@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#define M_PI 3.1415926535897932384626433832795
 
 const char* vertexShaderSource = "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n"
@@ -102,6 +103,10 @@ public:
     float s;
     float l;
     float rgb[3];
+    void shift(float time)
+    {
+        h = mod(time * 100, 360.0f);
+    }
     void fromTime(float time)
     {
         h = static_cast<int>(time) % 360;
@@ -160,22 +165,16 @@ public:
     }
 };
 
-float fX(float x)
-{
-    return pow(x, 4) - 2 * pow(x, 3) + pow(x, 2);
-}
-
-float dfX(float x)
-{
-    return 4 * pow(x, 3) - 6 * pow(x, 2) + 2 * x;
-}
-
 class func
 {
     std::vector<Vertex> vertices;
     std::vector<Vertex> finalVertecies;
     std::vector<unsigned int> indices;
 
+    float fX(float x)
+    {
+        return pow(x, 4) - 2 * pow(x, 3) + pow(x, 2);
+    }
     std::vector<Vertex> getVertices(float min, float max, float step)
     {
         std::vector<Vertex> vertices;
@@ -212,7 +211,7 @@ public:
             vertices[i] = vertex;
         }
         FILE* outpFile;
-        fopen_s(&outpFile, "outp.txt", "w");
+        fopen_s(&outpFile, "f_outp.txt", "w");
         fprintf(outpFile, "%d points\n", vertices.size());
         for (auto vertex : vertices)
         {
@@ -255,13 +254,97 @@ public:
     {
         glBufferData(GL_ARRAY_BUFFER, finalVertecies.size() * sizeof(Vertex), finalVertecies.data(), GL_STATIC_DRAW);
         glBindVertexArray(vao);
-        glDrawElements(GL_LINES, finalVertecies.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_LINE, finalVertecies.size(), GL_UNSIGNED_INT, 0);
+    }
+};
+
+class vertexFunc
+{
+
+    std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
+
+    std::vector<Vertex> getVertices(float min, float max, float step)
+    {
+        std::vector<Vertex> vertices;
+        hsl hsl{ 0,1,0.5 };
+        auto diff = (max + min) / 2;
+        while (min < max)
+        {
+            auto v = Vertex{ 0,0,0,0,0,0,0,0 };
+            v.x = cos(min);
+            v.y = sin(min);
+            v.z = min / 10;
+            hsl.shift(min);
+            auto rgb = hsl.getRgb();
+            v.r = rgb[0];
+            v.g = rgb[1];
+            v.b = rgb[2];
+            min += step;
+            vertices.push_back(v);
+        }
+        auto v = Vertex{ 0,0,0,0,0,0,0,0 };
+        v.x = cos(min);
+        v.y = sin(min);
+        v.z = min / 10;
+        hsl.shift(min);
+        auto rgb = hsl.getRgb();
+        v.r = rgb[0];
+        v.g = rgb[1];
+        v.b = rgb[2];
+        vertices.push_back(v);
+        return vertices;
+    }
+    unsigned int vao;
+    unsigned int ebo;
+    unsigned int vbo;
+public:
+    vertexFunc()
+    {
+        vertices = getVertices(0, 6 * M_PI, 0.1f);
+        FILE* outpFile;
+        fopen_s(&outpFile, "vf_outp.txt", "w");
+        fprintf(outpFile, "%d points\n", vertices.size());
+        for (auto vertex : vertices)
+        {
+            fprintf(outpFile, "%.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f\n", vertex.x, vertex.y, vertex.z, vertex.r, vertex.g, vertex.b, vertex.u, vertex.v);
+        }
+    }
+
+    void initDraw()
+    {
+        for (int i = 0; i < vertices.size() - 1; i++)
+        {
+            indices.push_back(i);
+            indices.push_back(i + 1);
+        }
+
+        glGenVertexArrays(1, &vao);
+        glGenBuffers(1, &ebo);
+        glGenBuffers(1, &vbo);
+
+        glBindVertexArray(vao);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+    }
+
+    void draw()
+    {
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+        glBindVertexArray(vao);
+        glDrawElements(GL_LINES, vertices.size(), GL_UNSIGNED_INT, 0);
     }
 };
 
 int main()
 {
     auto f = func();
+    auto vf = vertexFunc();
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -283,6 +366,7 @@ int main()
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     f.initDraw();
+    vf.initDraw();
 
     const unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
@@ -308,7 +392,8 @@ int main()
         processInput(window);
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(shaderProgram);
-        f.draw();
+        // f.draw();
+        vf.draw();
         glBindVertexArray(0);
 
         glfwSwapBuffers(window);
