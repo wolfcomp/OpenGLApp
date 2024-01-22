@@ -152,11 +152,6 @@
     <Library Include="Dependencies\libs\glfw3dll.lib" />
     <Library Include="Dependencies\libs\glfw3_mt.lib" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="data.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content >
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
