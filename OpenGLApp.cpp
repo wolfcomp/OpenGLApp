@@ -6,29 +6,10 @@
 #include <windows.h>
 #include <fstream>
 #include <iostream>
-#include <sstream>
-#include <string>
 #include <vector>
+
+#include "Shader.h"
 #define M_PI 3.1415926535897932384626433832795
-
-const char* vertexShaderSource = "#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"layout (location = 1) in vec3 aColor;\n"
-"out vec3 ourColor;\n"
-"void main()\n"
-"{\n"
-"   gl_Position = vec4(aPos, 1.0);\n"
-"   ourColor = aColor;\n"
-"}\0";
-
-
-const char* fragmentShaderSource = "#version 330 core\n"
-"out vec4 FragColor;\n"
-"in vec3 ourColor;\n"
-"void main()\n"
-"{\n"
-" FragColor = vec4(ourColor, 1.0);\n"
-"}\0";
 
 constexpr int width = 800;
 constexpr int height = 800;
@@ -39,12 +20,6 @@ struct Vertex
     float r, g, b;
     float u, v;
 };
-
-void printToDebugWindow(const char* message)
-{
-    OutputDebugStringA(message);
-    OutputDebugStringA("\n");
-}
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -57,46 +32,31 @@ void processInput(GLFWwindow* window)
         glfwSetWindowShouldClose(window, true);
 }
 
-int checkCompileStatus(unsigned int compileObject)
-{
-    int success;
-    char infoLog[512];
-    glGetShaderiv(compileObject, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(compileObject, 512, nullptr, infoLog);
-        printToDebugWindow("ERROR::SHADER::COMPILATION_FAILED");
-        printToDebugWindow(infoLog);
-    }
-    return success;
-}
-
-template <typename T>
-T clamp(T i, T min, T max)
-{
-    if (i < min)
-        return min;
-    if (i > max)
-        return max;
-    return i;
-}
-
-float getModif(float time, float (*func)(float))
-{
-    auto t = func(time);
-    if (t < 0)
-        t = -t;
-    return 0.25f * t + 0.25f;
-}
-
-template <typename T>
-T mod(T i, int mod)
-{
-    return i - mod * static_cast<int>(i / mod);
-}
-
 class hsl
 {
+    template <typename T>
+    T clamp(T i, T min, T max)
+    {
+        if (i < min)
+            return min;
+        if (i > max)
+            return max;
+        return i;
+    }
+
+    float getModif(float time, float (*func)(float))
+    {
+        auto t = func(time);
+        if (t < 0)
+            t = -t;
+        return 0.25f * t + 0.25f;
+    }
+
+    template <typename T>
+    T mod(T i, int mod)
+    {
+        return i - mod * static_cast<int>(i / mod);
+    }
 public:
     hsl(float h, float s, float l) : h(h), s(s), l(l) {}
     int h;
@@ -313,10 +273,9 @@ public:
 
     void initDraw()
     {
-        for (int i = 0; i < vertices.size() - 1; i++)
+        for (int i = 0; i < vertices.size(); i++)
         {
             indices.push_back(i);
-            indices.push_back(i + 1);
         }
 
         glGenVertexArrays(1, &vao);
@@ -337,7 +296,7 @@ public:
     {
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
         glBindVertexArray(vao);
-        glDrawElements(GL_LINES, vertices.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_LINE_STRIP, vertices.size(), GL_UNSIGNED_INT, 0);
     }
 };
 
@@ -353,14 +312,16 @@ int main()
     GLFWwindow* window = glfwCreateWindow(width, height, "OpenGLApp", nullptr, nullptr);
     if (window == nullptr)
     {
-        printToDebugWindow("Failed to create GLFW window");
+        std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
     }
     glfwMakeContextCurrent(window);
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        printToDebugWindow("Failed to initialize GLAD");
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        glfwTerminate();
+        return -1;
     }
     glViewport(0, 0, width, height);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -368,30 +329,13 @@ int main()
     f.initDraw();
     vf.initDraw();
 
-    const unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
-    glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
-    glCompileShader(vertexShader);
-    checkCompileStatus(vertexShader);
-
-    const unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
-    glCompileShader(fragmentShader);
-    checkCompileStatus(fragmentShader);
-
-    const unsigned int shaderProgram = glCreateProgram();
-
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    checkCompileStatus(shaderProgram);
+    Shader shader("shader.vs", "shader.fs");
 
     while (!glfwWindowShouldClose(window))
     {
         processInput(window);
         glClear(GL_COLOR_BUFFER_BIT);
-        glUseProgram(shaderProgram);
+        shader.use();
         // f.draw();
         vf.draw();
         glBindVertexArray(0);
@@ -399,9 +343,6 @@ int main()
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
 
     glfwTerminate();
 
