@@ -92,7 +92,7 @@ void process_mouse_input(GLFWwindow* window, const double x_pos, const double y_
     x_offset *= sensitivity;
     y_offset *= sensitivity;
 
-    model = rotate(model, glm::radians(x_offset), glm::vec3(0.0f, 1.0f, 0.0f));
+    model = rotate(model, glm::radians(x_offset), glm::vec3(0.0f, 0.0f, 1.0f));
     model = rotate(model, glm::radians(y_offset), glm::vec3(1.0f, 0.0f, 0.0f));
 }
 
@@ -510,9 +510,10 @@ int main()
     glfwSetCursorPosCallback(window, process_mouse_input);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    auto f2 = twoVarFunc(100, 0.1f);
+    auto f = twoVarFunc(100, 0.1f);
+    // auto f = vertexFunc();
 
-    f2.initDraw();
+    f.initDraw();
 
     Shader shader("shader.vs", "shader.fs");
     model = rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -534,7 +535,7 @@ int main()
         shader.set_mat4("model", value_ptr(model));
         shader.set_mat4("view", value_ptr(view));
         shader.set_mat4("projection", value_ptr(projection));
-        f2.draw();
+        f.draw();
         glBindVertexArray(0);
 
         glfwSwapBuffers(window);
