@@ -98,7 +98,7 @@ void process_mouse_input(GLFWwindow* window, const double x_pos, const double y_
 
 glm::vec3 process_direction(double delta_time)
 {
-    const float velocity = 250 * delta_time;
+    const float velocity = 10000 * delta_time;
     glm::vec3 vec(0.0f);
     if ((direction & Direction::FORWARD) == Direction::FORWARD)
         vec.z = velocity;
@@ -239,6 +239,10 @@ class func
     {
         return pow(x, 4) - 2 * pow(x, 3) + pow(x, 2);
     }
+    float dfX(float x)
+    {
+        return 4 * pow(x, 3) - 6 * pow(x, 2) + 2 * x;
+    }
     std::vector<Vertex> getVertices(float min, float max, float step)
     {
         std::vector<Vertex> vertices;
@@ -248,12 +252,14 @@ class func
             auto v = Vertex{ 0,0,0,0,0,0,0,0 };
             v.x = min - diff;
             v.y = fX(min);
+            v.z = dfX(min);
             min += step;
             vertices.push_back(v);
         }
         auto v = Vertex{ 0,0,0,0,0,0,0,0 };
         v.x = min - diff;
         v.y = fX(min);
+        v.z = dfX(min);
         vertices.push_back(v);
         return vertices;
     }
@@ -295,8 +301,10 @@ public:
             indices.push_back(finalVertecies.size() - 1);
             betweenVertex.x = nextVertex.x;
             betweenVertex.y = nextVertex.y;
+            betweenVertex.z = vertex.z;
             betweenVertex.r = vertex.r;
             betweenVertex.g = vertex.g;
+            betweenVertex.b = vertex.b;
             finalVertecies.push_back(betweenVertex);
             indices.push_back(finalVertecies.size() - 1);
         }
@@ -510,8 +518,9 @@ int main()
     glfwSetCursorPosCallback(window, process_mouse_input);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    auto f = twoVarFunc(100, 0.1f);
-    // auto f = vertexFunc();
+     // auto f = twoVarFunc(100, 0.1f);
+     auto f = vertexFunc();
+    // auto f = func();
 
     f.initDraw();
 
