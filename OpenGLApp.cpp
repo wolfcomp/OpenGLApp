@@ -243,7 +243,7 @@ class func
     {
         return 4 * pow(x, 3) - 6 * pow(x, 2) + 2 * x;
     }
-    std::vector<Vertex> getVertices(float min, float max, float step)
+    std::vector<Vertex> getVertices(float min, float max, float step, bool useZ)
     {
         std::vector<Vertex> vertices;
         auto diff = (max + min) / 2;
@@ -252,14 +252,16 @@ class func
             auto v = Vertex{ 0,0,0,0,0,0,0,0 };
             v.x = min - diff;
             v.y = fX(min);
-            v.z = dfX(min);
+            if (useZ)
+                v.z = dfX(min);
             min += step;
             vertices.push_back(v);
         }
         auto v = Vertex{ 0,0,0,0,0,0,0,0 };
         v.x = min - diff;
         v.y = fX(min);
-        v.z = dfX(min);
+        if (useZ)
+            v.z = dfX(min);
         vertices.push_back(v);
         return vertices;
     }
@@ -267,9 +269,9 @@ class func
     unsigned int ebo;
     unsigned int vbo;
 public:
-    func()
+    func(bool useZ = false)
     {
-        vertices = getVertices(-.3f, 1.3f, 0.1f);
+        vertices = getVertices(-.3f, 1.3f, 0.1f, useZ);
         for (int i = 0; i < vertices.size() - 1; i++)
         {
             auto vertex = vertices[i];
@@ -327,7 +329,7 @@ public:
     {
         glBufferData(GL_ARRAY_BUFFER, finalVertecies.size() * sizeof(Vertex), finalVertecies.data(), GL_STATIC_DRAW);
         glBindVertexArray(vao);
-        glDrawElements(GL_LINE, finalVertecies.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_LINES, finalVertecies.size(), GL_UNSIGNED_INT, 0);
     }
 };
 
@@ -518,9 +520,10 @@ int main()
     glfwSetCursorPosCallback(window, process_mouse_input);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-     // auto f = twoVarFunc(100, 0.1f);
-     auto f = vertexFunc();
-    // auto f = func();
+    // uncomment one of these to change the function being used for drawing
+    // auto f = twoVarFunc(100, 0.1f);
+    // auto f = vertexFunc();
+    auto f = func();
 
     f.initDraw();
 
