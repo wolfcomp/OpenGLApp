@@ -10,27 +10,15 @@
 #include <iostream>
 #include <vector>
 
+#include "Camera.h"
 #include "Shader.h"
 #define M_PI 3.1415926535897932384626433832795
 
 constexpr int width = 800;
 constexpr int height = 800;
 float lastX = 400, lastY = 300;
-float pitch, yaw;
 bool firstMouse = true;
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, 0.0f);
-glm::mat4 model = glm::mat4(1.0f);
-
-enum class Direction
-{
-    NONE = 0,
-    FORWARD = 1,
-    BACKWARD = 2,
-    LEFT = 4,
-    RIGHT = 8,
-    UP = 16,
-    DOWN = 32
-};
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 25000.0f, 0.01f);
 
 struct Vertex
 {
@@ -40,16 +28,6 @@ struct Vertex
 };
 
 Direction direction = Direction::NONE;
-
-inline Direction operator|(Direction a, Direction b)
-{
-    return static_cast<Direction>(static_cast<int>(a) | static_cast<int>(b));
-}
-
-inline Direction operator&(Direction a, Direction b)
-{
-    return static_cast<Direction>(static_cast<int>(a) & static_cast<int>(b));
-}
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -88,31 +66,13 @@ void process_mouse_input(GLFWwindow* window, const double x_pos, const double y_
     float y_offset = lastY - y_pos; // reversed: y ranges bottom to top
     lastX = x_pos;
     lastY = y_pos;
-    constexpr float sensitivity = 0.05f;
-    x_offset *= sensitivity;
-    y_offset *= sensitivity;
 
-    model = rotate(model, glm::radians(x_offset), glm::vec3(0.0f, 0.0f, 1.0f));
-    model = rotate(model, glm::radians(y_offset), glm::vec3(1.0f, 0.0f, 0.0f));
+    camera.process_mouse_movement(x_offset, y_offset);
 }
 
-glm::vec3 process_direction(double delta_time)
+void process_direction(double delta_time)
 {
-    const float velocity = 10000 * delta_time;
-    glm::vec3 vec(0.0f);
-    if ((direction & Direction::FORWARD) == Direction::FORWARD)
-        vec.z = velocity;
-    if ((direction & Direction::BACKWARD) == Direction::BACKWARD)
-        vec.z = -velocity;
-    if ((direction & Direction::LEFT) == Direction::LEFT)
-        vec.x = velocity;
-    if ((direction & Direction::RIGHT) == Direction::RIGHT)
-        vec.x = -velocity;
-    if ((direction & Direction::UP) == Direction::UP)
-        vec.y = -velocity;
-    if ((direction & Direction::DOWN) == Direction::DOWN)
-        vec.y = velocity;
-    return vec;
+    camera.process_keyboard(direction, delta_time);
 }
 
 class file_handle
@@ -494,6 +454,80 @@ public:
     }
 };
 
+class drawFromFile
+{
+    int size;
+    std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
+    unsigned int vao;
+    unsigned int ebo;
+    unsigned int vbo;
+    GLenum mode;
+    bool optimizedTriangles;
+public:
+    drawFromFile(const char* filename, GLenum mode = GL_LINES, bool optimizedTriangles = false)
+    {
+        std::ifstream file(filename);
+        std::string line;
+        int size = 0;
+        while (std::getline(file, line))
+        {
+            std::stringstream ss(line);
+            if (size == 0)
+            {
+                ss >> size;
+                continue;
+            }
+            Vertex v{ 0,0,0,0,0,0,0,0 };
+            ss >> v.x >> v.y >> v.z >> v.r >> v.g >> v.b >> v.u >> v.v;
+            vertices.push_back(v);
+            if (!optimizedTriangles)
+                indices.push_back(indices.size());
+        }
+        this->mode = mode;
+        this->optimizedTriangles = optimizedTriangles;
+    }
+    void initDraw()
+    {
+        if (optimizedTriangles)
+        {
+            int size = sqrt(vertices.size());
+
+            for (int i = 0; i < size - 1; i++)
+            {
+                for (int j = 0; j < size - 1; j++)
+                {
+                    indices.push_back(i * size + j);
+                    indices.push_back(i * size + j + 1);
+                    indices.push_back((i + 1) * size + j);
+                    indices.push_back((i + 1) * size + j);
+                    indices.push_back((i + 1) * size + j + 1);
+                    indices.push_back(i * size + j + 1);
+                }
+            }
+        }
+
+        glGenVertexArrays(1, &vao);
+        glGenBuffers(1, &ebo);
+        glGenBuffers(1, &vbo);
+
+        glBindVertexArray(vao);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+    }
+    void draw()
+    {
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+        glBindVertexArray(vao);
+        glDrawElements(this->mode, indices.size(), GL_UNSIGNED_INT, 0);
+    }
+};
+
 int main()
 {
     glfwInit();
@@ -521,16 +555,16 @@ int main()
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     // uncomment one of these to change the function being used for drawing
+    // in order to generate the files the functions below needs to be uncommented once
     // auto f = twoVarFunc(100, 0.1f);
     // auto f = vertexFunc();
-    auto f = func();
+    // auto f = func();
+    auto f = drawFromFile("vf_outp.txt", GL_LINE_STRIP, false);
 
     f.initDraw();
 
     Shader shader("shader.vs", "shader.fs");
-    model = rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    glm::mat4 view = glm::mat4(1.0f);
-    view = translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
     double lastTime = glfwGetTime();
 
@@ -538,14 +572,14 @@ int main()
     {
         const double deltaTime = glfwGetTime() - lastTime;
         process_key_input(window);
-        view = translate(view, process_direction(deltaTime));
+        process_direction(deltaTime);
         glClear(GL_COLOR_BUFFER_BIT);
         //enable gl wireframe mode
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         shader.use();
+        shader.set_mat4("view", value_ptr(camera.get_view_matrix()));
         shader.set_mat4("model", value_ptr(model));
-        shader.set_mat4("view", value_ptr(view));
         shader.set_mat4("projection", value_ptr(projection));
         f.draw();
         glBindVertexArray(0);

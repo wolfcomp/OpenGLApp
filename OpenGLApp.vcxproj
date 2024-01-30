@@ -135,12 +135,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Dependencies\includes\glm\detail\glm.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="OpenGLApp.cpp" />
     <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Dependencies\includes\glad\glad.h" />
     <ClInclude Include="Dependencies\includes\GLFW\glfw3.h" />
     <ClInclude Include="Dependencies\includes\GLFW\glfw3native.h" />
