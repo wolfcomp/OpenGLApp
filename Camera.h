@@ -48,7 +48,7 @@ class Camera
 public:
     Camera();
     Camera(const glm::vec3 position, const glm::vec3 up, const float yaw, const float pitch, float movement_speed, float mouse_sensitivity);
-    void process_keyboard(const Direction direction, const float delta_time);
+    void process_keyboard(const Direction direction, const double delta_time);
     void process_mouse_movement(const float x_offset, const float y_offset, const bool constrain_pitch = true);
     void process_mouse_scroll(const float y_offset);
     glm::mat4 get_view_matrix() const;

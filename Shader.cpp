@@ -1,5 +1,9 @@
 #include "Shader.h"
 
+#include <glad/glad.h>
+#include <fstream>
+#include <iostream>
+
 Shader::Shader(const char* vertex_path, const char* fragment_path)
 {
     // 1. retrieve the vertex/fragment source code from filePath

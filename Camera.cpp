@@ -58,9 +58,9 @@ void Camera::process_mouse_scroll(const float y_offset)
         zoom = 45.0f;
 }
 
-void Camera::process_keyboard(const Direction direction, const float delta_time)
+void Camera::process_keyboard(const Direction direction, const double delta_time)
 {
-    const float velocity = movement_speed * delta_time;
+    const float velocity = static_cast<float>(movement_speed * delta_time);
     if (direction == Direction::FORWARD)
         position += front * velocity;
     if (direction == Direction::BACKWARD)
