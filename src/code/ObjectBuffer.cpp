@@ -9,7 +9,7 @@ ObjectBuffer::~ObjectBuffer()
     objects.clear();
 }
 
-ObjectBuffer::ObjectBuffer()
+void ObjectBuffer::init_buffers()
 {
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &ebo);
@@ -28,6 +28,7 @@ ObjectBuffer::ObjectBuffer()
     glBindVertexArray(0);
 }
 
+
 void ObjectBuffer::draw() const
 {
     glBindVertexArray(vao);
@@ -40,7 +41,7 @@ void ObjectBuffer::draw() const
 void ObjectBuffer::add_object(ITriangleObject* object)
 {
     objects.push_back(object);
-    generate_draw();
+    update_buffers();
 }
 
 void ObjectBuffer::destroy_object(ITriangleObject* object)
@@ -52,7 +53,7 @@ void ObjectBuffer::destroy_object(ITriangleObject* object)
     }
 }
 
-void ObjectBuffer::generate_draw()
+void ObjectBuffer::update_buffers()
 {
     vertices.clear();
     indices.clear();
