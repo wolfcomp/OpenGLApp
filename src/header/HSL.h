@@ -1,5 +1,8 @@
 #pragma once
 #include <cmath>
+
+#include "glm/vec3.hpp"
+
 class hsl
 {
     template <typename T>
@@ -97,5 +100,10 @@ public:
         rgb[1] = g;
         rgb[2] = b;
         return rgb;
+    }
+    glm::vec3 get_rgb_vec3()
+    {
+        get_rgb();
+        return {rgb[0], rgb[1], rgb[2]};
     }
 };
