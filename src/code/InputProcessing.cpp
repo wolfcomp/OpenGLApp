@@ -3,10 +3,19 @@
 #include "glfw/glfw3.h"
 #include "glm/gtc/type_ptr.hpp"
 
+#define MOVEMENT_SPEED 30  // NOLINT(modernize-macro-to-enum)
+#define MOUSE_SENSITIVITY 0.1f
+
 InputProcessing::InputProcessing()
 {
-    camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 25000.0f, 0.01f);
+    camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, MOVEMENT_SPEED * 1000.0f, MOUSE_SENSITIVITY);
 }
+
+void InputProcessing::change_aspect(const float width, const float height)
+{
+    projection = glm::perspective(glm::radians(45.0f), width / height, 0.1f, 100.0f);
+}
+
 
 void InputProcessing::set_shader(Shader* shader)
 {
@@ -32,7 +41,25 @@ void InputProcessing::process_keyboard(GLFWwindow* window, const double delta_ti
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         direction = direction | Direction::DOWN;
 
+    for (const auto& listener : keyboard_listeners)
+    {
+        if (glfwGetKey(window, listener.first) == GLFW_PRESS)
+        {
+            listener.second();
+        }
+    }
+
     camera.process_keyboard(direction, delta_time);
+}
+
+void InputProcessing::attach_keyboard_listener(const int key, void (*event_handler)())
+{
+    keyboard_listeners[key] = event_handler;
+}
+
+void InputProcessing::remove_keyboard_listener(const int key)
+{
+    keyboard_listeners.erase(key);
 }
 
 void InputProcessing::reset()
