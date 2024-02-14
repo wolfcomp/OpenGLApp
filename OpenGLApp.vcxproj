@@ -140,6 +140,7 @@
     <ClCompile Include="OpenGLApp.cpp" />
     <ClCompile Include="src\code\Camera.cpp" />
     <ClCompile Include="src\code\Cube.cpp" />
+    <ClCompile Include="src\code\IcoSphere.cpp" />
     <ClCompile Include="src\code\InputProcessing.cpp" />
     <ClCompile Include="src\code\ObjectBuffer.cpp" />
     <ClCompile Include="src\code\Shader.cpp" />
@@ -434,6 +435,7 @@
     <ClInclude Include="src\header\Camera.h" />
     <ClInclude Include="src\header\Cube.h" />
     <ClInclude Include="src\header\HSL.h" />
+    <ClInclude Include="src\header\IcoSphere.h" />
     <ClInclude Include="src\header\InputProcessing.h" />
     <ClInclude Include="src\header\ITriangleObject.h" />
     <ClInclude Include="src\header\Math.h" />

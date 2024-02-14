@@ -4,26 +4,47 @@
 #include <iostream>
 
 #include "src/header/Cube.h"
+#include "src/header/IcoSphere.h"
 #include "src/header/InputProcessing.h"
 #include "src/header/Shader.h"
 #include "src/header/Misc.h"
 #include "src/header/ObjectBuffer.h"
 
-constexpr int width = 800;
-constexpr int height = 800;
+constexpr int width = 1600;
+constexpr int height = 900;
 float lastX = 400, lastY = 300;
 bool firstMouse = true;
+int subdivision = 0;
+bool dirty = true;
 
 InputProcessing input;
+ObjectBuffer objBuffer;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
 
+void increase_subdivision()
+{
+    if (subdivision < 5)
+    {
+        subdivision++;
+        dirty = true;
+    }
+}
+
+void decrease_subdivision()
+{
+    if (subdivision > 0)
+    {
+        subdivision--;
+        dirty = true;
+    }
+}
+
 void process_mouse_input(GLFWwindow* window, const double x_pos, const double y_pos)
 {
-
     if (firstMouse)
     {
         lastX = x_pos;
@@ -41,6 +62,7 @@ void process_mouse_input(GLFWwindow* window, const double x_pos, const double y_
 
 int main()
 {
+    input.change_aspect(width, height);
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -66,24 +88,31 @@ int main()
     glfwSetCursorPosCallback(window, process_mouse_input);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    ObjectBuffer objBuffer;
+    input.attach_keyboard_listener(GLFW_KEY_UP, increase_subdivision);
+    input.attach_keyboard_listener(GLFW_KEY_DOWN, decrease_subdivision);
 
-    auto cube = Cube();
-    auto cube2 = Cube();
-    auto cube3 = Cube();
+    objBuffer.init_buffers();
 
-    cube2.set_euler_rotation(glm::vec3(.4f, .2f, .6f));
-    cube3.set_euler_rotation(glm::vec3(.6f, -.8f, .1f));
-    cube2.set_scale(glm::vec3(1.5f));
-    cube3.set_scale(glm::vec3(0.5f));
-    cube2.set_position(glm::vec3(3.f));
-    cube3.set_position(glm::vec3(-2.f));
-    cube2.set_color(hsl(120, 1, .5f));
-    cube3.set_color(hsl(240, 1, .5f));
+    // auto cube = Cube();
+    // auto cube2 = Cube();
+    // auto cube3 = Cube();
+    //
+    // cube2.set_euler_rotation(glm::vec3(.4f, .2f, .6f));
+    // cube3.set_euler_rotation(glm::vec3(.6f, -.8f, .1f));
+    // cube2.set_scale(glm::vec3(1.5f));
+    // cube3.set_scale(glm::vec3(0.5f));
+    // cube2.set_position(glm::vec3(3.f));
+    // cube3.set_position(glm::vec3(-2.f));
+    // cube2.set_color(hsl(120, 1, .5f));
+    // cube3.set_color(hsl(240, 1, .5f));
+    //
+    // objBuffer.add_object(&cube);
+    // objBuffer.add_object(&cube2);
+    // objBuffer.add_object(&cube3);
 
-    objBuffer.add_object(&cube);
-    objBuffer.add_object(&cube2);
-    objBuffer.add_object(&cube3);
+    auto ico_sphere = IcoSphere();
+
+    objBuffer.add_object(&ico_sphere);
 
     Shader shader("shader.vs", "shader.fs");
     double lastTime = glfwGetTime();
@@ -92,6 +121,12 @@ int main()
     {
         const double deltaTime = glfwGetTime() - lastTime;
         input.process_keyboard(window, deltaTime);
+        if (dirty)
+        {
+            ico_sphere.set_subdivision(subdivision);
+            objBuffer.update_buffers();
+            dirty = false;
+        }
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         //enable gl wireframe mode
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

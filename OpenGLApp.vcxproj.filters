@@ -42,6 +42,9 @@
     <ClCompile Include="src\code\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\code\IcoSphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\includes\glm\gtx\wrap.hpp">
@@ -930,6 +933,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\header\Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\header\IcoSphere.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
