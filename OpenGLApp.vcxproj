@@ -437,6 +437,7 @@
     <ClInclude Include="src\header\HSL.h" />
     <ClInclude Include="src\header\IcoSphere.h" />
     <ClInclude Include="src\header\InputProcessing.h" />
+    <ClInclude Include="src\header\ISphere.h" />
     <ClInclude Include="src\header\ITriangleObject.h" />
     <ClInclude Include="src\header\Math.h" />
     <ClInclude Include="src\header\Misc.h" />
