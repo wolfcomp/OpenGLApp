@@ -43,18 +43,26 @@ void InputProcessing::process_keyboard(GLFWwindow* window, const double delta_ti
 
     for (const auto& listener : keyboard_listeners)
     {
-        if (glfwGetKey(window, listener.first) == GLFW_PRESS)
+        auto key = listener.first;
+        if (glfwGetKey(window, key) == GLFW_PRESS && (should_repeat[key] || !key_pressed[key]))
         {
+            key_pressed[key] = true;
             listener.second();
+        }
+        else if (glfwGetKey(window, key) == GLFW_RELEASE)
+        {
+            key_pressed[key] = false;
         }
     }
 
     camera.process_keyboard(direction, delta_time);
 }
 
-void InputProcessing::attach_keyboard_listener(const int key, void (*event_handler)())
+void InputProcessing::attach_keyboard_listener(const int key, void (*event_handler)(), bool repeat)
 {
     keyboard_listeners[key] = event_handler;
+    should_repeat[key] = repeat;
+    key_pressed[key] = false;
 }
 
 void InputProcessing::remove_keyboard_listener(const int key)
@@ -70,4 +78,19 @@ void InputProcessing::reset()
 void InputProcessing::process_mouse_movement(const float x_offset, const float y_offset, const bool constrain_pitch)
 {
     camera.process_mouse_movement(x_offset, y_offset, constrain_pitch);
+}
+
+void InputProcessing::process_mouse_scroll(const float y_offset)
+{
+    camera.process_mouse_scroll(y_offset);
+}
+
+void InputProcessing::set_camera_position(const glm::vec3 position)
+{
+    camera.set_position(position);
+}
+
+void InputProcessing::set_camera_rotation(const float yaw, const float pitch)
+{
+    camera.set_rotation(yaw, pitch);
 }

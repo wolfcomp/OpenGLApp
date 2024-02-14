@@ -14,14 +14,18 @@ class InputProcessing
     Camera camera;
     Direction direction = Direction::NONE;
     std::map<int, void (*)()> keyboard_listeners;
+    std::map<int, bool> should_repeat;
+    std::map<int, bool> key_pressed;
 
 public:
     InputProcessing();
+    void set_camera_position(const glm::vec3 position);
+    void set_camera_rotation(const float yaw, const float pitch);
     void change_aspect(const float width, const float height);
     void process_keyboard(GLFWwindow* window, const double delta_time);
     void process_mouse_movement(const float x_offset, const float y_offset, const bool constrain_pitch = true);
     void process_mouse_scroll(const float y_offset);
-    void attach_keyboard_listener(const int key, void (*event_handler)());
+    void attach_keyboard_listener(const int key, void (*event_handler)(), bool repeat);
     void remove_keyboard_listener(const int key);
     void set_shader(Shader *shader);
     void reset();

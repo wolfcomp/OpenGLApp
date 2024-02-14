@@ -42,37 +42,34 @@ void IcoSphere::generate_vertices()
         h_angle2 += H_ANGLE;
         h_angle1 += H_ANGLE;
     }
-    if (subdivision == 0)
-    {
-        indices = {
-            // top cone
-            0, 1, 2,
-            0, 2, 3,
-            0, 3, 4,
-            0, 4, 5,
-            0, 5, 1,
+    indices = {
+        // top cone
+        0, 1, 2,
+        0, 2, 3,
+        0, 3, 4,
+        0, 4, 5,
+        0, 5, 1,
 
-            // center cylinder
-            6, 2, 1,
-            6, 7, 2,
-            7, 3, 2,
-            7, 8, 3,
-            8, 4, 3,
-            8, 9, 4,
-            9, 5, 4,
-            9, 10, 5,
-            10, 1, 5,
-            6, 1, 10,
+        // center cylinder
+        6, 2, 1,
+        6, 7, 2,
+        7, 3, 2,
+        7, 8, 3,
+        8, 4, 3,
+        8, 9, 4,
+        9, 5, 4,
+        9, 10, 5,
+        10, 1, 5,
+        6, 1, 10,
 
-            // bottom cone
-            11, 6, 10,
-            11, 7, 6,
-            11, 8, 7,
-            11, 9, 8,
-            11, 10, 9
-        };
-    }
-    else
+        // bottom cone
+        11, 6, 10,
+        11, 7, 6,
+        11, 8, 7,
+        11, 9, 8,
+        11, 10, 9
+    };
+    if (subdivision > 0)
     {
         std::vector<Vertex> oldVertex;
         std::vector<unsigned> oldIndices;
@@ -108,6 +105,11 @@ void IcoSphere::generate_vertices()
                 }
             }
         }
+    }
+    for (auto& vert : vertices)
+    {
+        vert.position = rotation * vert.position;
+        vert.position += position;
     }
 }
 
@@ -156,9 +158,9 @@ void IcoSphere::set_position(const glm::vec3 position)
     generate_vertices();
 }
 
-void IcoSphere::set_radius(const glm::vec3 radius)
+void IcoSphere::set_radius(const float radius)
 {
-    this->radius = radius.x;
+    this->radius = radius;
     generate_vertices();
 }
 

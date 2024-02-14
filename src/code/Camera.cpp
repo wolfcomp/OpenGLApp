@@ -73,7 +73,6 @@ void Camera::process_keyboard(const Direction direction, const double delta_time
         position += up * velocity;
     if (direction == Direction::DOWN)
         position -= up * velocity;
-    update_camera_vectors();
 }
 
 void Camera::process_mouse_movement(const float x_offset, const float y_offset, const bool constrain_pitch)
@@ -87,5 +86,17 @@ void Camera::process_mouse_movement(const float x_offset, const float y_offset, 
         if (pitch < -89.0f)
             pitch = -89.0f;
     }
+    update_camera_vectors();
+}
+
+void Camera::set_position(const glm::vec3 position)
+{
+    this->position = position;
+}
+
+void Camera::set_rotation(const float yaw, const float pitch)
+{
+    this->yaw = yaw;
+    this->pitch = pitch;
     update_camera_vectors();
 }
