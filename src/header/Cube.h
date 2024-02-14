@@ -26,6 +26,6 @@ public:
     void set_scale(const glm::vec3 scale);
     void set_rotation(const glm::quat quaternion);
     void set_euler_rotation(const glm::vec3 angle);
-    std::vector<Vertex> get_vertices() const override;
-    std::vector<unsigned int> get_indices() const override;
+    std::vector<Vertex> get_vertices() override;
+    std::vector<unsigned int> get_indices() override;
 };

@@ -12,11 +12,11 @@ public:
     ITriangleObject &operator=(const ITriangleObject&) = default;
     ITriangleObject(ITriangleObject&&) = default;
     ITriangleObject &operator=(ITriangleObject&&) = default;
-    virtual std::vector<Vertex> get_vertices() const
+    virtual std::vector<Vertex> get_vertices()
     {
         return {};
     }
-    virtual std::vector<unsigned int> get_indices() const
+    virtual std::vector<unsigned int> get_indices()
     {
         return {};
     }

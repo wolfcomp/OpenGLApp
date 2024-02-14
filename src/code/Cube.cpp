@@ -97,12 +97,12 @@ void Cube::set_scale(const glm::vec3 scale)
     generate_vertices();
 }
 
-std::vector<Vertex> Cube::get_vertices() const
+std::vector<Vertex> Cube::get_vertices()
 {
     return vertices;
 }
 
-std::vector<unsigned int> Cube::get_indices() const
+std::vector<unsigned int> Cube::get_indices()
 {
     return indices;
 }

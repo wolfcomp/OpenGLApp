@@ -1,9 +1,9 @@
 #pragma once
 #include "HSL.h"
-#include "ITriangleObject.h"
+#include "ISphere.h"
 #include "Math.h"
 
-class IcoSphere : public ITriangleObject
+class IcoSphere : public ISphere
 {
     // disable linter warning for these constants as they are double to floating point conversion
     // ReSharper disable CppInconsistentNaming
@@ -19,12 +19,6 @@ class IcoSphere : public ITriangleObject
     unsigned int subdivision = 0;
     void generate_vertices();
     void compute_half_vertex(const Vertex& a, const Vertex& b, Vertex& result) const;
-    template <typename T, typename ... V>
-    static void push_vector(std::vector<T>& vector, V ... args);
-    template <typename T>
-    static void push_vector(std::vector<T>& vector, T arg);
-    template <typename T, typename ... V>
-    static void push_vector(std::vector<T>& vector, T arg, V ... args);
 
 public:
     IcoSphere();
@@ -34,7 +28,7 @@ public:
     void set_subdivision(const unsigned int subdivision);
     void set_rotation(const glm::quat quaternion);
     void set_euler_rotation(const glm::vec3 angle);
-    std::vector<Vertex> get_vertices() const override;
-    std::vector<unsigned int> get_indices() const override;
+    std::vector<Vertex> get_vertices() override;
+    std::vector<unsigned int> get_indices() override;
 };
 

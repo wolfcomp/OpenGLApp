@@ -16,7 +16,6 @@ void IcoSphere::generate_vertices()
     Vertex vertex;
     float h_angle1 = -M_PI / 2 - H_ANGLE / 2;
     float h_angle2 = -M_PI / 2;
-    vertex.color = color.get_rgb_vec3();
     vertex.position.z = radius;
     vertices[0] = vertex;
     vertex.position.z = -radius;
@@ -69,34 +68,35 @@ void IcoSphere::generate_vertices()
         11, 9, 8,
         11, 10, 9
     };
+
     if (subdivision > 0)
     {
-        std::vector<Vertex> oldVertex;
-        std::vector<unsigned> oldIndices;
+        std::vector<Vertex> old_vertex;
+        std::vector<unsigned> old_indices;
         unsigned index = 0;
-        Vertex v1, v2, v3, newV1, newV2, newV3;
+        Vertex v1, v2, v3, new_v1, new_v2, new_v3;
         for (unsigned i = 0; i < subdivision; ++i)
         {
-            oldVertex = vertices;
-            oldIndices = indices;
+            old_vertex = vertices;
+            old_indices = indices;
             vertices.clear();
             indices.clear();
             index = 0;
 
-            for (unsigned j = 0; j < oldIndices.size(); j += 3)
+            for (unsigned j = 0; j < old_indices.size(); j += 3)
             {
-                v1 = oldVertex[oldIndices[j]];
-                v2 = oldVertex[oldIndices[j + 1]];
-                v3 = oldVertex[oldIndices[j + 2]];
+                v1 = old_vertex[old_indices[j]];
+                v2 = old_vertex[old_indices[j + 1]];
+                v3 = old_vertex[old_indices[j + 2]];
 
-                compute_half_vertex(v1, v2, newV1);
-                compute_half_vertex(v2, v3, newV2);
-                compute_half_vertex(v1, v3, newV3);
+                compute_half_vertex(v1, v2, new_v1);
+                compute_half_vertex(v2, v3, new_v2);
+                compute_half_vertex(v1, v3, new_v3);
 
-                push_vector(vertices, v1, newV1, newV3);
-                push_vector(vertices, newV1, v2, newV2);
-                push_vector(vertices, newV1, newV2, newV3);
-                push_vector(vertices, newV3, newV2, v3);
+                push_vector(vertices, v1, new_v1, new_v3);
+                push_vector(vertices, new_v1, v2, new_v2);
+                push_vector(vertices, new_v1, new_v2, new_v3);
+                push_vector(vertices, new_v3, new_v2, v3);
 
                 for (char i = 0; i < 4; ++i)
                 {
@@ -105,11 +105,6 @@ void IcoSphere::generate_vertices()
                 }
             }
         }
-    }
-    for (auto& vert : vertices)
-    {
-        vert.position = rotation * vert.position;
-        vert.position += position;
     }
 }
 
@@ -120,42 +115,19 @@ void IcoSphere::compute_half_vertex(const Vertex& a, const Vertex& b, Vertex& re
     result.color = a.color;
 }
 
-template <typename T, typename... V>
-void IcoSphere::push_vector(std::vector<T>& vector, V... args)
-{
-    push_vector(vector, std::forward<V>(args)...);
-}
-
-template <typename T>
-void IcoSphere::push_vector(std::vector<T>& vector, T arg)
-{
-    vector.push_back(arg);
-}
-
-template <typename T, typename... V>
-void IcoSphere::push_vector(std::vector<T>& vector, T arg, V... args)
-{
-    vector.push_back(arg);
-    push_vector(vector, args...);
-}
-
-
 void IcoSphere::set_color(const hsl& color)
 {
     this->color = color;
-    generate_vertices();
 }
 
 void IcoSphere::set_euler_rotation(const glm::vec3 angle)
 {
     rotation = glm::quat(angle);
-    generate_vertices();
 }
 
 void IcoSphere::set_position(const glm::vec3 position)
 {
     this->position = position;
-    generate_vertices();
 }
 
 void IcoSphere::set_radius(const float radius)
@@ -167,7 +139,6 @@ void IcoSphere::set_radius(const float radius)
 void IcoSphere::set_rotation(const glm::quat quaternion)
 {
     rotation = quaternion;
-    generate_vertices();
 }
 
 void IcoSphere::set_subdivision(const unsigned int subdivision)
@@ -176,12 +147,21 @@ void IcoSphere::set_subdivision(const unsigned int subdivision)
     generate_vertices();
 }
 
-std::vector<unsigned> IcoSphere::get_indices() const
+std::vector<unsigned> IcoSphere::get_indices()
 {
     return indices;
 }
 
-std::vector<Vertex> IcoSphere::get_vertices() const
+std::vector<Vertex> IcoSphere::get_vertices()
 {
+    std::vector<Vertex> vertices = this->vertices;
+
+    for (auto& vert : vertices)
+    {
+        vert.color = this->color.get_rgb_vec3();
+        vert.position = rotation * vert.position;
+        vert.position += position;
+    }
+
     return vertices;
 }
