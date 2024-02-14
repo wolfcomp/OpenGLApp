@@ -135,18 +135,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Cube.cpp" />
     <ClCompile Include="Dependencies\includes\glm\detail\glm.cpp" />
     <ClCompile Include="glad.c" />
-    <ClCompile Include="InputProcessing.cpp" />
-    <ClCompile Include="ObjectBuffer.cpp" />
     <ClCompile Include="OpenGLApp.cpp" />
-    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="src\code\Camera.cpp" />
+    <ClCompile Include="src\code\Cube.cpp" />
+    <ClCompile Include="src\code\InputProcessing.cpp" />
+    <ClCompile Include="src\code\ObjectBuffer.cpp" />
+    <ClCompile Include="src\code\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="Cube.h" />
     <ClInclude Include="Dependencies\includes\glad\glad.h" />
     <ClInclude Include="Dependencies\includes\GLFW\glfw3.h" />
     <ClInclude Include="Dependencies\includes\GLFW\glfw3native.h" />
@@ -433,14 +431,16 @@
     <ClInclude Include="Dependencies\includes\glm\vec4.hpp" />
     <ClInclude Include="Dependencies\includes\glm\vector_relational.hpp" />
     <ClInclude Include="Dependencies\includes\KHR\khrplatform.h" />
-    <ClInclude Include="HSL.h" />
-    <ClInclude Include="InputProcessing.h" />
-    <ClInclude Include="ITriangleObject.h" />
-    <ClInclude Include="Math.h" />
-    <ClInclude Include="Misc.h" />
-    <ClInclude Include="ObjectBuffer.h" />
-    <ClInclude Include="Shader.h" />
-    <ClInclude Include="Vertex.h" />
+    <ClInclude Include="src\header\Camera.h" />
+    <ClInclude Include="src\header\Cube.h" />
+    <ClInclude Include="src\header\HSL.h" />
+    <ClInclude Include="src\header\InputProcessing.h" />
+    <ClInclude Include="src\header\ITriangleObject.h" />
+    <ClInclude Include="src\header\Math.h" />
+    <ClInclude Include="src\header\Misc.h" />
+    <ClInclude Include="src\header\ObjectBuffer.h" />
+    <ClInclude Include="src\header\Shader.h" />
+    <ClInclude Include="src\header\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Dependencies\includes\glm\detail\func_common.inl" />
