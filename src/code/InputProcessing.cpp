@@ -1,4 +1,4 @@
-﻿#include "InputProcessing.h"
+﻿#include "../header/InputProcessing.h"
 
 #include "glfw/glfw3.h"
 #include "glm/gtc/type_ptr.hpp"

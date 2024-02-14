@@ -3,11 +3,11 @@
 
 #include <iostream>
 
-#include "Cube.h"
-#include "InputProcessing.h"
-#include "Shader.h"
-#include "Misc.h"
-#include "ObjectBuffer.h"
+#include "src/header/Cube.h"
+#include "src/header/InputProcessing.h"
+#include "src/header/Shader.h"
+#include "src/header/Misc.h"
+#include "src/header/ObjectBuffer.h"
 
 constexpr int width = 800;
 constexpr int height = 800;
