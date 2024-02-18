@@ -304,9 +304,9 @@ class drawFromFile
     unsigned int ebo;
     unsigned int vbo;
     GLenum mode;
-    bool optimizedTriangles;
+    bool optimized;
 public:
-    drawFromFile(const char* filename, GLenum mode = GL_LINES, bool optimizedTriangles = false)
+    drawFromFile(const char* filename, GLenum mode = GL_LINES, bool optimized = false, bool scale_to_negative_one_one = true)
     {
         std::ifstream file(filename);
         std::string line;
@@ -322,28 +322,69 @@ public:
             auto v = Vertex();
             ss >> v.position.x >> v.position.y >> v.position.z >> v.color.r >> v.color.g >> v.color.b >> v.texture_coord.x >> v.texture_coord.y;
             vertices.push_back(v);
-            if (!optimizedTriangles)
+            if (!optimized)
                 indices.push_back(indices.size());
         }
+        if (scale_to_negative_one_one)
+        {
+            float minx = vertices[0].position.x;
+            float miny = vertices[0].position.y;
+            float maxx = vertices[0].position.x;
+            float maxy = vertices[0].position.y;
+            for (auto vertex : vertices)
+            {
+                if (vertex.position.x < minx)
+                    minx = vertex.position.x;
+                if (vertex.position.y < miny)
+                    miny = vertex.position.y;
+                if (vertex.position.x > maxx)
+                    maxx = vertex.position.x;
+                if (vertex.position.y > maxy)
+                    maxy = vertex.position.y;
+            }
+
+            float xscale, yscale;
+            xscale = abs(minx) > abs(maxx) ? abs(minx) : abs(maxx);
+            yscale = abs(miny) > abs(maxy) ? abs(miny) : abs(maxy);
+
+            float scale = xscale > yscale ? xscale : yscale;
+
+            for (auto& vert : vertices)
+            {
+                vert.position.x = vert.position.x / scale;
+                vert.position.y = vert.position.y / scale;
+            }
+        }
         this->mode = mode;
-        this->optimizedTriangles = optimizedTriangles;
+        this->optimized = optimized;
     }
     void initDraw()
     {
-        if (optimizedTriangles)
+        if (optimized)
         {
-            int size = sqrt(vertices.size());
-
-            for (int i = 0; i < size - 1; i++)
+            if (mode == GL_LINES)
             {
-                for (int j = 0; j < size - 1; j++)
+                for (int i = 0; i < vertices.size() - 1; i++)
                 {
-                    indices.push_back(i * size + j);
-                    indices.push_back(i * size + j + 1);
-                    indices.push_back((i + 1) * size + j);
-                    indices.push_back((i + 1) * size + j);
-                    indices.push_back((i + 1) * size + j + 1);
-                    indices.push_back(i * size + j + 1);
+                    indices.push_back(i);
+                    indices.push_back(i + 1);
+                }
+            }
+            else if (mode == GL_TRIANGLES)
+            {
+                int size = sqrt(vertices.size());
+
+                for (int i = 0; i < size - 1; i++)
+                {
+                    for (int j = 0; j < size - 1; j++)
+                    {
+                        indices.push_back(i * size + j);
+                        indices.push_back(i * size + j + 1);
+                        indices.push_back((i + 1) * size + j);
+                        indices.push_back((i + 1) * size + j);
+                        indices.push_back((i + 1) * size + j + 1);
+                        indices.push_back(i * size + j + 1);
+                    }
                 }
             }
         }
@@ -356,10 +397,12 @@ public:
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+        // ReSharper disable CppCStyleCast
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(float)));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
         glEnableVertexAttribArray(1);
+        // ReSharper restore CppCStyleCast
     }
     void draw()
     {
