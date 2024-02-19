@@ -25,6 +25,7 @@ float staticCamPitch = 0.f;
 
 InputProcessing input;
 ObjectBuffer objBuffer;
+ShaderStore shaderStore;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -102,11 +103,17 @@ int main()
     input.attach_keyboard_listener(GLFW_KEY_DOWN, decrease_subdivision, false);
     input.attach_keyboard_listener(GLFW_KEY_F, []() { wireframe = !wireframe; }, false);
 
+    auto shader = shaderStore.add_shader("shader.vs", "shader.fs");
+
     objBuffer.init_buffers();
 
     auto cube = Cube();
     auto cube2 = Cube();
     auto cube3 = Cube();
+
+    cube.shader = shader;
+    cube2.shader = shader;
+    cube3.shader = shader;
 
     cube2.set_euler_rotation(glm::vec3(.4f, .2f, .6f));
     cube3.set_euler_rotation(glm::vec3(.6f, -.8f, .1f));
@@ -121,36 +128,55 @@ int main()
     objBuffer.add_object(&cube2);
     objBuffer.add_object(&cube3);
 
-    auto ico_sphere = IcoSphere();
+    auto icoSphere = IcoSphere();
 
-    ico_sphere.set_radius(0.3f);
-    ico_sphere.set_color(hsl(0, 0.5f, .5f));
-    ico_sphere.set_position(glm::vec3(3.f, -2.f, -1.f));
+    icoSphere.shader = shader;
 
-    objBuffer.add_object(&ico_sphere);
+    icoSphere.set_radius(0.3f);
+    icoSphere.set_color(hsl(0, 0.5f, .5f));
+    icoSphere.set_position(glm::vec3(3.f, -2.f, -1.f));
 
-    Shader shader("shader.vs", "shader.fs");
-    double last_time = glfwGetTime();
+    objBuffer.add_object(&icoSphere);
+
+    auto sphere = Sphere();
+
+    sphere.shader = shader;
+
+    sphere.set_radius(0.3f);
+    sphere.set_color(hsl(0, 0.5f, .5f));
+    sphere.set_position(glm::vec3(-3.f, -2.f, -1.f));
+
+    objBuffer.add_object(&sphere);
+
+    auto capsule = Capsule();
+
+    capsule.shader = shader;
+
+    capsule.set_radius(0.3f);
+    capsule.set_color(hsl(0, 0.5f, .5f));
+    capsule.set_position(glm::vec3(3.f, 2.f, -1.f));
+
+    objBuffer.add_object(&capsule);
+    double lastTime = glfwGetTime();
 
     while (!glfwWindowShouldClose(window))
     {
-        const double delta_time = glfwGetTime() - last_time;
-        input.process_keyboard(window, delta_time);
+        const double deltaTime = glfwGetTime() - lastTime;
+        input.process_keyboard(window, deltaTime);
+        shaderStore.set_shader_params(&input);
         if (dirty)
         {
-            ico_sphere.set_subdivision(subdivision);
-            objBuffer.update_buffers();
+            icoSphere.set_subdivision(subdivision);
+            sphere.set_subdivision(subdivision);
+            capsule.set_subdivision(subdivision);
             dirty = false;
         }
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         //enable gl wireframe mode
-        if(wireframe)
+        if (wireframe)
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         else
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-        shader.use();
-        input.set_shader(&shader);
 
         objBuffer.draw();
 
@@ -159,7 +185,7 @@ int main()
         glfwSwapBuffers(window);
         glfwPollEvents();
         input.reset();
-        last_time = glfwGetTime();
+        lastTime = glfwGetTime();
     }
 
     glfwTerminate();
