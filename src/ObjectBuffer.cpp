@@ -1,4 +1,4 @@
-﻿#include "../header/ObjectBuffer.h"
+﻿#include "ObjectBuffer.h"
 
 #include "glad/glad.h"
 
@@ -32,16 +32,16 @@ void ObjectBuffer::init_buffers()
 void ObjectBuffer::draw() const
 {
     glBindVertexArray(vao);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
+    for (const auto& object : objects)
+    {
+        object->draw();
+    }
 }
 
 
 void ObjectBuffer::add_object(ITriangleObject* object)
 {
     objects.push_back(object);
-    update_buffers();
 }
 
 void ObjectBuffer::destroy_object(ITriangleObject* object)
@@ -50,26 +50,6 @@ void ObjectBuffer::destroy_object(ITriangleObject* object)
     if (it != objects.end())
     {
         objects.erase(it);
-    }
-}
-
-void ObjectBuffer::update_buffers()
-{
-    vertices.clear();
-    indices.clear();
-    for (const auto object : objects)
-    {
-        const auto object_vertices = object->get_vertices();
-        auto object_indices = object->get_indices();
-        const auto offset = vertices.size();
-        vertices.insert(vertices.end(), object_vertices.begin(), object_vertices.end());
-
-        for (auto& index : object_indices)
-        {
-            index += offset;
-        }
-
-        indices.insert(indices.end(), object_indices.begin(), object_indices.end());
     }
 }
 

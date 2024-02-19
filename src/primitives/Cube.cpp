@@ -1,4 +1,4 @@
-﻿#include "../header/Cube.h"
+﻿#include "Cube.h"
 
 Cube::Cube()
 {
@@ -95,16 +95,6 @@ void Cube::set_scale(const glm::vec3 scale)
 {
     this->scale = scale;
     generate_vertices();
-}
-
-std::vector<Vertex> Cube::get_vertices()
-{
-    return vertices;
-}
-
-std::vector<unsigned int> Cube::get_indices()
-{
-    return indices;
 }
 
 void Cube::set_rotation(const glm::quat quaternion)

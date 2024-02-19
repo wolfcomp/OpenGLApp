@@ -1,4 +1,4 @@
-#include "../header/IcoSphere.h"
+#include "IcoSphere.h"
 
 IcoSphere::IcoSphere()
 {
@@ -6,7 +6,6 @@ IcoSphere::IcoSphere()
     position = glm::vec3(0.0f, 0.0f, 0.0f);
     radius = 1.0f;
     rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-    generate_vertices();
 }
 
 void IcoSphere::generate_vertices()
@@ -98,13 +97,20 @@ void IcoSphere::generate_vertices()
                 push_vector(vertices, new_v1, new_v2, new_v3);
                 push_vector(vertices, new_v3, new_v2, v3);
 
-                for (char i = 0; i < 4; ++i)
+                for (char k = 0; k < 4; ++k)
                 {
                     push_vector(indices, index, index + 1, index + 2);
                     index += 3;
                 }
             }
         }
+    }
+
+    for (auto& vert : vertices)
+    {
+        vert.color = this->color.get_rgb_vec3();
+        vert.position = rotation * vert.position;
+        vert.position += position;
     }
 }
 
@@ -118,50 +124,41 @@ void IcoSphere::compute_half_vertex(const Vertex& a, const Vertex& b, Vertex& re
 void IcoSphere::set_color(const hsl& color)
 {
     this->color = color;
+    vertices.clear();
 }
 
 void IcoSphere::set_euler_rotation(const glm::vec3 angle)
 {
     rotation = glm::quat(angle);
+    vertices.clear();
 }
 
 void IcoSphere::set_position(const glm::vec3 position)
 {
     this->position = position;
+    vertices.clear();
 }
 
 void IcoSphere::set_radius(const float radius)
 {
     this->radius = radius;
-    generate_vertices();
+    vertices.clear();
 }
 
 void IcoSphere::set_rotation(const glm::quat quaternion)
 {
     rotation = quaternion;
+    vertices.clear();
 }
 
 void IcoSphere::set_subdivision(const unsigned int subdivision)
 {
     this->subdivision = subdivision;
-    generate_vertices();
+    vertices.clear();
 }
 
-std::vector<unsigned> IcoSphere::get_indices()
+void IcoSphere::pre_draw()
 {
-    return indices;
-}
-
-std::vector<Vertex> IcoSphere::get_vertices()
-{
-    std::vector<Vertex> vertices = this->vertices;
-
-    for (auto& vert : vertices)
-    {
-        vert.color = this->color.get_rgb_vec3();
-        vert.position = rotation * vert.position;
-        vert.position += position;
-    }
-
-    return vertices;
+    if (vertices.empty())
+        generate_vertices();
 }

@@ -16,34 +16,61 @@
     <Filter Include="Header Files\Libs">
       <UniqueIdentifier>{6496a7d2-9743-4eab-8aa5-65f0267c9e78}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\primitives">
+      <UniqueIdentifier>{d42b0630-26ba-4d4b-8de5-6f41ec036da2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\primitives">
+      <UniqueIdentifier>{3d826afa-522b-49ba-a6b7-b65841db76fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\assets">
+      <UniqueIdentifier>{b23827f1-cb71-42de-8269-17ed87504e6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\interfaces">
+      <UniqueIdentifier>{3bc5d764-8bb9-483a-bcc4-36cb2f458473}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\collision">
+      <UniqueIdentifier>{9421d76d-d70d-401d-b2e8-f01d5059774f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\collision">
+      <UniqueIdentifier>{62866c30-0234-4c9b-a9ad-2607837692d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OpenGLApp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Dependencies\includes\glm\detail\glm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\code\Camera.cpp">
+    <ClCompile Include="src\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\code\Cube.cpp">
+    <ClCompile Include="src\InputProcessing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\code\InputProcessing.cpp">
+    <ClCompile Include="src\ObjectBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\code\ObjectBuffer.cpp">
+    <ClCompile Include="src\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\code\Shader.cpp">
+    <ClCompile Include="src\ShaderStore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\code\IcoSphere.cpp">
+    <ClCompile Include="OpenGLApp.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\primitives\Capsule.cpp">
+      <Filter>Source Files\primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="src\primitives\Cube.cpp">
+      <Filter>Source Files\primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="src\primitives\IcoSphere.cpp">
+      <Filter>Source Files\primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="src\primitives\Sphere.cpp">
+      <Filter>Source Files\primitives</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -905,51 +932,54 @@
     <ClInclude Include="Dependencies\includes\glm\gtc\bitfield.hpp">
       <Filter>Header Files\Libs</Filter>
     </ClInclude>
-    <ClInclude Include="src\header\Vertex.h">
+    <ClInclude Include="src\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\header\Camera.h">
+    <ClInclude Include="src\HSL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\header\Cube.h">
+    <ClInclude Include="src\InputProcessing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\header\HSL.h">
+    <ClInclude Include="src\Math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\header\InputProcessing.h">
+    <ClInclude Include="src\Misc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\header\ITriangleObject.h">
+    <ClInclude Include="src\ObjectBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\header\Math.h">
+    <ClInclude Include="src\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\header\Misc.h">
+    <ClInclude Include="src\ShaderStore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\header\ObjectBuffer.h">
+    <ClInclude Include="src\Vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\header\Shader.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\primitives\Capsule.h">
+      <Filter>Header Files\primitives</Filter>
     </ClInclude>
-    <ClInclude Include="src\header\IcoSphere.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\primitives\Cube.h">
+      <Filter>Header Files\primitives</Filter>
     </ClInclude>
-    <ClInclude Include="src\header\ISphere.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\primitives\IcoSphere.h">
+      <Filter>Header Files\primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="src\primitives\Sphere.h">
+      <Filter>Header Files\primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="src\interfaces\ISphere.h">
+      <Filter>Header Files\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="src\interfaces\ITriangleObject.h">
+      <Filter>Header Files\interfaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Dependencies\libs\glfw3.dll" />
-    <None Include="shader.vs">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="shader.fs">
-      <Filter>Source Files</Filter>
-    </None>
     <None Include="Dependencies\includes\glm\gtx\wrap.inl">
       <Filter>Header Files\Libs</Filter>
     </None>
@@ -1357,6 +1387,12 @@
     </None>
     <None Include="Dependencies\includes\glm\gtx\bit.inl">
       <Filter>Header Files\Libs</Filter>
+    </None>
+    <None Include="shader.fs">
+      <Filter>Source Files\assets</Filter>
+    </None>
+    <None Include="shader.vs">
+      <Filter>Source Files\assets</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

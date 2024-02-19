@@ -45,6 +45,13 @@ struct Vertex
         position.z *= scale.z;
     }
 
+    void scale(float scale)
+    {
+        position.x *= scale;
+        position.y *= scale;
+        position.z *= scale;
+    }
+
     void translate(glm::vec3 translation)
     {
         position += translation;

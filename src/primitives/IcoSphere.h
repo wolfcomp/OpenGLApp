@@ -1,17 +1,16 @@
 #pragma once
-#include "HSL.h"
-#include "ISphere.h"
-#include "Math.h"
+#include "../HSL.h"
+#include "../interfaces/ISphere.h"
+#include "../Vertex.h"
+#include "../Math.h"
 
-class IcoSphere : public ISphere
+class IcoSphere final : public ISphere
 {
     // disable linter warning for these constants as they are double to floating point conversion
     // ReSharper disable CppInconsistentNaming
     const float H_ANGLE = M_PI / 180 * 72;  // NOLINT
     const float V_ANGLE = atanf(1.0f / 2);  // NOLINT
     // ReSharper restore CppInconsistentNaming
-    std::vector<Vertex> vertices;
-    std::vector<unsigned int> indices;
     hsl color;
     glm::vec3 position;
     float radius;
@@ -28,7 +27,6 @@ public:
     void set_subdivision(const unsigned int subdivision);
     void set_rotation(const glm::quat quaternion);
     void set_euler_rotation(const glm::vec3 angle);
-    std::vector<Vertex> get_vertices() override;
-    std::vector<unsigned int> get_indices() override;
+    void pre_draw() override;
 };
 

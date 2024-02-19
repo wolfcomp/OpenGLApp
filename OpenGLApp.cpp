@@ -3,12 +3,14 @@
 
 #include <iostream>
 
-#include "src/header/Cube.h"
-#include "src/header/IcoSphere.h"
-#include "src/header/InputProcessing.h"
-#include "src/header/Shader.h"
-#include "src/header/Misc.h"
-#include "src/header/ObjectBuffer.h"
+#include "src/InputProcessing.h"
+#include "src/Misc.h"
+#include "src/ObjectBuffer.h"
+#include "src/ShaderStore.h"
+#include "src/primitives/Capsule.h"
+#include "src/primitives/Cube.h"
+#include "src/primitives/IcoSphere.h"
+#include "src/primitives/Sphere.h"
 
 constexpr int width = 1600;
 constexpr int height = 900;
@@ -16,8 +18,10 @@ float lastX = 400, lastY = 300;
 bool firstMouse = true;
 int subdivision = 0;
 bool dirty = true;
-constexpr int fps = 60;
 bool wireframe = false;
+glm::vec3 staticCamPos = glm::vec3(0.f, 0.f, 3.f);
+float staticCamYaw = 0.f;
+float staticCamPitch = 0.f;
 
 InputProcessing input;
 ObjectBuffer objBuffer;
@@ -25,6 +29,7 @@ ObjectBuffer objBuffer;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
+    input.change_aspect(width, height);
 }
 
 void increase_subdivision()

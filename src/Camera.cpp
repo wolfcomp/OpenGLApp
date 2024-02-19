@@ -1,4 +1,4 @@
-#include "../header/Camera.h"
+#include "Camera.h"
 
 #include "glm/gtx/quaternion.hpp"
 

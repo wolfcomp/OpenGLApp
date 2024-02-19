@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <vector>
 
-#include "ITriangleObject.h"
+#include "interfaces/ITriangleObject.h"
 
 class ObjectBuffer
 {
@@ -20,7 +20,6 @@ public:
     ObjectBuffer &operator=(ObjectBuffer&&) = delete;
 
     void init_buffers();
-    void update_buffers();
     void draw() const;
     void add_object(ITriangleObject* object);
     void destroy_object(ITriangleObject* object);
