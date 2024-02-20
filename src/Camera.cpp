@@ -13,7 +13,6 @@ Camera::Camera()
     pitch = 0.0f;
     movement_speed = 2.5f;
     mouse_sensitivity = 0.1f;
-    zoom = 45.0f;
     update_camera_vectors();
 }
 
@@ -26,7 +25,6 @@ Camera::Camera(const glm::vec3 position, const glm::vec3 up, const float yaw, co
     front = glm::vec3(0.0f, 0.0f, -1.0f);
     this->movement_speed = movement_speed;
     this->mouse_sensitivity = mouse_sensitivity;
-    zoom = 45.0f;
     update_camera_vectors();
 }
 
@@ -48,16 +46,6 @@ glm::mat4 Camera::get_view_matrix() const
     return lookAt(position, position + front, up);
 }
 
-void Camera::process_mouse_scroll(const float y_offset)
-{
-    if (zoom >= 1.0f && zoom <= 45.0f)
-        zoom -= y_offset;
-    if (zoom <= 1.0f)
-        zoom = 1.0f;
-    if (zoom >= 45.0f)
-        zoom = 45.0f;
-}
-
 void Camera::process_keyboard(const Direction direction, const double delta_time)
 {
     const float velocity = static_cast<float>(movement_speed * delta_time);
@@ -75,10 +63,10 @@ void Camera::process_keyboard(const Direction direction, const double delta_time
         position -= up * velocity;
 }
 
-void Camera::process_mouse_movement(const float x_offset, const float y_offset, const bool constrain_pitch)
+void Camera::process_mouse_movement(const double x_offset, const double y_offset, const bool constrain_pitch)
 {
-    yaw += x_offset * mouse_sensitivity;
-    pitch += y_offset * mouse_sensitivity;
+    yaw += static_cast<float>(x_offset * mouse_sensitivity);
+    pitch += static_cast<float>(y_offset * mouse_sensitivity);
     if (constrain_pitch)
     {
         if (pitch > 89.0f)

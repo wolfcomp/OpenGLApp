@@ -41,7 +41,6 @@ class Camera
 
     float movement_speed;
     float mouse_sensitivity;
-    float zoom;
 
     void update_camera_vectors();
 
@@ -49,8 +48,7 @@ public:
     Camera();
     Camera(const glm::vec3 position, const glm::vec3 up, const float yaw, const float pitch, float movement_speed, float mouse_sensitivity);
     void process_keyboard(const Direction direction, const double delta_time);
-    void process_mouse_movement(const float x_offset, const float y_offset, const bool constrain_pitch = true);
-    void process_mouse_scroll(const float y_offset);
+    void process_mouse_movement(const double x_offset, const double y_offset, const bool constrain_pitch = true);
     void set_position(const glm::vec3 position);
     void set_rotation(const float yaw, const float pitch);
     glm::mat4 get_view_matrix() const;

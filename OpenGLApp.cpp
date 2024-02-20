@@ -14,7 +14,7 @@
 
 constexpr int width = 1600;
 constexpr int height = 900;
-float lastX = 400, lastY = 300;
+double lastX, lastY;
 bool firstMouse = true;
 int subdivision = 0;
 bool dirty = true;
@@ -30,7 +30,7 @@ ShaderStore shaderStore;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
-    input.change_aspect(width, height);
+    input.change_aspect(static_cast<float>(width), static_cast<float>(height));
 }
 
 void increase_subdivision()
@@ -60,12 +60,17 @@ void process_mouse_input(GLFWwindow* window, const double x_pos, const double y_
         firstMouse = false;
     }
 
-    const float x_offset = x_pos - lastX;
-    const float y_offset = lastY - y_pos; // reversed: y ranges bottom to top
+    const double xOffset = x_pos - lastX;
+    const double yOffset = lastY - y_pos; // reversed: y ranges bottom to top
     lastX = x_pos;
     lastY = y_pos;
 
-    input.process_mouse_movement(x_offset, y_offset);
+    input.process_mouse_movement(xOffset, yOffset);
+}
+
+void scroll_callback(GLFWwindow* window, double x_offset, double y_offset)
+{
+    input.process_mouse_scroll(y_offset);
 }
 
 int main()
@@ -98,6 +103,7 @@ int main()
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, process_mouse_input);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetScrollCallback(window, scroll_callback);
 
     input.attach_keyboard_listener(GLFW_KEY_UP, increase_subdivision, false);
     input.attach_keyboard_listener(GLFW_KEY_DOWN, decrease_subdivision, false);

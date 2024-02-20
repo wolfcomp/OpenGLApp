@@ -9,11 +9,15 @@
 InputProcessing::InputProcessing()
 {
     camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, MOVEMENT_SPEED * 1000.0f, MOUSE_SENSITIVITY);
+    zoom = 45.0f;
+    aspect = 16.0f / 9.0f;
+    projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
 }
 
 void InputProcessing::change_aspect(const float width, const float height)
 {
-    projection = glm::perspective(glm::radians(45.0f), width / height, 0.1f, 100.0f);
+    aspect = width / height;
+    projection = glm::perspective(glm::radians(zoom), aspect, 0.1f, 100.0f);
 }
 
 
@@ -75,14 +79,20 @@ void InputProcessing::reset()
     direction = Direction::NONE;
 }
 
-void InputProcessing::process_mouse_movement(const float x_offset, const float y_offset, const bool constrain_pitch)
+void InputProcessing::process_mouse_movement(const double x_offset, const double y_offset, const bool constrain_pitch)
 {
     camera.process_mouse_movement(x_offset, y_offset, constrain_pitch);
 }
 
-void InputProcessing::process_mouse_scroll(const float y_offset)
+void InputProcessing::process_mouse_scroll(const double y_offset)
 {
-    camera.process_mouse_scroll(y_offset);
+    if (zoom >= 1.0f && zoom <= 45.0f)
+        zoom = static_cast<float>(zoom - y_offset);
+    if (zoom <= 1.0f)
+        zoom = 1.0f;
+    if (zoom >= 45.0f)
+        zoom = 45.0f;
+    projection = glm::perspective(glm::radians(zoom), aspect, 0.1f, 100.0f);
 }
 
 void InputProcessing::set_camera_position(const glm::vec3 position)
