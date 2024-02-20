@@ -7,6 +7,7 @@
 #include "src/Misc.h"
 #include "src/ObjectBuffer.h"
 #include "src/ShaderStore.h"
+#include "src/objects/Door.h"
 #include "src/primitives/Capsule.h"
 #include "src/primitives/Cube.h"
 #include "src/primitives/IcoSphere.h"
@@ -130,9 +131,9 @@ int main()
     cube2.set_color(hsl(120, 1, .5f));
     cube3.set_color(hsl(240, 1, .5f));
 
-    objBuffer.add_object(&cube);
-    objBuffer.add_object(&cube2);
-    objBuffer.add_object(&cube3);
+    // objBuffer.add_object(&cube);
+    // objBuffer.add_object(&cube2);
+    // objBuffer.add_object(&cube3);
 
     auto icoSphere = IcoSphere();
 
@@ -142,7 +143,7 @@ int main()
     icoSphere.set_color(hsl(0, 0.5f, .5f));
     icoSphere.set_position(glm::vec3(3.f, -2.f, -1.f));
 
-    objBuffer.add_object(&icoSphere);
+    // objBuffer.add_object(&icoSphere);
 
     auto sphere = Sphere();
 
@@ -152,7 +153,7 @@ int main()
     sphere.set_color(hsl(0, 0.5f, .5f));
     sphere.set_position(glm::vec3(-3.f, -2.f, -1.f));
 
-    objBuffer.add_object(&sphere);
+    // objBuffer.add_object(&sphere);
 
     auto capsule = Capsule();
 
@@ -162,7 +163,14 @@ int main()
     capsule.set_color(hsl(0, 0.5f, .5f));
     capsule.set_position(glm::vec3(3.f, 2.f, -1.f));
 
-    objBuffer.add_object(&capsule);
+    // objBuffer.add_object(&capsule);
+
+    auto door = Door();
+
+    door.shader = shader;
+
+    objBuffer.add_object(&door);
+
     double lastTime = glfwGetTime();
 
     while (!glfwWindowShouldClose(window))

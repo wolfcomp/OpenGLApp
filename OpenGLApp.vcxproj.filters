@@ -34,6 +34,12 @@
     <Filter Include="Source Files\collision">
       <UniqueIdentifier>{62866c30-0234-4c9b-a9ad-2607837692d3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\objects">
+      <UniqueIdentifier>{a4e3b294-7bca-4076-bac3-66447f9990be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\objects">
+      <UniqueIdentifier>{59320c7d-b956-408a-ab18-828779760326}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -71,6 +77,9 @@
     </ClCompile>
     <ClCompile Include="src\primitives\Sphere.cpp">
       <Filter>Source Files\primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="src\objects\Door.cpp">
+      <Filter>Source Files\objects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -976,6 +985,9 @@
     </ClInclude>
     <ClInclude Include="src\interfaces\ITriangleObject.h">
       <Filter>Header Files\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="src\objects\Door.h">
+      <Filter>Header Files\objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
