@@ -15,45 +15,57 @@ struct Vertex
         texture_coord = glm::vec2(0.0f, 0.0f);
     }
 
-    Vertex(glm::vec3 position) : Vertex()
+    Vertex(const glm::vec3 position) : Vertex()
     {
         this->position = position;
     }
 
-    Vertex(glm::vec3 position, glm::vec3 color) : Vertex()
+    Vertex(const glm::vec3 position, const glm::vec3 color) : Vertex()
     {
         this->position = position;
         this->color = color;
     }
 
-    Vertex(glm::vec3 position, glm::vec3 color, glm::vec2 texture_coord)
+    Vertex(const glm::vec3 position, const glm::vec3 color, const glm::vec2 texture_coord)
     {
         this->position = position;
         this->color = color;
         this->texture_coord = texture_coord;
     }
 
-    void rotate(glm::quat quaternion)
+    Vertex rotate(const glm::quat quaternion)
     {
         position = quaternion * position;
+        return *this;
     }
 
-    void scale(glm::vec3 scale)
+    Vertex scale(const glm::vec3 scale)
     {
         position.x *= scale.x;
         position.y *= scale.y;
         position.z *= scale.z;
+        return *this;
     }
 
-    void scale(float scale)
+    Vertex scale(const float scale)
     {
         position.x *= scale;
         position.y *= scale;
         position.z *= scale;
+        return *this;
     }
 
-    void translate(glm::vec3 translation)
+    Vertex translate(const glm::vec3 translation)
     {
         position += translation;
+        return *this;
+    }
+
+    Vertex translate(const float x, const float y, const float z)
+    {
+        position.x += x;
+        position.y += y;
+        position.z += z;
+        return *this;
     }
 };
