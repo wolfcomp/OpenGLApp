@@ -169,6 +169,8 @@ int main()
 
     door.shader = shader;
 
+    door.set_scale(4);
+
     objBuffer.add_object(&door);
 
     double lastTime = glfwGetTime();
