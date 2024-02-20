@@ -10,9 +10,13 @@ struct Bezier
 {
     T p0, p1, p2, p3;
     Bezier(T p0, T p1, T p2, T p3) : p0(p0), p1(p1), p2(p2), p3(p3) {}
-    T operator()(float t)
+    T operator()(const float t)
     {
-        return lerp(lerp(lerp(p0, p1, t), lerp(p1, p2, t), t), lerp(lerp(p1, p2, t), lerp(p2, p3, t), t), t);
+        const auto u = 1 - t;
+        return powf(u, 3) * p0 +
+            3 * t * powf(u, 2) * p1 +
+            3 * powf(t, 2) * u * p2 +
+            powf(t, 3) * p3;
     }
 };
 #endif
@@ -31,17 +35,22 @@ struct BSpline
 
     T operator()(float t)
     {
-        for (int i = 0; i < points.size() - 1; i++)
+        if (points.size() == 0)
+            return T();
+        if (points.size() == 1)
+            return std::get<1>(points[0])(t);
+        auto it = points.begin();
+        auto cur = *it;
+        auto next = *(++it);
+        while (t >= std::get<0>(cur) && next != points.end())
         {
-            if (std::get<0>(points[i]) <= t && t <= std::get<0>(points[i + 1]))
-            {
-                float t0 = std::get<0>(points[i]);
-                float t1 = std::get<0>(points[i + 1]);
-                float t_ = (t - t0) / (t1 - t0);
-                return std::get<1>(points[i])(t_);
-            }
+            cur = next;
+            next = *(++it);
         }
-        return std::get<1>(points[points.size() - 1])(1);
+        if(next == points.end())
+            return std::get<1>(cur)(1);
+        auto u = (t - std::get<0>(cur)) / (std::get<0>(next) - std::get<0>(cur));
+        return std::get<1>(cur)(u);
     }
 };
 #endif
