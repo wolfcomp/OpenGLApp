@@ -81,6 +81,9 @@
     <ClCompile Include="src\objects\Door.cpp">
       <Filter>Source Files\objects</Filter>
     </ClCompile>
+    <ClCompile Include="src\objects\House.cpp">
+      <Filter>Source Files\objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\includes\glm\gtx\wrap.hpp">
@@ -987,6 +990,9 @@
       <Filter>Header Files\interfaces</Filter>
     </ClInclude>
     <ClInclude Include="src\objects\Door.h">
+      <Filter>Header Files\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\objects\House.h">
       <Filter>Header Files\objects</Filter>
     </ClInclude>
   </ItemGroup>

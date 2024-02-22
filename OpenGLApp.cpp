@@ -8,6 +8,7 @@
 #include "src/ObjectBuffer.h"
 #include "src/ShaderStore.h"
 #include "src/objects/Door.h"
+#include "src/objects/House.h"
 #include "src/primitives/Capsule.h"
 #include "src/primitives/Cube.h"
 #include "src/primitives/IcoSphere.h"
@@ -165,13 +166,11 @@ int main()
 
     // objBuffer.add_object(&capsule);
 
-    auto door = Door();
+    auto house = House();
 
-    door.shader = shader;
+    house.shader = shader;
 
-    door.set_scale(4);
-
-    objBuffer.add_object(&door);
+    objBuffer.add_object(&house);
 
     double lastTime = glfwGetTime();
 

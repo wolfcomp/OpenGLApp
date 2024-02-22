@@ -142,6 +142,7 @@
     <ClCompile Include="src\InputProcessing.cpp" />
     <ClCompile Include="src\ObjectBuffer.cpp" />
     <ClCompile Include="src\objects\Door.cpp" />
+    <ClCompile Include="src\objects\House.cpp" />
     <ClCompile Include="src\primitives\Capsule.cpp" />
     <ClCompile Include="src\primitives\Cube.cpp" />
     <ClCompile Include="src\primitives\IcoSphere.cpp" />
@@ -445,6 +446,7 @@
     <ClInclude Include="src\Misc.h" />
     <ClInclude Include="src\ObjectBuffer.h" />
     <ClInclude Include="src\objects\Door.h" />
+    <ClInclude Include="src\objects\House.h" />
     <ClInclude Include="src\primitives\Capsule.h" />
     <ClInclude Include="src\primitives\Cube.h" />
     <ClInclude Include="src\primitives\IcoSphere.h" />
