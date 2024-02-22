@@ -32,21 +32,21 @@ void Door::generate_vertices()
     auto ironColor = hsl(0, 0.0f, .37f);
     unsigned handleRight, handleLeft;
     vertex.color = woodColor.get_rgb_vec3();
-    vertex.position = glm::vec3(-0.5f, 0.f, 0.5f);
+    vertex.position = glm::vec3(-0.025f, 0.f, 0.5f);
     vertices.push_back(vertex); // 0
-    vertex.position = glm::vec3(-0.45f, 0.f, 0.5f);
+    vertex.position = glm::vec3(0.025f, 0.f, 0.5f);
     vertices.push_back(vertex); // 1
-    vertex.position = glm::vec3(-0.45f, 1.f, 0.5f);
+    vertex.position = glm::vec3(0.025f, 1.f, 0.5f);
     vertices.push_back(vertex); // 2
-    vertex.position = glm::vec3(-0.5f, 1.f, 0.5f);
+    vertex.position = glm::vec3(-0.025f, 1.f, 0.5f);
     vertices.push_back(vertex); // 3
-    vertex.position = glm::vec3(-0.5f, 0.f, 0.f);
+    vertex.position = glm::vec3(-0.025f, 0.f, 0.f);
     vertices.push_back(vertex); // 4
-    vertex.position = glm::vec3(-0.45f, 0.f, 0.f);
+    vertex.position = glm::vec3(0.025f, 0.f, 0.f);
     vertices.push_back(vertex); // 5
-    vertex.position = glm::vec3(-0.45f, 1.f, 0.f);
+    vertex.position = glm::vec3(0.025f, 1.f, 0.f);
     vertices.push_back(vertex); // 6
-    vertex.position = glm::vec3(-0.5f, 1.f, 0.f);
+    vertex.position = glm::vec3(-0.025f, 1.f, 0.f);
     vertices.push_back(vertex); // 7
     auto inset = 0.02f;
     auto vecInset = glm::vec3(0.f, inset, -inset);
@@ -98,38 +98,38 @@ void Door::generate_vertices()
     // handles
     vertex.color = ironColor.get_rgb_vec3();
     handleRight = vertices.size();
-    vertex.position = glm::vec3(-0.5f, 0.45f, 0.45f);
+    vertex.position = glm::vec3(-0.025f, 0.45f, 0.45f);
     vertices.push_back(vertex);
-    vertex.position = glm::vec3(-0.5f, 0.55f, 0.45f);
+    vertex.position = glm::vec3(-0.025f, 0.55f, 0.45f);
     vertices.push_back(vertex);
-    vertex.position = glm::vec3(-0.5f, 0.55f, 0.4f);
+    vertex.position = glm::vec3(-0.025f, 0.55f, 0.4f);
     vertices.push_back(vertex);
-    vertex.position = glm::vec3(-0.5f, 0.45f, 0.4f);
+    vertex.position = glm::vec3(-0.025f, 0.45f, 0.4f);
     vertices.push_back(vertex);
-    vertex.position = glm::vec3(-0.525f, 0.45f, 0.45f);
+    vertex.position = glm::vec3(-0.05f, 0.45f, 0.45f);
     vertices.push_back(vertex);
-    vertex.position = glm::vec3(-0.525f, 0.55f, 0.45f);
+    vertex.position = glm::vec3(-0.05f, 0.55f, 0.45f);
     vertices.push_back(vertex);
-    vertex.position = glm::vec3(-0.525f, 0.55f, 0.4f);
+    vertex.position = glm::vec3(-0.05f, 0.55f, 0.4f);
     vertices.push_back(vertex);
-    vertex.position = glm::vec3(-0.525f, 0.45f, 0.4f);
+    vertex.position = glm::vec3(-0.05f, 0.45f, 0.4f);
     vertices.push_back(vertex);
     handleLeft = vertices.size();
-    vertex.position = glm::vec3(-0.45f, 0.45f, 0.45f);
+    vertex.position = glm::vec3(0.025f, 0.45f, 0.45f);
     vertices.push_back(vertex);
-    vertex.position = glm::vec3(-0.45f, 0.55f, 0.45f);
+    vertex.position = glm::vec3(0.025f, 0.55f, 0.45f);
     vertices.push_back(vertex);
-    vertex.position = glm::vec3(-0.45f, 0.55f, 0.4f);
+    vertex.position = glm::vec3(0.025f, 0.55f, 0.4f);
     vertices.push_back(vertex);
-    vertex.position = glm::vec3(-0.45f, 0.45f, 0.4f);
+    vertex.position = glm::vec3(0.025f, 0.45f, 0.4f);
     vertices.push_back(vertex);
-    vertex.position = glm::vec3(-0.425f, 0.45f, 0.45f);
+    vertex.position = glm::vec3(0.05f, 0.45f, 0.45f);
     vertices.push_back(vertex);
-    vertex.position = glm::vec3(-0.425f, 0.55f, 0.45f);
+    vertex.position = glm::vec3(0.05f, 0.55f, 0.45f);
     vertices.push_back(vertex);
-    vertex.position = glm::vec3(-0.425f, 0.55f, 0.4f);
+    vertex.position = glm::vec3(0.05f, 0.55f, 0.4f);
     vertices.push_back(vertex);
-    vertex.position = glm::vec3(-0.425f, 0.45f, 0.4f);
+    vertex.position = glm::vec3(0.05f, 0.45f, 0.4f);
     vertices.push_back(vertex);
 
     for (int i = handleRight; i < handleLeft; i++)
@@ -177,8 +177,8 @@ void Door::generate_vertices()
 
     for (auto& vertex : vertices)
     {
-        vertex.position *= scale;
         vertex.position = rotateY(vertex.position, angle);
+        vertex.position *= scale;
         vertex.position += position;
     }
 }

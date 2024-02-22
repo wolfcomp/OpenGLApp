@@ -1,6 +1,6 @@
 #pragma once
 #include "../interfaces/ITriangleObject.h"
-class Door : public ITriangleObject
+class Door final : public ITriangleObject
 {
     glm::vec3 position;
     float angle;
