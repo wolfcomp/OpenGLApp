@@ -23,7 +23,7 @@ inline Direction operator&(Direction a, Direction b)
     return static_cast<Direction>(static_cast<int>(a) & static_cast<int>(b));
 }
 
-inline bool operator==(Direction a, Direction b)
+inline bool operator==(const Direction a, const Direction b)
 {
     return static_cast<int>(a & b) != 0;
 }
@@ -34,13 +34,13 @@ class Camera
     glm::vec3 front;
     glm::vec3 up;
     glm::vec3 right;
-    glm::vec3 world_up;
+    glm::vec3 worldUp;
 
     float yaw;
     float pitch;
-
-    float movement_speed;
-    float mouse_sensitivity;
+    
+    float movementSpeed;
+    float mouseSensitivity;
 
     void update_camera_vectors();
 

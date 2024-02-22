@@ -8,23 +8,23 @@ Camera::Camera()
     front = glm::vec3(0.0f, 0.0f, -1.0f);
     up = glm::vec3(0.0f, 1.0f, 0.0f);
     right = glm::vec3(1.0f, 0.0f, 0.0f);
-    world_up = glm::vec3(0.0f, 1.0f, 0.0f);
+    worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
     yaw = -90.0f;
     pitch = 0.0f;
-    movement_speed = 2.5f;
-    mouse_sensitivity = 0.1f;
+    movementSpeed = 2.5f;
+    mouseSensitivity = 0.1f;
     update_camera_vectors();
 }
 
 Camera::Camera(const glm::vec3 position, const glm::vec3 up, const float yaw, const float pitch, float movement_speed, float mouse_sensitivity)
 {
     this->position = position;
-    this->world_up = up;
+    this->worldUp = up;
     this->yaw = yaw;
     this->pitch = pitch;
     front = glm::vec3(0.0f, 0.0f, -1.0f);
-    this->movement_speed = movement_speed;
-    this->mouse_sensitivity = mouse_sensitivity;
+    this->movementSpeed = movement_speed;
+    this->mouseSensitivity = mouse_sensitivity;
     update_camera_vectors();
 }
 
@@ -37,7 +37,7 @@ void Camera::update_camera_vectors()
     new_front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
     front = normalize(new_front);
     // also re-calculate the right and up vector
-    right = normalize(cross(front, world_up));
+    right = normalize(cross(front, worldUp));
     up = normalize(cross(right, front));
 }
 
@@ -48,7 +48,10 @@ glm::mat4 Camera::get_view_matrix() const
 
 void Camera::process_keyboard(const Direction direction, const double delta_time)
 {
-    const float velocity = static_cast<float>(movement_speed * delta_time);
+    if (direction == Direction::NONE)
+        return;
+    const double velocityD = movementSpeed * delta_time;
+    const float velocity = static_cast<float>(velocityD);
     if (direction == Direction::FORWARD)
         position += front * velocity;
     if (direction == Direction::BACKWARD)
@@ -65,8 +68,8 @@ void Camera::process_keyboard(const Direction direction, const double delta_time
 
 void Camera::process_mouse_movement(const double x_offset, const double y_offset, const bool constrain_pitch)
 {
-    yaw += static_cast<float>(x_offset * mouse_sensitivity);
-    pitch += static_cast<float>(y_offset * mouse_sensitivity);
+    yaw += static_cast<float>(x_offset * mouseSensitivity);
+    pitch += static_cast<float>(y_offset * mouseSensitivity);
     if (constrain_pitch)
     {
         if (pitch > 89.0f)
