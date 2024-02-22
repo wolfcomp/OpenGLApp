@@ -177,7 +177,9 @@ int main()
 
     while (!glfwWindowShouldClose(window))
     {
-        const double deltaTime = glfwGetTime() - lastTime;
+        const double currentTime = glfwGetTime();
+        const double deltaTime = (currentTime - lastTime) / 1000;
+        lastTime = currentTime;
         input.process_keyboard(window, deltaTime);
         shaderStore.set_shader_params(&input);
         if (dirty)
@@ -201,7 +203,6 @@ int main()
         glfwSwapBuffers(window);
         glfwPollEvents();
         input.reset();
-        lastTime = glfwGetTime();
     }
 
     glfwTerminate();
