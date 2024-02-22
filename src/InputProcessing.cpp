@@ -3,7 +3,7 @@
 #include "glfw/glfw3.h"
 #include "glm/gtc/type_ptr.hpp"
 
-#define MOVEMENT_SPEED 30  // NOLINT(modernize-macro-to-enum)
+#define MOVEMENT_SPEED 5.f
 #define MOUSE_SENSITIVITY 0.1f
 
 InputProcessing::InputProcessing()
