@@ -438,6 +438,9 @@
     <ClInclude Include="Dependencies\includes\glm\vector_relational.hpp" />
     <ClInclude Include="Dependencies\includes\KHR\khrplatform.h" />
     <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\collision\AABB.h" />
+    <ClInclude Include="src\collision\ICollision.h" />
+    <ClInclude Include="src\collision\SphereCollider.h" />
     <ClInclude Include="src\HSL.h" />
     <ClInclude Include="src\InputProcessing.h" />
     <ClInclude Include="src\interfaces\ISphere.h" />

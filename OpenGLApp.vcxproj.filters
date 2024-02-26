@@ -995,6 +995,15 @@
     <ClInclude Include="src\objects\House.h">
       <Filter>Header Files\objects</Filter>
     </ClInclude>
+    <ClInclude Include="src\collision\ICollision.h">
+      <Filter>Header Files\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="src\collision\AABB.h">
+      <Filter>Header Files\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="src\collision\SphereCollider.h">
+      <Filter>Header Files\collision</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Dependencies\libs\glfw3.dll" />
