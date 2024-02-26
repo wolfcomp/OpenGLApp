@@ -27,11 +27,11 @@ void ShaderStore::remove_shader(const unsigned id)
     shaders.erase(id);
 }
 
-void ShaderStore::set_shader_params(InputProcessing* input) const
+void ShaderStore::set_shader_params(void func(const Shader*)) const
 {
     for (const auto& shaderPair : shaders)
     {
         const auto shader = shaderPair.second;
-        input->set_shader(shader);
+        func(shader);
     }
 }

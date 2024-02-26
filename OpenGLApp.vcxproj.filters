@@ -84,6 +84,12 @@
     <ClCompile Include="src\objects\House.cpp">
       <Filter>Source Files\objects</Filter>
     </ClCompile>
+    <ClCompile Include="src\primitives\Cone.cpp">
+      <Filter>Source Files\primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="src\objects\Character.cpp">
+      <Filter>Source Files\objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\includes\glm\gtx\wrap.hpp">
@@ -1003,6 +1009,12 @@
     </ClInclude>
     <ClInclude Include="src\collision\SphereCollider.h">
       <Filter>Header Files\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="src\primitives\Cone.h">
+      <Filter>Header Files\primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="src\objects\Character.h">
+      <Filter>Header Files\objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
