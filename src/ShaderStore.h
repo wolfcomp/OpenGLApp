@@ -1,18 +1,13 @@
 #pragma once
-#include <map>
-
-#include "InputProcessing.h"
 #include "Shader.h"
 
 class ShaderStore
 {
-    std::map<unsigned, Shader*> shaders;
-
 public:
-    Shader* get_shader(const unsigned id);
-    Shader* add_shader(const char* vertex_path, const char* fragment_path);
-    void remove_shader(const unsigned id);
-    void remove_all_shaders();
-    void set_shader_params(void func(const Shader*)) const;
+    static Shader* get_shader(const unsigned id);
+    static Shader* get_shader(const std::string name);
+    static Shader* add_shader(const std::string& name, const char* vertex_path, const char* fragment_path);
+    static void remove_shader(const unsigned id);
+    static void remove_all_shaders();
+    static void set_shader_params(void func(const Shader*));
 };
-

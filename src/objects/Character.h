@@ -13,12 +13,13 @@ class Character
     Capsule model;
     Cone look;
     Camera camera;
-    ICollision collision;
+    ICollision* collision;
 
     void update_sub_objects();
     
 public:
     Character();
+    ~Character();
     void set_explicit_camera(const glm::vec3& position, const float yaw, const float pitch);
     void set_position(const glm::vec3& position);
     void set_look(const float yaw, const float pitch);

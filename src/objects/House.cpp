@@ -131,6 +131,7 @@ void House::set_rotation(const float angle)
 void House::set_scale(const glm::vec3 scale)
 {
     this->scale = scale;
+    this->door.set_scale(scale.x);
     vertices.clear();
 }
 

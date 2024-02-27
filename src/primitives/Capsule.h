@@ -1,9 +1,9 @@
 #pragma once
 #include "../HSL.h"
-#include "../interfaces/ISphere.h"
+#include "../interfaces/ITriangleObject.h"
 #include "../Vertex.h"
 
-class Capsule final : public ISphere
+class Capsule final : public ITriangleObject
 {
     hsl color;
     glm::vec3 position;
@@ -12,7 +12,7 @@ class Capsule final : public ISphere
     glm::quat rotation;
     unsigned int subdivision = 0;
     void generate_vertices();
-    void compute_half_vertex(const Vertex& a, const Vertex& b, Vertex& result) const;
+    void compute_half_vertex(const Vertex& a, const Vertex& b, Vertex& result);
 public:
     Capsule();
     void set_color(const hsl& color);

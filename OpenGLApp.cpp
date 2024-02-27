@@ -10,11 +10,8 @@
 #include "src/objects/Character.h"
 #include "src/objects/Door.h"
 #include "src/objects/House.h"
-#include "src/primitives/Capsule.h"
-#include "src/primitives/Cone.h"
 #include "src/primitives/Cube.h"
-#include "src/primitives/IcoSphere.h"
-#include "src/primitives/Sphere.h"
+#include "src/primitives/Plane.h"
 
 constexpr int width = 1600;
 constexpr int height = 900;
@@ -29,7 +26,6 @@ float staticCamPitch = 0.f;
 
 InputProcessing input;
 ObjectBuffer objBuffer;
-ShaderStore shaderStore;
 Character character;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -114,72 +110,30 @@ int main()
     input.attach_keyboard_listener(GLFW_KEY_A, []() { character.update_position(glm::vec3(0, 0, -1), deltaTime); }, true);
     input.attach_keyboard_listener(GLFW_KEY_D, []() { character.update_position(glm::vec3(0, 0, 1), deltaTime); }, true);
 
-    auto shader = shaderStore.add_shader("shader.vs", "shader.fs");
+    ShaderStore::add_shader("default", "shader.vs", "shader.fs");
 
     objBuffer.init_buffers();
 
-    auto cube = Cube();
-    auto cube2 = Cube();
-    auto cube3 = Cube();
+    auto plane = Plane();
 
-    cube.shader = shader;
-    cube2.shader = shader;
-    cube3.shader = shader;
+    plane.shader = ShaderStore::get_shader("default");
 
-    cube2.set_euler_rotation(glm::vec3(.4f, .2f, .6f));
-    cube3.set_euler_rotation(glm::vec3(.6f, -.8f, .1f));
-    cube2.set_scale(glm::vec3(1.5f));
-    cube3.set_scale(glm::vec3(0.5f));
-    cube2.set_position(glm::vec3(3.f));
-    cube3.set_position(glm::vec3(-2.f));
-    cube2.set_color(hsl(120, 1, .5f));
-    cube3.set_color(hsl(240, 1, .5f));
+    plane.set_size(glm::vec2(100));
+    plane.set_color(hsl(0,.5,.5));
 
-    // objBuffer.add_object(&cube);
-    objBuffer.add_object(&cube2);
-    objBuffer.add_object(&cube3);
-
-    auto icoSphere = IcoSphere();
-
-    icoSphere.shader = shader;
-
-    icoSphere.set_radius(0.3f);
-    icoSphere.set_color(hsl(0, 0.5f, .5f));
-    icoSphere.set_position(glm::vec3(3.f, -2.f, -1.f));
-
-    objBuffer.add_object(&icoSphere);
-
-    auto sphere = Sphere();
-
-    sphere.shader = shader;
-
-    sphere.set_radius(0.3f);
-    sphere.set_color(hsl(0, 0.5f, .5f));
-    sphere.set_position(glm::vec3(-3.f, -2.f, -1.f));
-
-    // objBuffer.add_object(&sphere);
-
-    auto capsule = Capsule();
-
-    capsule.shader = shader;
-
-    capsule.set_radius(0.3f);
-    capsule.set_color(hsl(0, 0.5f, .5f));
-    capsule.set_position(glm::vec3(3.f, 2.f, -1.f));
-
-    // objBuffer.add_object(&capsule);
+    objBuffer.add_object(&plane);
 
     auto house = House();
 
-    house.shader = shader;
+    house.shader = ShaderStore::get_shader("default");
+    house.set_scale(glm::vec3(2));
+    house.set_position(glm::vec3(5,0,10));
+    house.set_rotation(65);
 
-    // objBuffer.add_object(&house);
+    objBuffer.add_object(&house);
 
-    auto cone = Cone();
-
-    cone.shader = shader;
-
-    // objBuffer.add_object(&cone);
+    character.set_position(glm::vec3(0,0.75f,0));
+    character.set_shader(ShaderStore::get_shader("default"));
 
     double lastTime = glfwGetTime();
 
@@ -189,17 +143,13 @@ int main()
         deltaTime = (currentTime - lastTime) / 1000;
         lastTime = currentTime;
         input.process_keyboard(window, deltaTime);
-        shaderStore.set_shader_params([](const Shader* shad)
+        ShaderStore::set_shader_params([](const Shader* shad)
             {
                 input.set_shader(shad);
                 character.update_shader(shad);
             });
         if (lastSubdivision != subdivision)
         {
-            icoSphere.set_subdivision(subdivision);
-            sphere.set_subdivision(subdivision);
-            capsule.set_subdivision(subdivision);
-            cone.set_subdivision(subdivision);
             lastSubdivision = subdivision;
         }
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

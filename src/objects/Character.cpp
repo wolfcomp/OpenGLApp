@@ -1,43 +1,54 @@
 #include "Character.h"
 
+#include "../Math.h"
+#include "../collision/AABB.h"
 #include "glm/gtc/type_ptr.inl"
 #include "glm/gtx/rotate_normalized_axis.inl"
 #include "glm/gtx/rotate_vector.hpp"
 
 #define MOVEMENT_SPEED 5000.f
 #define MOUSE_SENSITIVITY 0.1f
-#define PITCH_CONSTRAINT 89.0f
+#define PITCH_CONSTRAINT 25.0f
 
 Character::Character()
 {
     model = Capsule();
     look = Cone();
     camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
-    pitch = 20.0f;
+    pitch = -20.0f;
     set_position(glm::vec3(0.0f, 0.0f, 0.0f));
     model.set_subdivision(5);
     look.set_subdivision(5);
+    look.set_color(hsl(188, 0.42f, 0.44f));
+    model.set_color(hsl(278, 0.42f, 0.44f));
     model.set_euler_rotation(glm::vec3(glm::radians(90.f), 0, 0));
+    constexpr auto height = 0.75f;
+    constexpr auto radius = 0.25f;
+    model.set_height(height);
+    model.set_radius(radius);
+    look.set_height(height / 2);
+    look.set_radius(radius / 2);
+    collision = new AABB(glm::vec3(-radius, 0, -radius),glm::vec3(radius, height + radius * 2, radius));
     update_sub_objects();
 }
 
 void Character::update_sub_objects()
 {
-    model.set_position(position - glm::vec3(0, 0.5, 0));
-    glm::vec3 lookOffset;
-    lookOffset.x = cos(glm::radians(yaw));
-    lookOffset.z = sin(glm::radians(yaw));
-    lookOffset = normalize(lookOffset);
-    look.set_position(position + lookOffset);
-    look.set_euler_rotation(glm::vec3(0, glm::radians(yaw), glm::radians(90.f)));
+    model.set_position(position);
+    const auto zRotMat = rot_z_mat(90.f);
+    const auto xRotMat = rot_x_mat(-yaw);
+    look.set_position(position + rotateY(glm::vec3(.45f, 0, 0), glm::radians(-yaw)) + glm::vec3(0, 0.45, 0));
+    look.set_rotation(combine(&zRotMat, &xRotMat, nullptr));
     glm::vec3 cameraOffset;
     cameraOffset.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
     cameraOffset.y = sin(glm::radians(pitch));
     cameraOffset.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
     cameraOffset = normalize(cameraOffset);
     cameraOffset *= camera_offset;
-    camera.set_position(position - cameraOffset);
+    camera.set_position(position - cameraOffset + glm::vec3(0, .5, 0));
     camera.set_rotation(yaw, pitch);
+    if(collision)
+        collision->set_position(position);
 }
 
 void Character::set_shader(Shader* shader)
@@ -93,7 +104,7 @@ void Character::process_mouse_scroll(const double y_offset)
     cameraOffset.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
     cameraOffset = normalize(cameraOffset);
     cameraOffset *= camera_offset;
-    camera.set_position(position - cameraOffset);
+    camera.set_position(position - cameraOffset + glm::vec3(0, .5, 0));
 }
 
 
@@ -109,6 +120,7 @@ void Character::draw()
 {
     model.draw();
     look.draw();
+    collision->draw_bounds();
 }
 
 glm::vec3 Character::get_position() const
@@ -125,3 +137,9 @@ void Character::update_shader(const Shader* shader) const
 {
     shader->set_mat4("view", value_ptr(camera.get_view_matrix()));
 }
+
+Character::~Character()
+{
+    delete collision;
+}
+

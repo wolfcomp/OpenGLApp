@@ -1,10 +1,10 @@
 #pragma once
 #include "../HSL.h"
-#include "../interfaces/ISphere.h"
+#include "../interfaces/ITriangleObject.h"
 #include "../Vertex.h"
 #include "../Math.h"
 
-class IcoSphere final : public ISphere
+class IcoSphere final : public ITriangleObject
 {
     // disable linter warning for these constants as they are double to floating point conversion
     // ReSharper disable CppInconsistentNaming

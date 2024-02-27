@@ -19,6 +19,7 @@ void Capsule::generate_vertices()
     Vertex vertex;
     Vertex new_v1, new_v2, new_v3, v1, v2, v3;
     float radius_mod = radius;
+    vertex.color = color.get_rgb_vec3();
     vertex.position.z = radius_mod;
     vertices.push_back(vertex); // 0
     vertex.position.z = .000001f;
@@ -108,19 +109,22 @@ void Capsule::generate_vertices()
 
     for (auto& vertex : vertices)
     {
-        if (vertex.position.z > 0)
-            vertex.position.z += height;
-        else
-            vertex.position.z -= height;
+        if (height - radius > 0)
+        {
+            if (vertex.position.z > 0)
+                vertex.position.z += height - radius;
+            else
+                vertex.position.z -= height - radius;
+        }
 
-        vertex.color = this->color.get_rgb_vec3();
         vertex.position = rotation * vertex.position;
         vertex.position += position;
     }
 }
 
-void Capsule::compute_half_vertex(const Vertex& a, const Vertex& b, Vertex& result) const
+void Capsule::compute_half_vertex(const Vertex& a, const Vertex& b, Vertex& result)
 {
+    result.color = color.get_rgb_vec3();
     result.position = normalize(a.position + b.position);
     result.position *= radius / length(result.position);
 }

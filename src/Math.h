@@ -1,3 +1,8 @@
+#include <cmath>
+#include <cstdarg>
+#include <vector>
+#include <glm/mat4x4.hpp>
+
 #ifdef M_PI
 #undef M_PI
 #endif
@@ -47,10 +52,25 @@ struct BSpline
             cur = next;
             next = *(++it);
         }
-        if(next == points.end())
+        if (next == points.end())
             return std::get<1>(cur)(1);
         auto u = (t - std::get<0>(cur)) / (std::get<0>(next) - std::get<0>(cur));
         return std::get<1>(cur)(u);
     }
 };
+#endif
+
+#ifndef MAT_MATH_H
+#define MAT_MATH_H
+glm::mat4 rot_z_mat(float angle);
+
+glm::mat4 rot_y_mat(float angle);
+
+glm::mat4 rot_x_mat(float angle);
+
+glm::mat4 scale_mat(float x, float y, float z);
+
+glm::mat4 translate_mat(float x, float y, float z);
+
+glm::mat4 combine(const glm::mat4* mats...);
 #endif

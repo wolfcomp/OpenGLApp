@@ -1,9 +1,16 @@
 #include "ShaderStore.h"
 
-Shader* ShaderStore::add_shader(const char* vertex_path, const char* fragment_path)
+#include <map>
+
+std::map<unsigned, Shader*> shaders;
+std::map<unsigned, std::string> shaderNames;
+
+Shader* ShaderStore::add_shader(const std::string& name, const char* vertex_path, const char* fragment_path)
 {
     const auto shader = new Shader(vertex_path, fragment_path);
-    shaders[shaders.size()] = shader;
+    const auto id = shaders.size();
+    shaders[id] = shader;
+    shaderNames[id] = name;
     return shader;
 }
 
@@ -11,6 +18,19 @@ Shader* ShaderStore::get_shader(const unsigned id)
 {
     return shaders[id];
 }
+
+Shader* ShaderStore::get_shader(const std::string name)
+{
+    for (const auto& shader : shaderNames)
+    {
+        if (shader.second == name)
+        {
+            return shaders[shader.first];
+        }
+    }
+    return nullptr;
+}
+
 
 void ShaderStore::remove_all_shaders()
 {
@@ -27,7 +47,7 @@ void ShaderStore::remove_shader(const unsigned id)
     shaders.erase(id);
 }
 
-void ShaderStore::set_shader_params(void func(const Shader*)) const
+void ShaderStore::set_shader_params(void func(const Shader*))
 {
     for (const auto& shaderPair : shaders)
     {

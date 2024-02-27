@@ -1,7 +1,7 @@
 #pragma once
 #include "../HSL.h"
-#include "../interfaces/ISphere.h"
-class Cone final : public ISphere
+#include "../interfaces/ITriangleObject.h"
+class Cone final : public ITriangleObject
 {
     glm::vec3 position;
     glm::quat rotation;

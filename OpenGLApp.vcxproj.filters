@@ -90,6 +90,12 @@
     <ClCompile Include="src\objects\Character.cpp">
       <Filter>Source Files\objects</Filter>
     </ClCompile>
+    <ClCompile Include="src\Math.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\primitives\Plane.cpp">
+      <Filter>Source Files\primitives</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\includes\glm\gtx\wrap.hpp">
@@ -989,9 +995,6 @@
     <ClInclude Include="src\primitives\Sphere.h">
       <Filter>Header Files\primitives</Filter>
     </ClInclude>
-    <ClInclude Include="src\interfaces\ISphere.h">
-      <Filter>Header Files\interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="src\interfaces\ITriangleObject.h">
       <Filter>Header Files\interfaces</Filter>
     </ClInclude>
@@ -1015,6 +1018,15 @@
     </ClInclude>
     <ClInclude Include="src\objects\Character.h">
       <Filter>Header Files\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\primitives\Plane.h">
+      <Filter>Header Files\primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="src\collision\MeshCollider.h">
+      <Filter>Header Files\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="src\interfaces\IObject.h">
+      <Filter>Header Files\interfaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

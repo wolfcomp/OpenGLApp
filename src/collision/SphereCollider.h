@@ -12,8 +12,8 @@ struct SphereCollider final : ICollision
         return abs(distance(point, center)) <= radius;
     }
 
-    glm::vec3 rebound(const glm::vec3 point) const override
+    glm::vec3 rebound(const glm::vec3 point, const glm::vec3 velocity) const override
     {
-        return center + radius * normalize(point - center);
+        return velocity - center + radius * normalize(point - center);
     }
 };
