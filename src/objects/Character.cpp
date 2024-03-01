@@ -50,7 +50,9 @@ void Character::update_sub_objects()
     if(collision)
     {
         collision->set_position(position - position * glm::vec3(0,.5,0));
-        collision->set_rotation(quat_cast(rot_y_mat(yaw)));
+        collision->set_rotation(quat_cast(rot_y_mat(-yaw)));
+        point_render.clear_points();
+        point_render.add_points(collision->get_points());
     }
 }
 
@@ -58,6 +60,7 @@ void Character::set_shader(Shader* shader)
 {
     model.shader = shader;
     look.shader = shader;
+    point_render.shader = shader;
 }
 
 void Character::set_explicit_camera(const glm::vec3& position, const float yaw, const float pitch)
@@ -121,8 +124,9 @@ void Character::update_position(const glm::vec3& direction, const double delta_t
 
 void Character::draw()
 {
-    model.draw();
+    // model.draw();
     look.draw();
+    point_render.draw();
     collision->draw_bounds();
 }
 

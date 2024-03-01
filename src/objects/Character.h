@@ -1,4 +1,5 @@
 #pragma once
+#include "PointRender.h"
 #include "../Camera.h"
 #include "../primitives/Capsule.h"
 #include "../primitives/Cone.h"
@@ -14,6 +15,7 @@ class Character
     Cone look;
     Camera camera;
     ICollision* collision;
+    PointRender point_render;
 
     void update_sub_objects();
     

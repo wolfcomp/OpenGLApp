@@ -99,6 +99,9 @@
     <ClCompile Include="src\collision\ColliderHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\objects\PointRender.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\includes\glm\gtx\wrap.hpp">
@@ -1032,6 +1035,9 @@
       <Filter>Header Files\interfaces</Filter>
     </ClInclude>
     <ClInclude Include="src\collision\ColliderHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\objects\PointRender.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

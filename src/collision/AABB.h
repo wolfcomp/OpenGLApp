@@ -49,6 +49,23 @@ struct AABB final : ICollision
 
     std::vector<glm::vec3> get_points() const override
     {
-        
+        const auto curMin = min;
+        const auto curMax = max;
+        const auto step = (curMax - curMin) / 10.f;
+        auto points = std::vector<glm::vec3>();
+        const auto x = step.x;
+        const auto y = step.y;
+        const auto z = step.z;
+        for (auto i = 0; i < 10; i++)
+        {
+            for (auto j = 0; j < 10; j++)
+            {
+                for (auto k = 0; k < 10; k++)
+                {
+                    points.push_back(glm::vec3(curMin.x + x * static_cast<float>(i), curMin.y + y * static_cast<float>(j), curMin.z + z * static_cast<float>(k)) * rotation + position);
+                }
+            }
+        }
+        return points;
     }
 };

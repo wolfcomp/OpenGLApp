@@ -1,5 +1,7 @@
 #pragma once
 #include "glm/vec3.hpp"
+#include "glm/gtc/quaternion.hpp"
+#include <vector>
 
 // we are ignoring height for now
 constexpr glm::vec3 reboundMultiplier = glm::vec3(1, 0, 1);

@@ -146,6 +146,7 @@
     <ClCompile Include="src\objects\Character.cpp" />
     <ClCompile Include="src\objects\Door.cpp" />
     <ClCompile Include="src\objects\House.cpp" />
+    <ClCompile Include="src\objects\PointRender.cpp" />
     <ClCompile Include="src\primitives\Capsule.cpp" />
     <ClCompile Include="src\primitives\Cone.cpp" />
     <ClCompile Include="src\primitives\Cube.cpp" />
@@ -458,6 +459,7 @@
     <ClInclude Include="src\objects\Character.h" />
     <ClInclude Include="src\objects\Door.h" />
     <ClInclude Include="src\objects\House.h" />
+    <ClInclude Include="src\objects\PointRender.h" />
     <ClInclude Include="src\primitives\Capsule.h" />
     <ClInclude Include="src\primitives\Cone.h" />
     <ClInclude Include="src\primitives\Cube.h" />
