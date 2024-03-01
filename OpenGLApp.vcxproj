@@ -139,6 +139,7 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="OpenGLApp.cpp" />
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\collision\ColliderHandler.cpp" />
     <ClCompile Include="src\InputProcessing.cpp" />
     <ClCompile Include="src\Math.cpp" />
     <ClCompile Include="src\ObjectBuffer.cpp" />
@@ -443,6 +444,7 @@
     <ClInclude Include="Dependencies\includes\KHR\khrplatform.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\collision\AABB.h" />
+    <ClInclude Include="src\collision\ColliderHandler.h" />
     <ClInclude Include="src\collision\ICollision.h" />
     <ClInclude Include="src\collision\MeshCollider.h" />
     <ClInclude Include="src\collision\SphereCollider.h" />

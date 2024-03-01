@@ -15,8 +15,8 @@ struct AABB final : ICollision
 
     bool contains(const glm::vec3 point) const override
     {
-        auto curMin = min + position;
-        auto curMax = max + position;
+        auto curMin = min * rotation + position;
+        auto curMax = max * rotation + position;
         return point.x >= curMin.x && point.x <= curMax.x &&
             point.y >= curMin.y && point.y <= curMax.y &&
             point.z >= curMin.z && point.z <= curMax.z;
@@ -40,9 +40,15 @@ struct AABB final : ICollision
     {
         auto curMin = min + position;
         auto curMax = max + position;
+        bounds_object.set_rotation(rotation);
         bounds_object.set_position((curMin + curMax) / 2.f);
         bounds_object.set_scale(max - min);
         bounds_object.draw_mode = GL_POINTS;
         bounds_object.draw();
+    }
+
+    std::vector<glm::vec3> get_points() const override
+    {
+        
     }
 };

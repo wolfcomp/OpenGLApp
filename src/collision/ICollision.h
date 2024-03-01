@@ -13,9 +13,14 @@ struct ICollision
     ICollision& operator=(const ICollision&) = default;
     ICollision& operator=(ICollision&&) = default;
     glm::vec3 position = glm::vec3(0);
+    glm::quat rotation = glm::quat(1, 0, 0, 0);
     void set_position(const glm::vec3& position)
     {
         this->position = position;
+    }
+    void set_rotation(const glm::quat& rotation)
+    {
+        this->rotation = rotation;
     }
     virtual bool contains(const glm::vec3 point) const
     {
@@ -34,6 +39,10 @@ struct ICollision
         return rebound_with_scalar(point, glm::vec3(0));
     }
     virtual void draw_bounds() {}
+    virtual std::vector<glm::vec3> get_points() const
+    {
+        return { position };
+    }
 };
 
 inline bool operator==(const ICollision& lhs, const glm::vec3& rhs)

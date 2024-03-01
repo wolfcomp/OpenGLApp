@@ -96,6 +96,9 @@
     <ClCompile Include="src\primitives\Plane.cpp">
       <Filter>Source Files\primitives</Filter>
     </ClCompile>
+    <ClCompile Include="src\collision\ColliderHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\includes\glm\gtx\wrap.hpp">
@@ -1027,6 +1030,9 @@
     </ClInclude>
     <ClInclude Include="src\interfaces\IObject.h">
       <Filter>Header Files\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="src\collision\ColliderHandler.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

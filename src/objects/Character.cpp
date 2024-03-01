@@ -28,7 +28,7 @@ Character::Character()
     model.set_radius(radius);
     look.set_height(height / 2);
     look.set_radius(radius / 2);
-    collision = new AABB(glm::vec3(-radius, 0, -radius),glm::vec3(radius, height + radius * 2, radius));
+    collision = new AABB(glm::vec3(-radius/2, 0, -radius/2),glm::vec3(radius/2, height/2 + radius * 1.5, radius/2));
     update_sub_objects();
 }
 
@@ -48,7 +48,10 @@ void Character::update_sub_objects()
     camera.set_position(position - cameraOffset + glm::vec3(0, .5, 0));
     camera.set_rotation(yaw, pitch);
     if(collision)
-        collision->set_position(position);
+    {
+        collision->set_position(position - position * glm::vec3(0,.5,0));
+        collision->set_rotation(quat_cast(rot_y_mat(yaw)));
+    }
 }
 
 void Character::set_shader(Shader* shader)
