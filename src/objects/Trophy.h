@@ -1,0 +1,24 @@
+﻿#pragma once
+#include "../primitives/Sphere.h"
+#include "../primitives/Cone.h"
+
+class Trophy
+{
+    Sphere topModel;
+    Cone botModel;
+    glm::vec3 position;
+    float yaw;
+    float pitch;
+    float radius;
+    float coneHeight;
+    float totHeight; // radius + coneHeight
+    ICollision* collision;
+    void update_sub_objects();
+public:
+    Trophy();
+    ~Trophy();
+    void set_position(const glm::vec3& position);
+    void update_shader(Shader* shader);
+    void draw();
+    glm::vec3 get_position();
+};
