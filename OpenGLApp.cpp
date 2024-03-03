@@ -33,9 +33,10 @@ float staticCamPitch = 0.f;
 InputProcessing input;
 ObjectBuffer objBuffer;
 Character character;
-//std::vector<Trophy> trophies;
-Trophy trophy0, trophy1, trophy2, trophy3;
 Character npc;
+//Having them in vectors or arrays didn't work, and caused the program to crash on draw
+Trophy trophy0, trophy1, trophy2, trophy3, trophy4, trophy5, trophy6, trophy7;
+
 
 double npcProgress = 0;
 float npcSpeed = 100;
@@ -85,6 +86,72 @@ void process_mouse_input(GLFWwindow* window, const double x_pos, const double y_
 void scroll_callback(GLFWwindow* window, double x_offset, double y_offset)
 {
 	character.process_mouse_scroll(y_offset);
+}
+
+void InstantiateTrophies(float& offsetTrop)
+{
+	trophy0.update_shader((ShaderStore::get_shader("default")));
+	trophy1.update_shader((ShaderStore::get_shader("default")));
+	trophy2.update_shader((ShaderStore::get_shader("default")));
+	trophy3.update_shader((ShaderStore::get_shader("default")));
+	trophy4.update_shader((ShaderStore::get_shader("default")));
+	trophy5.update_shader((ShaderStore::get_shader("default")));
+	trophy6.update_shader((ShaderStore::get_shader("default")));
+	trophy7.update_shader((ShaderStore::get_shader("default")));
+	offsetTrop = 3.f;
+	trophy0.set_position(glm::vec3(0+10, .75, 0));
+	trophy1.set_position(glm::vec3(offsetTrop+10, .75, offsetTrop));
+	trophy2.set_position(glm::vec3(offsetTrop*2+10, .75, offsetTrop*2));
+	trophy3.set_position(glm::vec3(offsetTrop*3+10, .75, offsetTrop*3));
+	trophy4.set_position(glm::vec3(offsetTrop*4+10, .75, offsetTrop*4));
+	trophy5.set_position(glm::vec3(offsetTrop*5+10, .75, offsetTrop*5));
+	trophy6.set_position(glm::vec3(offsetTrop*6+10, .75, offsetTrop*6));
+	trophy7.set_position(glm::vec3(offsetTrop*7+10, .75, offsetTrop*7));
+}
+
+void SetupNPCPath(float offsetTrop)
+{
+	auto b1 = Bezier<glm::vec3>(trophy0.get_position(), trophy0.get_position() + glm::vec3(offsetTrop, 0, 0),
+	                            trophy1.get_position() - glm::vec3(offsetTrop, 0, 0), trophy1.get_position());
+	
+	auto b2 = Bezier<glm::vec3>(trophy1.get_position(), trophy1.get_position() + glm::vec3(offsetTrop*2, 0, 0),
+	                            trophy2.get_position() - glm::vec3(offsetTrop * 2, 0, 0), trophy2.get_position());
+	
+	auto b3 = Bezier<glm::vec3>(trophy2.get_position(), trophy2.get_position() + glm::vec3(offsetTrop * 3, 0, 0),
+	                            trophy3.get_position() - glm::vec3(offsetTrop * 3, 0, 0), trophy3.get_position());
+	
+	auto b4 = Bezier<glm::vec3>(trophy3.get_position(), trophy3.get_position() + glm::vec3(offsetTrop * 4, 0, 0),
+	                            trophy4.get_position() - glm::vec3(offsetTrop * 4, 0, 0), trophy4.get_position());
+	
+	auto b5 = Bezier<glm::vec3>(trophy4.get_position(), trophy4.get_position() + glm::vec3(offsetTrop * 5, 0, 0),
+	                            trophy5.get_position() - glm::vec3(offsetTrop * 5, 0, 0), trophy5.get_position());
+	
+	auto b6 = Bezier<glm::vec3>(trophy5.get_position(), trophy5.get_position() + glm::vec3(offsetTrop * 6, 0, 0),
+	                            trophy6.get_position() - glm::vec3(offsetTrop * 6, 0, 0), trophy6.get_position());
+	
+	auto b7 = Bezier<glm::vec3>(trophy6.get_position(), trophy6.get_position() + glm::vec3(offsetTrop * 7, 0, 0),
+	                            trophy7.get_position() - glm::vec3(offsetTrop * 7, 0, 0), trophy7.get_position());
+	
+	auto b8 = Bezier<glm::vec3>(trophy7.get_position(), trophy7.get_position() + glm::vec3(offsetTrop * 8, 0, 0),
+	                            trophy0.get_position() - glm::vec3(offsetTrop * 8, 0, 0), trophy0.get_position());
+	
+	splineObj.add_point(0, b1);
+	splineObj.add_point(.15, b2);
+	splineObj.add_point(.3, b3);
+	splineObj.add_point(.45, b4);
+	splineObj.add_point(.6, b5);
+	splineObj.add_point(.75, b6);
+	splineObj.add_point(.9, b7);
+	splineObj.add_point(1, Bezier<glm::vec3>(trophy7.get_position(), trophy7.get_position(), trophy7.get_position(), trophy7.get_position()));
+}
+
+void NPCMovement()
+{
+	npcProgress += deltaTime * npcSpeed;
+	if (npcProgress >= 2)
+		npcProgress = 0;
+	auto p = splineObj(abs(npcProgress - 1));
+	npc.set_position(p);
 }
 
 void move_character(const glm::vec3& direction)
@@ -155,35 +222,12 @@ int main()
     character.set_position(glm::vec3(0, 0.75f, 0));
     character.set_shader(ShaderStore::get_shader("default"));
 
-	trophy0.update_shader((ShaderStore::get_shader("default")));
-	trophy1.update_shader((ShaderStore::get_shader("default")));
-	trophy2.update_shader((ShaderStore::get_shader("default")));
-	trophy3.update_shader((ShaderStore::get_shader("default")));
-	auto offsetTrop = 3.f;
-	trophy0.set_position(glm::vec3(0+10, .75, 0));
-	trophy1.set_position(glm::vec3(offsetTrop+10, .75, offsetTrop));
-	trophy2.set_position(glm::vec3(offsetTrop*2+10, .75, offsetTrop*2));
-	trophy3.set_position(glm::vec3(offsetTrop*3+10, .75, offsetTrop * 3));
-
-
-	bool isProgressing = true;
 	npc.set_shader(ShaderStore::get_shader("default"));
 	
-
-	auto b1 = Bezier<glm::vec3>(trophy0.get_position(), trophy0.get_position() + glm::vec3(offsetTrop, 0, 0),
-		trophy1.get_position() - glm::vec3(offsetTrop, 0, 0), trophy1.get_position());
-
-	auto b2 = Bezier<glm::vec3>(trophy1.get_position(), trophy1.get_position() + glm::vec3(offsetTrop*2, 0, 0),
-		trophy2.get_position() - glm::vec3(offsetTrop * 2, 0, 0), trophy2.get_position());
-
-	auto b3 = Bezier<glm::vec3>(trophy2.get_position(), trophy2.get_position() + glm::vec3(offsetTrop * 3, 0, 0),
-		trophy3.get_position() - glm::vec3(offsetTrop * 3, 0, 0), trophy3.get_position());
-
-	splineObj.add_point(0, b1);
-	splineObj.add_point(.33, b2);
-	splineObj.add_point(.66, b3);
-	splineObj.add_point(1, Bezier<glm::vec3>(trophy3.get_position(), trophy3.get_position(), trophy3.get_position(), trophy3.get_position()));
-
+	float offsetTrop;
+	InstantiateTrophies(offsetTrop);
+	
+	SetupNPCPath(offsetTrop); // has to be after trophies are placed out
 
 	double lastTime = glfwGetTime();
 
@@ -208,13 +252,7 @@ int main()
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		else
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		//npc movement todo extract to its own function 
-		npcProgress += deltaTime * npcSpeed;
-		if (npcProgress >= 2)
-			npcProgress = 0;
-		auto p = splineObj(abs(npcProgress - 1));
-		npc.set_position(p);
-		// end of npc Movement
+		NPCMovement();
 		objBuffer.draw();
 		character.draw();
 		npc.draw();
@@ -222,6 +260,11 @@ int main()
 		trophy1.draw();
 		trophy2.draw();
 		trophy3.draw();
+		trophy4.draw();
+		trophy5.draw();
+		trophy6.draw();
+		trophy7.draw();
+
 
 		glBindVertexArray(0);
 

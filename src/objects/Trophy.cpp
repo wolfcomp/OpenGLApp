@@ -7,12 +7,18 @@ void Trophy::update_sub_objects()
     botModel.set_position(position - glm::vec3(0,coneHeight,0));
 }
 
+void Trophy::collect()
+{
+    isCollected = true;
+}
+
 Trophy::Trophy()
 {
     topModel = Sphere();
     botModel = Cone();
     pitch = 0;
     yaw   = 0;
+    isCollected = false;
     set_position(glm::vec3(0.0f, 0.0f, 0.0f));
     topModel.set_subdivision(2);
     botModel.set_subdivision(2);
@@ -40,11 +46,24 @@ void Trophy::update_shader(Shader* shader)
     botModel.shader = shader;
 }
 
+Sphere& Trophy::get_top()
+{
+    return topModel;
+}
+
+Cone& Trophy::get_bot()
+{
+    return botModel;
+}
+
 void Trophy::draw()
 {
-    topModel.draw();
-    botModel.draw();
-    collision->draw_bounds();
+    if(!isCollected)
+    {
+        topModel.draw();
+        botModel.draw();
+        collision->draw_bounds();
+    }
 }
 
 glm::vec3 Trophy::get_position()
