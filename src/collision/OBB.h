@@ -23,7 +23,15 @@ struct OBB : ICollision
                 auto detA = (det(point, c) - det(a, c)) / det(b, c);
                 auto detB = -(det(point, b) - det(a, b)) / det(b, c);
                 if (detA > 0 && detB > 0 && detA + detB < 1)
-                    return true;
+                {
+                    if (on_collision && should_overlap)
+                    {
+                        on_collision(this, collider);
+                        return false;
+                    }
+                    else
+                        return true;
+                }
                 ++i;
             }
         }

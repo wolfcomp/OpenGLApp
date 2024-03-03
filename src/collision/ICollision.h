@@ -18,6 +18,8 @@ struct ICollision
     glm::vec2 position = glm::vec2(0);
     float angle = 0;
     IObject* draw_object = nullptr;
+    bool should_overlap = true;
+    void (*on_collision)(ICollision* self, ICollision* other) = nullptr;
     virtual glm::vec2 get_center() const
     {
         return position;
