@@ -31,7 +31,7 @@ Trophy::Trophy()
     yaw = 0;
     isCollected = false;
     position = glm::vec3(0.0f, 0.0f, 0.0f);
-    vertices = { position };
+    vertices = {position};
     topModel.set_subdivision(3);
     botModel.set_subdivision(2);
     topModel.set_color(hsl(48, 0.86f, 0.46f));
@@ -46,16 +46,16 @@ Trophy::Trophy()
     collision->should_overlap = true;
     collision->parent = this;
     collision->on_collision = [](IObject* self_obj, ICollision* self, ICollision* other)
-        {
-            dynamic_cast<Trophy*>(self_obj)->collect(self, other);
-        };
+    {
+        dynamic_cast<Trophy*>(self_obj)->collect(self, other);
+    };
     update_sub_objects();
 }
 
 void Trophy::set_position(const glm::vec3& position)
 {
     this->position = position;
-    vertices = { position };
+    vertices = {position};
     collision->set_position(glm::vec2(position.x, position.z));
     update_sub_objects();
 }

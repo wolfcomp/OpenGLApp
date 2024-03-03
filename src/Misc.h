@@ -12,11 +12,13 @@
 class file_handle
 {
     FILE* file;
+
 public:
     file_handle(const char* path, const char* mode)
     {
         fopen_s(&file, path, mode);
     }
+
     void printf(_Printf_format_string_ char const* const format, ...) const
     {
         va_list args;
@@ -24,6 +26,7 @@ public:
         vfprintf(file, format, args);
         va_end(args);
     }
+
     ~file_handle()
     {
         fclose(file);
@@ -40,10 +43,12 @@ class func
     {
         return pow(x, 4) - 2 * pow(x, 3) + pow(x, 2);
     }
+
     float dfX(float x)
     {
         return 4 * pow(x, 3) - 6 * pow(x, 2) + 2 * x;
     }
+
     std::vector<Vertex> getVertices(float min, float max, float step, bool useZ)
     {
         std::vector<Vertex> vertices;
@@ -66,9 +71,11 @@ class func
         vertices.push_back(v);
         return vertices;
     }
+
     unsigned int vao;
     unsigned int ebo;
     unsigned int vbo;
+
 public:
     func(bool useZ = false)
     {
@@ -136,14 +143,13 @@ public:
 
 class vertexFunc
 {
-
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
 
     std::vector<Vertex> getVertices(float min, float max, float step)
     {
         std::vector<Vertex> vertices;
-        hsl hsl{ 0,1,0.5 };
+        hsl hsl{0, 1, 0.5};
         auto diff = (max + min) / 2;
         while (min < max)
         {
@@ -171,9 +177,11 @@ class vertexFunc
         vertices.push_back(v);
         return vertices;
     }
+
     unsigned int vao;
     unsigned int ebo;
     unsigned int vbo;
+
 public:
     vertexFunc()
     {
@@ -220,10 +228,11 @@ class twoVarFunc
     int size;
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
+
     std::vector<Vertex> getVertices(int size, float step, float offset_x, float offset_y)
     {
         std::vector<Vertex> vertices;
-        hsl hsl{ 0,1,0.5 };
+        hsl hsl{0, 1, 0.5};
         for (int i = 0; i < size; i++)
         {
             for (int j = 0; j < size; j++)
@@ -242,9 +251,11 @@ class twoVarFunc
         }
         return vertices;
     }
+
     unsigned int vao;
     unsigned int ebo;
     unsigned int vbo;
+
 public:
     twoVarFunc(int size, float step)
     {
@@ -258,6 +269,7 @@ public:
             file.printf("%.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f\n", vertex.position.x, vertex.position.y, vertex.position.z, vertex.color.r, vertex.color.g, vertex.color.b, vertex.texture_coord.x, vertex.texture_coord.y);
         }
     }
+
     void initDraw()
     {
         for (int i = 0; i < size - 1; i++)
@@ -305,6 +317,7 @@ class drawFromFile
     unsigned int vbo;
     GLenum mode;
     bool optimized;
+
 public:
     drawFromFile(const char* filename, GLenum mode = GL_LINES, bool optimized = false, bool scale_to_negative_one_one = true)
     {
@@ -358,6 +371,7 @@ public:
         this->mode = mode;
         this->optimized = optimized;
     }
+
     void initDraw()
     {
         if (optimized)
@@ -404,6 +418,7 @@ public:
         glEnableVertexAttribArray(1);
         // ReSharper restore CppCStyleCast
     }
+
     void draw()
     {
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);

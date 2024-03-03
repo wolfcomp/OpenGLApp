@@ -20,7 +20,7 @@ void Cube::generate_indices()
         4, 5, 1, 1, 0, 4, // top
         6, 7, 3, 3, 2, 6, // bottom
         4, 0, 6, 6, 2, 0, // left
-        5, 1, 7, 7, 3, 1  // right
+        5, 1, 7, 7, 3, 1 // right
     };
 }
 
@@ -108,4 +108,3 @@ void Cube::set_euler_rotation(const glm::vec3 angle)
     this->rotation = glm::quat(angle);
     generate_vertices();
 }
-

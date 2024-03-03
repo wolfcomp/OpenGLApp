@@ -1,6 +1,7 @@
 #pragma once
 #include "../HSL.h"
 #include "../interfaces/ITriangleObject.h"
+
 class Plane : public ITriangleObject
 {
     glm::vec3 position;
@@ -18,4 +19,3 @@ public:
     void set_euler_rotation(const glm::vec3 angle);
     void pre_draw() override;
 };
-

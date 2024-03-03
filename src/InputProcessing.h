@@ -9,7 +9,7 @@
 #include "glm/gtc/type_ptr.hpp"
 
 class InputProcessing
-{    
+{
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 projection;
     std::map<int, void (*)()> keyboard_listeners;

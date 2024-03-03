@@ -17,7 +17,7 @@ void Plane::generate_vertices()
         Vertex(glm::vec3(size.x / 2, 0, size.y / 2), color.get_rgb_vec3()),
         Vertex(glm::vec3(-size.x / 2, 0, size.y / 2), color.get_rgb_vec3())
     };
-    indices = { 0, 1, 2, 0, 2, 3 };
+    indices = {0, 1, 2, 0, 2, 3};
 
     for (auto& vertex : vertices)
     {
