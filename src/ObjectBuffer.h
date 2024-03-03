@@ -1,13 +1,13 @@
 ﻿#pragma once
 #include <vector>
 
-#include "interfaces/ITriangleObject.h"
+#include "interfaces/IObject.h"
 
 class ObjectBuffer
 {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
-    std::vector<ITriangleObject*> objects;
+    std::vector<IObject*> objects;
     unsigned int vao;
     unsigned int ebo;
     unsigned int vbo;
@@ -21,9 +21,10 @@ public:
 
     void init_buffers();
     void draw() const;
-    void add_object(ITriangleObject* object);
-    void destroy_object(ITriangleObject* object);
-    std::vector<ITriangleObject*> get_objects() const;
+    void add_object(IObject* object);
+    void destroy_object(IObject* object);
+    std::vector<IObject*> get_objects_in_range(glm::vec3 position, float radius) const;
+    std::vector<IObject*> get_objects() const;
 
     ~ObjectBuffer();
 };

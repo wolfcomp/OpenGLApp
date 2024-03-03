@@ -21,6 +21,10 @@ Shader* ShaderStore::get_shader(const unsigned id)
 
 Shader* ShaderStore::get_shader(const std::string name)
 {
+    if (shaderNames.empty())
+    {
+        return nullptr;
+    }
     for (const auto& shader : shaderNames)
     {
         if (shader.second == name)

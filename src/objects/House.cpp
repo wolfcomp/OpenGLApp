@@ -1,6 +1,8 @@
 #include "House.h"
 
 #include "../HSL.h"
+#include "../Math.h"
+#include "../collision/OBB.h"
 #include "glm/gtx/rotate_vector.hpp"
 
 House::House()
@@ -98,11 +100,24 @@ void House::generate_vertices()
         16, 17, 19, 19, 16, 18
     };
 
+    collision = new OBB();
+    dynamic_cast<OBB*>(collision)->points = {
+           glm::vec2(0, 0),
+           glm::vec2(0, 4),
+           glm::vec2(1.5f, 0),
+           glm::vec2(1.5f, 4)
+    };
     for (auto& vertex : vertices)
     {
         vertex.position = rotateY(vertex.position, angle);
         vertex.position *= scale;
         vertex.position += position;
+    }
+    for (auto& point : dynamic_cast<OBB*>(collision)->points)
+    {
+        point = rotate(point, -angle);
+        point *= glm::vec2(scale.x, scale.z);
+        point += glm::vec2(position.x, position.z);
     }
     vertex = vertices[5];
     door.set_position(vertex.position);
@@ -119,12 +134,15 @@ void House::pre_draw()
 void House::set_position(const glm::vec3 position)
 {
     this->position = position;
+    collision->set_position(position);
     vertices.clear();
 }
 
 void House::set_rotation(const float angle)
 {
     this->angle = angle;
+    // this->collision->set_rotation(quat_cast(rot_y_mat(angle)));
+    door.set_rotation(this->angle + doorAngle);
     vertices.clear();
 }
 

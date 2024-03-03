@@ -96,12 +96,6 @@
     <ClCompile Include="src\primitives\Plane.cpp">
       <Filter>Source Files\primitives</Filter>
     </ClCompile>
-    <ClCompile Include="src\collision\ColliderHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\objects\PointRender.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\includes\glm\gtx\wrap.hpp">
@@ -1013,12 +1007,6 @@
     <ClInclude Include="src\collision\ICollision.h">
       <Filter>Header Files\collision</Filter>
     </ClInclude>
-    <ClInclude Include="src\collision\AABB.h">
-      <Filter>Header Files\collision</Filter>
-    </ClInclude>
-    <ClInclude Include="src\collision\SphereCollider.h">
-      <Filter>Header Files\collision</Filter>
-    </ClInclude>
     <ClInclude Include="src\primitives\Cone.h">
       <Filter>Header Files\primitives</Filter>
     </ClInclude>
@@ -1028,9 +1016,6 @@
     <ClInclude Include="src\primitives\Plane.h">
       <Filter>Header Files\primitives</Filter>
     </ClInclude>
-    <ClInclude Include="src\collision\MeshCollider.h">
-      <Filter>Header Files\collision</Filter>
-    </ClInclude>
     <ClInclude Include="src\interfaces\IObject.h">
       <Filter>Header Files\interfaces</Filter>
     </ClInclude>
@@ -1039,6 +1024,9 @@
     </ClInclude>
     <ClInclude Include="src\objects\PointRender.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\collision\OBB.h">
+      <Filter>Header Files\collision</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

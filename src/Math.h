@@ -1,5 +1,3 @@
-#include <cmath>
-#include <cstdarg>
 #include <vector>
 #include <glm/mat4x4.hpp>
 

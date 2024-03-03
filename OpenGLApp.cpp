@@ -72,6 +72,11 @@ void scroll_callback(GLFWwindow* window, double x_offset, double y_offset)
     character.process_mouse_scroll(y_offset);
 }
 
+void move_character(const glm::vec3& direction)
+{
+    character.update_position(direction, deltaTime, objBuffer);
+}
+
 int main()
 {
     input.change_aspect(width, height);
@@ -105,10 +110,10 @@ int main()
     input.attach_keyboard_listener(GLFW_KEY_UP, increase_subdivision, false);
     input.attach_keyboard_listener(GLFW_KEY_DOWN, decrease_subdivision, false);
     input.attach_keyboard_listener(GLFW_KEY_F, []() { wireframe = !wireframe; }, false);
-    input.attach_keyboard_listener(GLFW_KEY_W, []() { character.update_position(glm::vec3(1, 0, 0), deltaTime); }, true);
-    input.attach_keyboard_listener(GLFW_KEY_S, []() { character.update_position(glm::vec3(-1, 0, 0), deltaTime); }, true);
-    input.attach_keyboard_listener(GLFW_KEY_A, []() { character.update_position(glm::vec3(0, 0, -1), deltaTime); }, true);
-    input.attach_keyboard_listener(GLFW_KEY_D, []() { character.update_position(glm::vec3(0, 0, 1), deltaTime); }, true);
+    input.attach_keyboard_listener(GLFW_KEY_W, []() { move_character(glm::vec3(1, 0, 0)); }, true);
+    input.attach_keyboard_listener(GLFW_KEY_S, []() { move_character(glm::vec3(-1, 0, 0)); }, true);
+    input.attach_keyboard_listener(GLFW_KEY_A, []() { move_character(glm::vec3(0, 0, -1)); }, true);
+    input.attach_keyboard_listener(GLFW_KEY_D, []() { move_character(glm::vec3(0, 0, 1)); }, true);
 
     ShaderStore::add_shader("default", "shader.vs", "shader.fs");
 
@@ -119,7 +124,7 @@ int main()
     plane.shader = ShaderStore::get_shader("default");
 
     plane.set_size(glm::vec2(100));
-    plane.set_color(hsl(0,.5,.5));
+    plane.set_color(hsl(0, .5, .5));
 
     objBuffer.add_object(&plane);
 
@@ -127,12 +132,12 @@ int main()
 
     house.shader = ShaderStore::get_shader("default");
     house.set_scale(glm::vec3(2));
-    house.set_position(glm::vec3(5,0,10));
-    house.set_rotation(65);
+    house.set_position(glm::vec3(5, 0, 10));
+    house.set_rotation(glm::radians(65.f));
 
     objBuffer.add_object(&house);
 
-    character.set_position(glm::vec3(0,0.75f,0));
+    character.set_position(glm::vec3(0, 0.75f, 0));
     character.set_shader(ShaderStore::get_shader("default"));
 
     double lastTime = glfwGetTime();
@@ -153,6 +158,7 @@ int main()
             lastSubdivision = subdivision;
         }
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glPointSize(5);
         //enable gl wireframe mode
         if (wireframe)
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -161,6 +167,7 @@ int main()
 
         objBuffer.draw();
         character.draw();
+        house.collision->draw_bounds();
 
         glBindVertexArray(0);
 

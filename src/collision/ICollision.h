@@ -3,6 +3,7 @@
 #include "glm/gtc/quaternion.hpp"
 #include <vector>
 
+class IObject;
 // we are ignoring height for now
 constexpr glm::vec3 reboundMultiplier = glm::vec3(1, 0, 1);
 
@@ -14,17 +15,22 @@ struct ICollision
     ICollision(ICollision&&) = default;
     ICollision& operator=(const ICollision&) = default;
     ICollision& operator=(ICollision&&) = default;
-    glm::vec3 position = glm::vec3(0);
-    glm::quat rotation = glm::quat(1, 0, 0, 0);
-    void set_position(const glm::vec3& position)
+    glm::vec2 position = glm::vec2(0);
+    float angle = 0;
+    IObject* draw_object = nullptr;
+    virtual glm::vec2 get_center() const
+    {
+        return position;
+    }
+    void set_position(const glm::vec2& position)
     {
         this->position = position;
     }
-    void set_rotation(const glm::quat& rotation)
+    void set_rotation(const float angle)
     {
-        this->rotation = rotation;
+        this->angle = angle;
     }
-    virtual bool contains(const glm::vec3 point) const
+    virtual bool contains(ICollision* collider)
     {
         return false;
     }
@@ -41,18 +47,8 @@ struct ICollision
         return rebound_with_scalar(point, glm::vec3(0));
     }
     virtual void draw_bounds() {}
-    virtual std::vector<glm::vec3> get_points() const
+    virtual std::vector<glm::vec2> get_points()
     {
         return { position };
     }
 };
-
-inline bool operator==(const ICollision& lhs, const glm::vec3& rhs)
-{
-    return lhs.contains(rhs);
-}
-
-inline bool operator==(const glm::vec3& lhs, const ICollision& rhs)
-{
-    return rhs.contains(lhs);
-}

@@ -39,12 +39,12 @@ void ObjectBuffer::draw() const
 }
 
 
-void ObjectBuffer::add_object(ITriangleObject* object)
+void ObjectBuffer::add_object(IObject* object)
 {
     objects.push_back(object);
 }
 
-void ObjectBuffer::destroy_object(ITriangleObject* object)
+void ObjectBuffer::destroy_object(IObject* object)
 {
     const auto it = std::find(objects.begin(), objects.end(), object);
     if (it != objects.end())
@@ -53,8 +53,35 @@ void ObjectBuffer::destroy_object(ITriangleObject* object)
     }
 }
 
-std::vector<ITriangleObject*> ObjectBuffer::get_objects() const
+std::vector<IObject*> ObjectBuffer::get_objects() const
 {
     return objects;
 }
 
+std::vector<IObject*> ObjectBuffer::get_objects_in_range(glm::vec3 position, float radius) const
+{
+    std::vector<IObject*> objectsInRange;
+    for (const auto& object : objects)
+    {
+        glm::vec3 min, max;
+        min = max = object->vertices[0].position;
+        for (auto vertex : object->vertices)
+        {
+            if (vertex.position <= min)
+            {
+                min = vertex.position;
+            }
+            if (vertex.position >= max)
+            {
+                max = vertex.position;
+            }
+        }
+        auto objectCenter = (min + max) / 2.0f;
+        auto distance = glm::distance(position, objectCenter);
+        if (distance <= radius)
+        {
+            objectsInRange.push_back(object);
+        }
+    }
+    return objectsInRange;
+}

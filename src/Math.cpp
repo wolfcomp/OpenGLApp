@@ -1,5 +1,7 @@
 #include "Math.h"
 
+#include <cstdarg>
+
 #include "glm/detail/func_trigonometric.inl"
 
 glm::mat4 rot_z_mat(float angle)

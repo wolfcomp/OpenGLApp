@@ -1,7 +1,8 @@
 #include "Character.h"
 
 #include "../Math.h"
-#include "../collision/AABB.h"
+#include "../ObjectBuffer.h"
+#include "../collision/OBB.h"
 #include "glm/gtc/type_ptr.inl"
 #include "glm/gtx/rotate_normalized_axis.inl"
 #include "glm/gtx/rotate_vector.hpp"
@@ -22,13 +23,11 @@ Character::Character()
     look.set_color(hsl(188, 0.42f, 0.44f));
     model.set_color(hsl(278, 0.42f, 0.44f));
     model.set_euler_rotation(glm::vec3(glm::radians(90.f), 0, 0));
-    constexpr auto height = 0.75f;
-    constexpr auto radius = 0.25f;
     model.set_height(height);
     model.set_radius(radius);
     look.set_height(height / 2);
     look.set_radius(radius / 2);
-    collision = new AABB(glm::vec3(-radius/2, 0, -radius/2),glm::vec3(radius/2, height/2 + radius * 1.5, radius/2));
+    collision = new OBB();
     update_sub_objects();
 }
 
@@ -47,12 +46,16 @@ void Character::update_sub_objects()
     cameraOffset *= camera_offset;
     camera.set_position(position - cameraOffset + glm::vec3(0, .5, 0));
     camera.set_rotation(yaw, pitch);
-    if(collision)
+    if (collision)
     {
-        collision->set_position(position - position * glm::vec3(0,.5,0));
-        collision->set_rotation(quat_cast(rot_y_mat(-yaw)));
-        point_render.clear_points();
-        point_render.add_points(collision->get_points());
+        dynamic_cast<OBB*>(collision)->points = {
+            glm::vec2(-radius, -radius),
+            glm::vec2(radius, -radius),
+            glm::vec2(-radius, radius),
+            glm::vec2(radius, radius)
+        };
+        collision->set_position(glm::vec2(position.x, position.z));
+        collision->set_rotation(yaw);
     }
 }
 
@@ -60,7 +63,6 @@ void Character::set_shader(Shader* shader)
 {
     model.shader = shader;
     look.shader = shader;
-    point_render.shader = shader;
 }
 
 void Character::set_explicit_camera(const glm::vec3& position, const float yaw, const float pitch)
@@ -114,19 +116,27 @@ void Character::process_mouse_scroll(const double y_offset)
 }
 
 
-void Character::update_position(const glm::vec3& direction, const double delta_time)
+void Character::update_position(const glm::vec3& direction, const double delta_time, const ObjectBuffer& buffer)
 {
     const double velocityD = MOVEMENT_SPEED * delta_time;
     const float velocity = static_cast<float>(velocityD);
-    position += rotateY(direction, glm::radians(-yaw)) * velocity;
+    const auto newPos = position + rotateY(direction, glm::radians(-yaw)) * velocity;
+    const auto objsInRange = buffer.get_objects_in_range(newPos, 10);
+    collision->set_position(glm::vec2(newPos.x, newPos.z));
+    if (!objsInRange.empty())
+    {
+        for (const auto& obj : objsInRange)
+            if (obj->collision != nullptr && obj->collision->contains(collision))
+                return;
+    }
+    position = newPos;
     update_sub_objects();
 }
 
 void Character::draw()
 {
-    // model.draw();
+    model.draw();
     look.draw();
-    point_render.draw();
     collision->draw_bounds();
 }
 
