@@ -2,7 +2,7 @@
 #include "../primitives/Sphere.h"
 #include "../primitives/Cone.h"
 
-class Trophy
+class Trophy : public IObject
 {
     Sphere topModel;
     Cone botModel;
@@ -15,7 +15,7 @@ class Trophy
     ICollision* collision;
     bool isCollected;
     void update_sub_objects();
-    void collect();
+    void collect(ICollision* self, ICollision* other);
 public:
     Trophy();
     ~Trophy();
@@ -23,6 +23,6 @@ public:
     void update_shader(Shader* shader);
     Sphere& get_top();
     Cone& get_bot(); 
-    void draw();
+    void pre_draw() override;
     glm::vec3 get_position();
 };

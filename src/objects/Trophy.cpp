@@ -1,13 +1,24 @@
 ﻿#include "Trophy.h"
-#include "../collision/AABB.h"
+#include "../collision/OBB.h"
 
 void Trophy::update_sub_objects()
 {
     topModel.set_position(position + glm::vec3(0,radius,0));
     botModel.set_position(position - glm::vec3(0,coneHeight,0));
+    if (collision)
+    {
+        dynamic_cast<OBB*>(collision)->points = {
+            glm::vec2(-radius, -radius),
+            glm::vec2(radius, -radius),
+            glm::vec2(-radius, radius),
+            glm::vec2(radius, radius)
+        };
+        collision->set_position(glm::vec2(position.x, position.z));
+        collision->set_rotation(yaw);
+    }
 }
 
-void Trophy::collect()
+void Trophy::collect(ICollision* self, ICollision* other)
 {
     isCollected = true;
 }
@@ -20,7 +31,7 @@ Trophy::Trophy()
     yaw   = 0;
     isCollected = false;
     set_position(glm::vec3(0.0f, 0.0f, 0.0f));
-    topModel.set_subdivision(2);
+    topModel.set_subdivision(3);
     botModel.set_subdivision(2);
     topModel.set_color(hsl(48, 0.86f, 0.46f));
     botModel.set_color(hsl(48, 0.86f, 0.46f));
@@ -30,7 +41,9 @@ Trophy::Trophy()
     topModel.set_radius(radius);
     botModel.set_radius(radius);
     botModel.set_height(coneHeight);
-    collision = new AABB(glm::vec3(-radius/2, 0, -radius/2),glm::vec3(radius/2, totHeight/2 + radius * 1.5, radius/2));
+    collision = new OBB();
+    collision->should_overlap = true;
+    //collision->on_collision = [this](ICollision* self, ICollision* other){ this->collect(self, other);};
     update_sub_objects();
 }
 
@@ -56,7 +69,7 @@ Cone& Trophy::get_bot()
     return botModel;
 }
 
-void Trophy::draw()
+void Trophy::pre_draw()
 {
     if(!isCollected)
     {
