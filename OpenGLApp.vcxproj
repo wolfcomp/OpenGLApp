@@ -155,6 +155,7 @@
     <ClCompile Include="src\primitives\Sphere.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\ShaderStore.cpp" />
+    <ClCompile Include="src\TimeManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\includes\glad\glad.h" />
@@ -467,6 +468,7 @@
     <ClInclude Include="src\primitives\Sphere.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\ShaderStore.h" />
+    <ClInclude Include="src\TimeManager.h" />
     <ClInclude Include="src\Vertex.h" />
   </ItemGroup>
   <ItemGroup>

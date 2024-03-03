@@ -12,25 +12,25 @@ struct OBB : ICollision
 
     bool contains(ICollision* collider) override
     {
+        const auto colPoints = get_points();
         for (auto point : collider->get_points())
         {
             auto i = 0;
             while (i + 2 < points.size())
             {
-                auto a = points[i];
-                auto b = points[i + 1] - a;
-                auto c = points[i + 2] - a;
+                auto a = colPoints[i];
+                auto b = colPoints[i + 1] - a;
+                auto c = colPoints[i + 2] - a;
                 auto detA = (det(point, c) - det(a, c)) / det(b, c);
                 auto detB = -(det(point, b) - det(a, b)) / det(b, c);
                 if (detA > 0 && detB > 0 && detA + detB < 1)
                 {
                     if (on_collision && should_overlap)
                     {
-                        on_collision(this, collider);
+                        on_collision(parent, this, collider);
                         return false;
                     }
-                    else
-                        return true;
+                    return true;
                 }
                 ++i;
             }

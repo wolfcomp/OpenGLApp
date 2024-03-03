@@ -8,8 +8,8 @@
 #include "src/Misc.h"
 #include "src/ObjectBuffer.h"
 #include "src/ShaderStore.h"
+#include "src/TimeManager.h"
 #include "src/objects/Character.h"
-#include "src/objects/Door.h"
 #include "src/objects/House.h"
 #include "src/primitives/Cube.h"
 #include "src/primitives/Plane.h"
@@ -21,7 +21,7 @@
 
 constexpr int width = 1600;
 constexpr int height = 900;
-double lastX, lastY, deltaTime;
+double lastX, lastY;
 bool firstMouse = true;
 int subdivision = 0;
 int lastSubdivision = 0;
@@ -113,22 +113,14 @@ void instantiate_trophies(float& offset_trop)
     trophy7.update_shader((ShaderStore::get_shader("default")));
     offset_trop = 3.f;
     set_trophy_positions(offset_trop);
-    objBuffer.add_object(&trophy0.get_bot());
-    objBuffer.add_object(&trophy1.get_bot());
-    objBuffer.add_object(&trophy2.get_bot());
-    objBuffer.add_object(&trophy3.get_bot());
-    objBuffer.add_object(&trophy4.get_bot());
-    objBuffer.add_object(&trophy5.get_bot());
-    objBuffer.add_object(&trophy6.get_bot());
-    objBuffer.add_object(&trophy7.get_bot());
-    objBuffer.add_object(&trophy0.get_top());
-    objBuffer.add_object(&trophy1.get_top());
-    objBuffer.add_object(&trophy2.get_top());
-    objBuffer.add_object(&trophy3.get_top());
-    objBuffer.add_object(&trophy4.get_top());
-    objBuffer.add_object(&trophy5.get_top());
-    objBuffer.add_object(&trophy6.get_top());
-    objBuffer.add_object(&trophy7.get_top());
+    objBuffer.add_object(&trophy0);
+    objBuffer.add_object(&trophy1);
+    objBuffer.add_object(&trophy2);
+    objBuffer.add_object(&trophy3);
+    objBuffer.add_object(&trophy4);
+    objBuffer.add_object(&trophy5);
+    objBuffer.add_object(&trophy6);
+    objBuffer.add_object(&trophy7);
 }
 
 void setup_npc_path(float offsetTrop)
@@ -171,7 +163,7 @@ void setup_npc_path(float offsetTrop)
 
 void npc_movement()
 {
-    npcProgress += deltaTime * npcSpeed;
+    npcProgress += TimeManager::get_delta_time() * npcSpeed;
     if (npcProgress >= 2)
         npcProgress = 0;
     auto p = splineObj(abs(npcProgress - 1));
@@ -180,7 +172,7 @@ void npc_movement()
 
 void move_character(const glm::vec3& direction)
 {
-    character.update_position(direction, deltaTime, objBuffer);
+    character.update_position(direction, TimeManager::get_delta_time(), objBuffer);
 }
 
 void invert_curve()
@@ -259,14 +251,14 @@ int main()
 
     setup_npc_path(offsetTrop); // has to be after trophies are placed out
 
-    double lastTime = glfwGetTime();
+    TimeManager::set_last_frame(glfwGetTime());
 
     while (!glfwWindowShouldClose(window))
     {
-        const double currentTime = glfwGetTime();
-        deltaTime = (currentTime - lastTime) / 1000;
-        lastTime = currentTime;
-        input.process_keyboard(window, deltaTime);
+        TimeManager::set_current_frame(glfwGetTime());
+        TimeManager::set_delta_time((TimeManager::get_current_frame() - TimeManager::get_last_frame()) / 1000);
+        TimeManager::set_last_frame(TimeManager::get_current_frame());
+        input.process_keyboard(window, TimeManager::get_delta_time());
         ShaderStore::set_shader_params([](const Shader* shad)
         {
             input.set_shader(shad);

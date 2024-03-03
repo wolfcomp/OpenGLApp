@@ -11,6 +11,7 @@ struct ICollision
 {
     virtual ~ICollision() = default;
     ICollision() = default;
+    explicit ICollision(IObject* parent) : parent(parent) {}
     ICollision(const ICollision&) = default;
     ICollision(ICollision&&) = default;
     ICollision& operator=(const ICollision&) = default;
@@ -19,7 +20,8 @@ struct ICollision
     float angle = 0;
     IObject* draw_object = nullptr;
     bool should_overlap = true;
-    void (*on_collision)(ICollision* self, ICollision* other) = nullptr;
+    void (*on_collision)(IObject* parent_self, ICollision* self, ICollision* other) = nullptr;
+    IObject *parent = nullptr;
     virtual glm::vec2 get_center() const
     {
         return position;

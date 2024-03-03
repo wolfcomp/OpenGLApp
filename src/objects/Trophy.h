@@ -12,7 +12,6 @@ class Trophy : public IObject
     float radius;
     float coneHeight;
     float totHeight; // radius + coneHeight
-    ICollision* collision;
     bool isCollected;
     void update_sub_objects();
     void collect(ICollision* self, ICollision* other);
