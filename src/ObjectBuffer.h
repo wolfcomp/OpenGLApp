@@ -16,8 +16,8 @@ public:
     ObjectBuffer() = default;
     ObjectBuffer(const ObjectBuffer&) = delete;
     ObjectBuffer(ObjectBuffer&&) = delete;
-    ObjectBuffer &operator=(const ObjectBuffer&) = delete;
-    ObjectBuffer &operator=(ObjectBuffer&&) = delete;
+    ObjectBuffer& operator=(const ObjectBuffer&) = delete;
+    ObjectBuffer& operator=(ObjectBuffer&&) = delete;
 
     void init_buffers();
     void draw() const;

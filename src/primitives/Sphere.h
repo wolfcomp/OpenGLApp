@@ -3,7 +3,7 @@
 #include "../interfaces/ITriangleObject.h"
 #include "../Vertex.h"
 
-class Sphere final :  public ITriangleObject
+class Sphere final : public ITriangleObject
 {
     hsl color;
     glm::vec3 position;
@@ -12,6 +12,7 @@ class Sphere final :  public ITriangleObject
     unsigned int subdivision = 0;
     void generate_vertices();
     void compute_half_vertex(const Vertex& a, const Vertex& b, Vertex& result) const;
+
 public:
     Sphere();
     void set_color(const hsl& color);
@@ -22,4 +23,3 @@ public:
     void set_euler_rotation(const glm::vec3 angle);
     void pre_draw() override;
 };
-

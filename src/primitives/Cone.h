@@ -1,6 +1,7 @@
 #pragma once
 #include "../HSL.h"
 #include "../interfaces/ITriangleObject.h"
+
 class Cone final : public ITriangleObject
 {
     glm::vec3 position;
@@ -11,6 +12,7 @@ class Cone final : public ITriangleObject
     hsl color;
     void generate_vertices();
     void compute_half_vertex(const Vertex& a, const Vertex& b, Vertex& result) const;
+
 public:
     Cone();
     void set_color(const hsl& color);
@@ -22,4 +24,3 @@ public:
     void set_euler_rotation(const glm::vec3 angle);
     void pre_draw() override;
 };
-

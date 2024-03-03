@@ -1,6 +1,7 @@
 #pragma once
 #include "../ShaderStore.h"
 #include "../interfaces/IObject.h"
+
 class PointRender : public IObject
 {
 public:
@@ -9,6 +10,7 @@ public:
         draw_mode = GL_POINTS;
         shader = ShaderStore::get_shader("default");
     }
+
     void add_points(const std::vector<glm::vec2>& points)
     {
         Vertex vertex;
@@ -20,10 +22,10 @@ public:
             indices.push_back(vertices.size() - 1);
         }
     }
+
     void clear_points()
     {
         vertices.clear();
         indices.clear();
     }
 };
-

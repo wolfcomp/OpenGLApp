@@ -3,6 +3,7 @@
 
 #include <string>
 #include <sstream>
+
 class Shader
 {
 public:

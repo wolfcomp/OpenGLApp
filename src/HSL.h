@@ -28,12 +28,13 @@ class hsl
     {
         return i - mod * static_cast<int>(i / mod);
     }
+
 public:
-    hsl() : h(0), s(0), l(0), rgb{ 0,0,0 }
+    hsl() : h(0), s(0), l(0), rgb{0, 0, 0}
     {
     }
 
-    hsl(float h, float s, float l) : h(h), s(s), l(l), rgb{ 0,0,0 }
+    hsl(float h, float s, float l) : h(h), s(s), l(l), rgb{0, 0, 0}
     {
     }
 
@@ -41,16 +42,19 @@ public:
     float s;
     float l;
     float rgb[3];
+
     void shift(float time)
     {
         h = mod(time * 100, 360.0f);
     }
+
     void from_time(float time)
     {
         h = static_cast<int>(time) % 360;
         s = 1;
         l = clamp(get_modif(time, sin), 0.25f, 0.75f);
     }
+
     float* get_rgb()
     {
         float c = (1.0f - abs(2.0f * l - 1.0f)) * s;
@@ -101,6 +105,7 @@ public:
         rgb[2] = b;
         return rgb;
     }
+
     glm::vec3 get_rgb_vec3()
     {
         get_rgb();

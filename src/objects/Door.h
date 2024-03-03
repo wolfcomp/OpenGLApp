@@ -1,5 +1,6 @@
 #pragma once
 #include "../interfaces/ITriangleObject.h"
+
 class Door final : public ITriangleObject
 {
     glm::vec3 position;
@@ -14,4 +15,3 @@ public:
     void set_rotation(const float angle);
     void pre_draw() override;
 };
-
