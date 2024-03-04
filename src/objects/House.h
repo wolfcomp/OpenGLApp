@@ -1,5 +1,7 @@
 #pragma once
 #include "Door.h"
+#include "../primitives/Sphere.h"
+#include "../primitives/Cube.h"
 #include "../interfaces/ITriangleObject.h"
 #include "../primitives/Cube.h"
 
@@ -14,6 +16,9 @@ class House final : public ITriangleObject
     float doorOffset;
     void generate_vertices();
     Door door;
+    Sphere sphere;
+    Cube cube;
+    Cube cube2;
     Cube leftSide;
     Cube rightSide;
     OBB* doorOpen;

@@ -18,7 +18,6 @@ glm::mat4 rot_z_mat(float angle)
 
 glm::mat4 rot_y_mat(float angle)
 {
-    angle = glm::radians(angle);
     return {
         glm::vec4(cos(angle), 0, sin(angle), 0),
         glm::vec4(0, 1, 0, 0),
