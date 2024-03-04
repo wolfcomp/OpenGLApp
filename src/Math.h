@@ -1,3 +1,4 @@
+// ReSharper disable once CppMissingIncludeGuard
 #include <vector>
 #include <glm/mat4x4.hpp>
 
@@ -5,6 +6,28 @@
 #undef M_PI
 #endif
 #define M_PI 3.1415926535897932384626433832795
+
+#ifndef LERP
+#define LERP
+template<typename T>
+T lerp(const T& a, const T& b, const float t)
+{
+    return a + (b - a) * t;
+}
+#endif
+
+#ifndef CLAMP
+#define CLAMP
+template<typename T, typename U>
+T clamp(const T& value, const U& min, const U& max)
+{
+    if (value < min)
+        return min;
+    if (value > max)
+        return max;
+    return value;
+}
+#endif
 
 #ifndef BEZIER
 #define BEZIER

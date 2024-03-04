@@ -177,7 +177,7 @@ void Door::generate_vertices()
 
     for (auto& vertex : vertices)
     {
-        vertex.position = rotateY(vertex.position, angle);
+        vertex.position = rotateY(vertex.position, glm::radians(angle));
         vertex.position *= scale;
         vertex.position += position;
     }

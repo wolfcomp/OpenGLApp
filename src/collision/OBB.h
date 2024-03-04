@@ -12,6 +12,34 @@ struct OBB : ICollision
 
     bool contains(ICollision* collider) override
     {
+        const auto colPoints = position == glm::vec2() ? points : get_points();
+        for (auto point : collider->get_points())
+        {
+            auto i = 0;
+            while (i + 2 < points.size())
+            {
+                auto a = colPoints[i];
+                auto b = colPoints[i + 1] - a;
+                auto c = colPoints[i + 2] - a;
+                auto detA = (det(point, c) - det(a, c)) / det(b, c);
+                auto detB = -(det(point, b) - det(a, b)) / det(b, c);
+                if (detA > 0 && detB > 0 && detA + detB < 1)
+                {
+                    if (should_overlap)
+                    {
+                        return false;
+                    }
+                    return true;
+                }
+                ++i;
+            }
+        }
+
+        return false;
+    }
+
+    void check_overlap(ICollision* collider) override
+    {
         const auto colPoints = get_points();
         for (auto point : collider->get_points())
         {
@@ -28,15 +56,12 @@ struct OBB : ICollision
                     if (on_collision && should_overlap)
                     {
                         on_collision(parent, this, collider);
-                        return false;
+                        return;
                     }
-                    return true;
                 }
                 ++i;
             }
         }
-
-        return false;
     }
 
     float det(const glm::vec2& a, const glm::vec2& b)

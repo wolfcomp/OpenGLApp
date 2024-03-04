@@ -96,6 +96,15 @@
     <ClCompile Include="src\primitives\Plane.cpp">
       <Filter>Source Files\primitives</Filter>
     </ClCompile>
+    <ClCompile Include="src\objects\PointRender.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TimeManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\objects\Trophy.cpp">
+      <Filter>Source Files\objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\includes\glm\gtx\wrap.hpp">
@@ -1027,6 +1036,15 @@
     </ClInclude>
     <ClInclude Include="src\collision\OBB.h">
       <Filter>Header Files\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TimeManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\objects\Trophy.h">
+      <Filter>Header Files\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Lerper.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -7,8 +7,10 @@ public:
     static double get_camera_lerp();
     static double get_last_frame();
     static double get_current_frame();
+    static double get_door_lerp();
     static void set_camera_lerp(const double lerp);
     static void set_delta_time(const double time);
     static void set_last_frame(const double time);
     static void set_current_frame(const double time);
+    static void set_door_lerp(const double lerp);
 };

@@ -64,6 +64,8 @@ std::vector<IObject*> ObjectBuffer::get_objects_in_range(glm::vec3 position, flo
     for (const auto& object : objects)
     {
         glm::vec3 min, max;
+        if(object->vertices.empty())
+            continue;
         min = max = object->vertices[0].position;
         for (auto vertex : object->vertices)
         {

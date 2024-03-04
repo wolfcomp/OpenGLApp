@@ -4,6 +4,7 @@ double deltaTime;
 double cameraLerp;
 double lastFrame;
 double currentFrame;
+double doorLerp;
 
 double TimeManager::get_camera_lerp()
 {
@@ -25,6 +26,11 @@ double TimeManager::get_last_frame()
     return lastFrame;
 }
 
+double TimeManager::get_door_lerp()
+{
+    return doorLerp;
+}
+
 void TimeManager::set_camera_lerp(const double lerp)
 {
     cameraLerp = lerp;
@@ -43,4 +49,9 @@ void TimeManager::set_delta_time(const double time)
 void TimeManager::set_last_frame(const double time)
 {
     lastFrame = time;
+}
+
+void TimeManager::set_door_lerp(const double lerp)
+{
+    doorLerp = lerp;
 }

@@ -124,14 +124,25 @@ void Character::update_position(const glm::vec3& direction, const double delta_t
     const auto objsInRange = buffer.get_objects_in_range(newPos, 10);
     collision->set_position(glm::vec2(newPos.x, newPos.z));
     if (!objsInRange.empty())
-    {
         for (const auto& obj : objsInRange)
-            if (obj->collision != nullptr && obj->collision->contains(collision))
-                return;
-    }
+            for (const auto& objCollision : obj->get_collisions())
+                if (objCollision != nullptr && objCollision->contains(collision))
+                    return;
+
     position = newPos;
     update_sub_objects();
 }
+
+void Character::check_overlap(const ObjectBuffer& buffer) const
+{
+    const auto objsInRange = buffer.get_objects_in_range(position, 10);
+    if (!objsInRange.empty())
+        for (const auto& obj : objsInRange)
+            for (const auto& objCollision : obj->get_collisions())
+                if (objCollision != nullptr)
+                    objCollision->check_overlap(collision);
+}
+
 
 void Character::draw()
 {
@@ -159,4 +170,3 @@ Character::~Character()
 {
     delete collision;
 }
-

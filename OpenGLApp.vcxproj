@@ -107,6 +107,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\Dependencies\includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>Default</LanguageStandard>
       <LanguageStandard_C>Default</LanguageStandard_C>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -452,6 +453,7 @@
     <ClInclude Include="src\InputProcessing.h" />
     <ClInclude Include="src\interfaces\IObject.h" />
     <ClInclude Include="src\interfaces\ITriangleObject.h" />
+    <ClInclude Include="src\Lerper.h" />
     <ClInclude Include="src\Math.h" />
     <ClInclude Include="src\Misc.h" />
     <ClInclude Include="src\ObjectBuffer.h" />

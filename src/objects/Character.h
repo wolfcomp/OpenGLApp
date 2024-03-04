@@ -21,7 +21,7 @@ class Character
     ICollision* collision;
 
     void update_sub_objects();
-    
+
 public:
     Character();
     ~Character();
@@ -33,8 +33,8 @@ public:
     void set_shader(Shader* shader);
     void update_shader(const Shader* shader) const;
     void update_position(const glm::vec3& direction, const double delta_time, const ObjectBuffer& buffer);
+    void check_overlap(const ObjectBuffer& buffer) const;
     void draw();
     glm::vec3 get_position() const;
     glm::quat get_look() const;
 };
-

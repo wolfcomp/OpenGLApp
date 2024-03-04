@@ -23,7 +23,7 @@ struct ICollision
     glm::vec2 position = glm::vec2(0);
     float angle = 0;
     IObject* draw_object = nullptr;
-    bool should_overlap = true;
+    bool should_overlap = false;
     void (*on_collision)(IObject* parent_self, ICollision* self, ICollision* other) = nullptr;
     IObject* parent = nullptr;
 
@@ -47,6 +47,10 @@ struct ICollision
         return false;
     }
 
+    virtual void check_overlap(ICollision* collider)
+    {
+    }
+
     virtual glm::vec3 rebound(const glm::vec3 point, const glm::vec3 velocity) const
     {
         return point;
@@ -68,6 +72,6 @@ struct ICollision
 
     virtual std::vector<glm::vec2> get_points()
     {
-        return {position};
+        return { position };
     }
 };

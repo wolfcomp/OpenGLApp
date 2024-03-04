@@ -1,6 +1,9 @@
 #pragma once
 #include "Door.h"
 #include "../interfaces/ITriangleObject.h"
+#include "../primitives/Cube.h"
+
+struct OBB;
 
 class House final : public ITriangleObject
 {
@@ -11,6 +14,17 @@ class House final : public ITriangleObject
     float doorOffset;
     void generate_vertices();
     Door door;
+    Cube leftSide;
+    Cube rightSide;
+    OBB* doorOpen;
+    OBB* leftDoorGuard;
+    OBB* rightDoorGuard;
+    OBB* backInside;
+    OBB* leftInside;
+    OBB* rightInside;
+    OBB* frontLeftInside;
+    OBB* frontRightInside;
+    bool isInside;
 
 public:
     House();
@@ -19,6 +33,8 @@ public:
     void set_rotation(const float angle);
     void set_door_offset(const float offset);
     void set_door_rotation(const float angle);
+    bool is_inside() const;
+    void set_inside(const bool inside);
     void pre_draw() override;
+    std::vector<ICollision*> get_collisions() override;
 };
-

@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
 
@@ -14,7 +13,6 @@
 #include "src/primitives/Cube.h"
 #include "src/primitives/Plane.h"
 #include "src/objects/Trophy.h"
-#include "math.h"
 #include <random>
 
 #include "glm/gtx/rotate_vector.hpp"
@@ -238,7 +236,7 @@ int main()
     house.shader = ShaderStore::get_shader("default");
     house.set_scale(glm::vec3(2));
     house.set_position(glm::vec3(5, 0, 10));
-    house.set_rotation(glm::radians(65.f));
+    house.set_rotation(65.f);
 
     objBuffer.add_object(&house);
 
@@ -258,7 +256,9 @@ int main()
         TimeManager::set_current_frame(glfwGetTime());
         TimeManager::set_delta_time((TimeManager::get_current_frame() - TimeManager::get_last_frame()) / 1000);
         TimeManager::set_last_frame(TimeManager::get_current_frame());
+        auto curDoorLerp = TimeManager::get_door_lerp();
         input.process_keyboard(window, TimeManager::get_delta_time());
+        character.check_overlap(objBuffer);
         ShaderStore::set_shader_params([](const Shader* shad)
         {
             input.set_shader(shad);
@@ -269,6 +269,7 @@ int main()
             lastSubdivision = subdivision;
         }
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glPointSize(5);
         //enable gl wireframe mode
         if (wireframe)
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -279,6 +280,14 @@ int main()
         character.draw();
         npc.draw();
 
+        if(abs(curDoorLerp - TimeManager::get_door_lerp()) < std::numeric_limits<double>::epsilon() && !house.is_inside())
+        {
+            auto doorLerp = curDoorLerp - TimeManager::get_delta_time() * 1000;
+            doorLerp = clamp(doorLerp, 0.0, 1.0);
+            TimeManager::set_door_lerp(doorLerp);
+            house.set_door_rotation(lerp(0, -90, doorLerp));
+            house.collision->should_overlap = false;
+        }
 
         glBindVertexArray(0);
 
