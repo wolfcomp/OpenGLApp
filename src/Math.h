@@ -1,6 +1,8 @@
-// ReSharper disable once CppMissingIncludeGuard
+#pragma once
 #include <vector>
-#include <glm/mat4x4.hpp>
+
+#include "Vertex.h"
+#include "glm/fwd.hpp"
 
 #ifdef M_PI
 #undef M_PI
@@ -14,6 +16,13 @@ T lerp(const T& a, const T& b, const float t)
 {
     return a + (b - a) * t;
 }
+template <>
+Vertex lerp(const Vertex& a, const Vertex& b, const float t);
+#endif
+
+#ifndef EULER_LERP
+#define EULER_LERP
+glm::vec3 euler_lerp(const glm::vec3& a, const glm::vec3& b, const float t);
 #endif
 
 #ifndef CLAMP
@@ -36,6 +45,9 @@ template <typename T>
 struct Bezier
 {
     T p0, p1, p2, p3;
+    Bezier() : p0(T()), p1(T()), p2(T()), p3(T())
+    {
+    }
 
     Bezier(T p0, T p1, T p2, T p3) : p0(p0), p1(p1), p2(p2), p3(p3)
     {

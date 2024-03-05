@@ -10,12 +10,12 @@
 #include "src/TimeManager.h"
 #include "src/objects/Character.h"
 #include "src/objects/House.h"
-#include "src/primitives/Cube.h"
 #include "src/primitives/Plane.h"
 #include "src/objects/Trophy.h"
 #include <random>
 
 #include "glm/gtx/rotate_vector.hpp"
+#include "src/objects/PointRender.h"
 
 constexpr int width = 1600;
 constexpr int height = 900;
@@ -24,9 +24,13 @@ bool firstMouse = true;
 int subdivision = 0;
 int lastSubdivision = 0;
 bool wireframe = false;
-
-float staticCamYaw = 0.f;
-float staticCamPitch = 0.f;
+glm::vec3 staticCameraPos = glm::vec3(5.5, 3, 5);
+float staticCamYaw = 60.f;
+float staticCamPitch = -25.f;
+float curveAggressiveness = 1;
+bool lastCharacterStateObserved = false;
+float prevYawExplicit;
+float prevPitchExplicit;
 
 InputProcessing input;
 ObjectBuffer objBuffer;
@@ -41,6 +45,7 @@ double npcProgress = 0;
 float npcSpeed = 100;
 
 BSpline<glm::vec3> splineObj;
+Bezier<glm::vec3> camBezier;
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -121,31 +126,31 @@ void instantiate_trophies(float& offset_trop)
     objBuffer.add_object(&trophy7);
 }
 
-void setup_npc_path(float offsetTrop)
+void setup_npc_path(float offset_trop)
 {
-    auto b1 = Bezier<glm::vec3>(trophy0.get_position(), trophy0.get_position() + glm::vec3(offsetTrop, 0, 0),
-                                trophy1.get_position() - glm::vec3(offsetTrop, 0, 0), trophy1.get_position());
+    auto b1 = Bezier<glm::vec3>(trophy0.get_position(), trophy0.get_position() + glm::vec3(offset_trop, 0, 0),
+        trophy1.get_position() - glm::vec3(offset_trop, 0, 0), trophy1.get_position());
 
-    auto b2 = Bezier<glm::vec3>(trophy1.get_position(), trophy1.get_position() + glm::vec3(offsetTrop * 2, 0, 0),
-                                trophy2.get_position() - glm::vec3(offsetTrop * 2, 0, 0), trophy2.get_position());
+    auto b2 = Bezier<glm::vec3>(trophy1.get_position(), trophy1.get_position() + glm::vec3(offset_trop * 2, 0, 0),
+        trophy2.get_position() - glm::vec3(offset_trop * 2, 0, 0), trophy2.get_position());
 
-    auto b3 = Bezier<glm::vec3>(trophy2.get_position(), trophy2.get_position() + glm::vec3(offsetTrop * 3, 0, 0),
-                                trophy3.get_position() - glm::vec3(offsetTrop * 3, 0, 0), trophy3.get_position());
+    auto b3 = Bezier<glm::vec3>(trophy2.get_position(), trophy2.get_position() + glm::vec3(offset_trop * 3, 0, 0),
+        trophy3.get_position() - glm::vec3(offset_trop * 3, 0, 0), trophy3.get_position());
 
-    auto b4 = Bezier<glm::vec3>(trophy3.get_position(), trophy3.get_position() + glm::vec3(offsetTrop * 4, 0, 0),
-                                trophy4.get_position() - glm::vec3(offsetTrop * 4, 0, 0), trophy4.get_position());
+    auto b4 = Bezier<glm::vec3>(trophy3.get_position(), trophy3.get_position() + glm::vec3(offset_trop * 4, 0, 0),
+        trophy4.get_position() - glm::vec3(offset_trop * 4, 0, 0), trophy4.get_position());
 
-    auto b5 = Bezier<glm::vec3>(trophy4.get_position(), trophy4.get_position() + glm::vec3(offsetTrop * 5, 0, 0),
-                                trophy5.get_position() - glm::vec3(offsetTrop * 5, 0, 0), trophy5.get_position());
+    auto b5 = Bezier<glm::vec3>(trophy4.get_position(), trophy4.get_position() + glm::vec3(offset_trop * 5, 0, 0),
+        trophy5.get_position() - glm::vec3(offset_trop * 5, 0, 0), trophy5.get_position());
 
-    auto b6 = Bezier<glm::vec3>(trophy5.get_position(), trophy5.get_position() + glm::vec3(offsetTrop * 6, 0, 0),
-                                trophy6.get_position() - glm::vec3(offsetTrop * 6, 0, 0), trophy6.get_position());
+    auto b6 = Bezier<glm::vec3>(trophy5.get_position(), trophy5.get_position() + glm::vec3(offset_trop * 6, 0, 0),
+        trophy6.get_position() - glm::vec3(offset_trop * 6, 0, 0), trophy6.get_position());
 
-    auto b7 = Bezier<glm::vec3>(trophy6.get_position(), trophy6.get_position() + glm::vec3(offsetTrop * 7, 0, 0),
-                                trophy7.get_position() - glm::vec3(offsetTrop * 7, 0, 0), trophy7.get_position());
+    auto b7 = Bezier<glm::vec3>(trophy6.get_position(), trophy6.get_position() + glm::vec3(offset_trop * 7, 0, 0),
+        trophy7.get_position() - glm::vec3(offset_trop * 7, 0, 0), trophy7.get_position());
 
-    auto b8 = Bezier<glm::vec3>(trophy7.get_position(), trophy7.get_position() + glm::vec3(offsetTrop * 8, 0, 0),
-                                trophy0.get_position() - glm::vec3(offsetTrop * 8, 0, 0), trophy0.get_position());
+    auto b8 = Bezier<glm::vec3>(trophy7.get_position(), trophy7.get_position() + glm::vec3(offset_trop * 8, 0, 0),
+        trophy0.get_position() - glm::vec3(offset_trop * 8, 0, 0), trophy0.get_position());
 
     splineObj.points.clear();
     splineObj.add_point(0, b1);
@@ -156,7 +161,7 @@ void setup_npc_path(float offsetTrop)
     splineObj.add_point(.75, b6);
     splineObj.add_point(.9, b7);
     splineObj.add_point(1, Bezier<glm::vec3>(trophy7.get_position(), trophy7.get_position(), trophy7.get_position(),
-                                             trophy7.get_position()));
+        trophy7.get_position()));
 }
 
 void npc_movement()
@@ -176,7 +181,72 @@ void move_character(const glm::vec3& direction)
 void invert_curve()
 {
     offsetTrop = -offsetTrop;
-    setup_npc_path(offsetTrop);
+    setup_npc_path(offsetTrop / curveAggressiveness);
+}
+
+void change_curve_aggressivity()
+{
+    curveAggressiveness = fmod(curveAggressiveness, 2);
+    curveAggressiveness += 0.1f;
+    setup_npc_path(offsetTrop / curveAggressiveness);
+}
+
+glm::vec3 rot_lerp(const glm::vec3 a, const glm::vec3 b, const float t)
+{
+    return euler_lerp(a, b, t);
+}
+
+void house_move_vertexes(House& house, const float t)
+{
+    for (int i = 0; i < house.vertices.size(); ++i)
+    {
+        house.vertices[i] = lerp(house.ProperVertexes[i], house.OffsetVertexes[i], t);
+    }
+}
+
+void set_camera(House& house)
+{
+    auto curCamLerp = TimeManager::get_camera_lerp();
+    auto charCamPos = character.get_camera_position();
+    const auto charCamB1 = glm::vec3(charCamPos.x, charCamPos.y, staticCameraPos.z);
+    const auto charCamB2 = glm::vec3(charCamPos.x, staticCameraPos.y, staticCameraPos.z);
+    camBezier = Bezier<glm::vec3>(charCamPos, charCamB1, charCamB2, staticCameraPos);
+    constexpr int camSpeed = 1000;
+    const auto characterLook = character.get_look_angles();
+    if (house.is_inside() != lastCharacterStateObserved)
+    {
+        lastCharacterStateObserved = house.is_inside();
+        prevYawExplicit = characterLook.y;
+        prevPitchExplicit = characterLook.x;
+    }
+    if (house.is_inside() && curCamLerp < 1)
+    {
+        curCamLerp = clamp(curCamLerp + TimeManager::get_delta_time() * camSpeed, 0.0, 1.0);
+        auto camPos = camBezier(curCamLerp);
+        auto camLook = rot_lerp(glm::vec3(prevPitchExplicit, prevYawExplicit, 0), glm::vec3(staticCamPitch, staticCamYaw, 0), curCamLerp);
+        house_move_vertexes(house, curCamLerp);
+        character.set_explicit_camera(camPos, camLook, true);
+        TimeManager::set_camera_lerp(curCamLerp);
+    }
+    else if (curCamLerp > 0 && !house.is_inside())
+    {
+        curCamLerp = clamp(curCamLerp - TimeManager::get_delta_time() * camSpeed, 0.0, 1.0);
+        auto camPos = camBezier(curCamLerp);
+        auto camLook = rot_lerp(glm::vec3(prevPitchExplicit, prevYawExplicit, 0), glm::vec3(staticCamPitch, staticCamYaw, 0), curCamLerp);
+        house_move_vertexes(house, curCamLerp);
+        character.set_explicit_camera(camPos, camLook, true);
+        TimeManager::set_camera_lerp(curCamLerp);
+    }
+    else if (house.is_inside())
+    {
+        character.set_explicit_camera(staticCameraPos, glm::vec3(staticCamPitch, staticCamYaw, 0), true);
+        house_move_vertexes(house, 1);
+    }
+    else
+    {
+        character.set_explicit_camera(charCamPos, glm::vec3(characterLook, 0), false);
+        house_move_vertexes(house, 0);
+    }
 }
 
 int main()
@@ -217,6 +287,7 @@ int main()
     input.attach_keyboard_listener(GLFW_KEY_A, []() { move_character(glm::vec3(0, 0, -1)); }, true);
     input.attach_keyboard_listener(GLFW_KEY_D, []() { move_character(glm::vec3(0, 0, 1)); }, true);
     input.attach_keyboard_listener(GLFW_KEY_I, []() { invert_curve(); }, false);
+    input.attach_keyboard_listener(GLFW_KEY_C, []() { change_curve_aggressivity(); }, false);
 
     ShaderStore::add_shader("default", "shader.vs", "shader.fs");
 
@@ -245,9 +316,10 @@ int main()
 
     npc.set_shader(ShaderStore::get_shader("default"));
 
+
     instantiate_trophies(offsetTrop);
 
-    setup_npc_path(offsetTrop); // has to be after trophies are placed out
+    setup_npc_path(offsetTrop / curveAggressiveness); // has to be after trophies are placed out
 
     TimeManager::set_last_frame(glfwGetTime());
 
@@ -259,11 +331,12 @@ int main()
         auto curDoorLerp = TimeManager::get_door_lerp();
         input.process_keyboard(window, TimeManager::get_delta_time());
         character.check_overlap(objBuffer);
+        set_camera(house);
         ShaderStore::set_shader_params([](const Shader* shad)
-        {
-            input.set_shader(shad);
-            character.update_shader(shad);
-        });
+            {
+                input.set_shader(shad);
+                character.update_shader(shad);
+            });
         if (lastSubdivision != subdivision)
         {
             lastSubdivision = subdivision;
@@ -280,14 +353,15 @@ int main()
         character.draw();
         npc.draw();
 
-        if(abs(curDoorLerp - TimeManager::get_door_lerp()) < std::numeric_limits<double>::epsilon() && !house.is_inside())
+        if (abs(curDoorLerp - TimeManager::get_door_lerp()) < std::numeric_limits<double>::epsilon() && !house.is_inside() && !house.collision->should_overlap)
         {
             auto doorLerp = curDoorLerp - TimeManager::get_delta_time() * 1000;
             doorLerp = clamp(doorLerp, 0.0, 1.0);
             TimeManager::set_door_lerp(doorLerp);
             house.set_door_rotation(lerp(0, -90, doorLerp));
-            house.collision->should_overlap = false;
         }
+        if(!house.is_inside())
+            house.collision->should_overlap = false;
 
         glBindVertexArray(0);
 

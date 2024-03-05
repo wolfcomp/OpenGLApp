@@ -27,6 +27,8 @@ class House final : public ITriangleObject
     bool isInside;
 
 public:
+    std::vector<Vertex> ProperVertexes;
+    std::vector<Vertex> OffsetVertexes;
     House();
     void set_position(const glm::vec3 position);
     void set_scale(const glm::vec3 scale);

@@ -31,6 +31,17 @@ Character::Character()
     update_sub_objects();
 }
 
+glm::vec3 Character::get_camera_position() const
+{
+    glm::vec3 ret;
+    ret.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    ret.y = sin(glm::radians(pitch));
+    ret.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    ret = normalize(ret);
+    ret *= cameraOffset;
+    return position - ret + glm::vec3(0, .5, 0);
+}
+
 void Character::update_sub_objects()
 {
     model.set_position(position);
@@ -38,14 +49,11 @@ void Character::update_sub_objects()
     const auto xRotMat = rot_x_mat(-yaw);
     look.set_position(position + rotateY(glm::vec3(.45f, 0, 0), glm::radians(-yaw)) + glm::vec3(0, 0.45, 0));
     look.set_rotation(combine(&zRotMat, &xRotMat, nullptr));
-    glm::vec3 cameraOffset;
-    cameraOffset.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    cameraOffset.y = sin(glm::radians(pitch));
-    cameraOffset.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    cameraOffset = normalize(cameraOffset);
-    cameraOffset *= camera_offset;
-    camera.set_position(position - cameraOffset + glm::vec3(0, .5, 0));
-    camera.set_rotation(yaw, pitch);
+    if (!cameraExplicit)
+    {
+        camera.set_position(get_camera_position());
+        camera.set_rotation(glm::vec3(pitch, yaw, 0));
+    }
     if (collision)
     {
         dynamic_cast<OBB*>(collision)->points = {
@@ -65,10 +73,11 @@ void Character::set_shader(Shader* shader)
     look.shader = shader;
 }
 
-void Character::set_explicit_camera(const glm::vec3& position, const float yaw, const float pitch)
+void Character::set_explicit_camera(const glm::vec3& position, const glm::vec3 euler, const bool was_explicit)
 {
+    cameraExplicit = was_explicit;
     camera.set_position(position);
-    camera.set_rotation(yaw, pitch);
+    camera.set_rotation(euler);
 }
 
 void Character::set_position(const glm::vec3& position)
@@ -100,19 +109,13 @@ void Character::process_mouse_movement(const double x_offset, const double y_off
 
 void Character::process_mouse_scroll(const double y_offset)
 {
-    camera_offset -= static_cast<float>(y_offset);
-    if (camera_offset < 1.0f)
-        camera_offset = 1.0f;
-    if (camera_offset > 10.0f)
-        camera_offset = 10.0f;
+    cameraOffset -= static_cast<float>(y_offset);
+    if (cameraOffset < 1.0f)
+        cameraOffset = 1.0f;
+    if (cameraOffset > 10.0f)
+        cameraOffset = 10.0f;
 
-    glm::vec3 cameraOffset;
-    cameraOffset.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    cameraOffset.y = sin(glm::radians(pitch));
-    cameraOffset.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    cameraOffset = normalize(cameraOffset);
-    cameraOffset *= camera_offset;
-    camera.set_position(position - cameraOffset + glm::vec3(0, .5, 0));
+    camera.set_position(get_camera_position());
 }
 
 
@@ -159,6 +162,11 @@ glm::vec3 Character::get_position() const
 glm::quat Character::get_look() const
 {
     return glm::vec3(pitch, yaw, 0);
+}
+
+glm::vec2 Character::get_look_angles() const
+{
+    return {pitch, yaw};
 }
 
 void Character::update_shader(const Shader* shader) const

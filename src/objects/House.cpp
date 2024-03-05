@@ -161,6 +161,14 @@ void House::generate_vertices()
         vertex.position *= scale;
         vertex.position += position;
     }
+    ProperVertexes = vertices;
+    OffsetVertexes = vertices;
+    OffsetVertexes[11].position += (vertices[12].position - vertices[11].position) / 2.f;
+    OffsetVertexes[8] = OffsetVertexes[11];
+    OffsetVertexes[9] = vertices[12];
+    OffsetVertexes[0] = vertices[1];
+    OffsetVertexes[16] = vertices[19];
+    OffsetVertexes[17] = vertices[18];
     for (auto& point : dynamic_cast<OBB*>(collision)->points)
     {
         point = rotate(point, glm::radians(-angle));

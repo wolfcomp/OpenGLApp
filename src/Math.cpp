@@ -2,7 +2,8 @@
 
 #include <cstdarg>
 
-#include "glm/detail/func_trigonometric.inl"
+#include "Vertex.h"
+#include "glm/gtc/matrix_transform.hpp"
 
 glm::mat4 rot_z_mat(float angle)
 {
@@ -68,4 +69,32 @@ glm::mat4 combine(const glm::mat4* mats...)
         mats = va_arg(args, glm::mat4*);
     }
     return result;
+}
+
+float lerp_shortest(float a, float b, float t)
+{
+    if (b - a > 180)
+        a += 360;
+    if (b - a < -180)
+        a -= 360;
+    return a + t * (b - a);
+}
+
+glm::vec3 euler_lerp(const glm::vec3& a, const glm::vec3& b, const float t)
+{
+    return {
+       lerp_shortest(a.x, b.x, t),
+       lerp_shortest(a.y, b.y, t),
+       lerp_shortest(a.z, b.z, t)
+    };
+}
+
+template <>
+Vertex lerp(const Vertex& a, const Vertex& b, const float t)
+{
+    return {
+        lerp(a.position, b.position, t),
+        lerp(a.color, b.color, t),
+        lerp(a.texture_coord, b.texture_coord, t),
+    };
 }
