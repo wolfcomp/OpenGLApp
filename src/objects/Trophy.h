@@ -18,7 +18,7 @@ class Trophy : public IObject
 
 public:
     Trophy();
-    ~Trophy();
+    ~Trophy() override;
     void set_position(const glm::vec3& position);
     void update_shader(Shader* shader);
     Sphere& get_top();

@@ -116,7 +116,7 @@ void Cone::set_subdivision(const unsigned int subdivision)
 
 void Cone::set_rotation(const glm::quat quaternion)
 {
-    this->rotation = glm::eulerAngles(quaternion);
+    this->rotation = eulerAngles(quaternion);
     vertices.clear();
 }
 

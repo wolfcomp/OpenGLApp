@@ -20,9 +20,9 @@ class InputProcessing
 
 public:
     InputProcessing();
-    void change_aspect(const float width, const float height);
-    void process_keyboard(GLFWwindow* window, const double delta_time);
-    void attach_keyboard_listener(const int key, void (*event_handler)(), bool repeat);
-    void remove_keyboard_listener(const int key);
+    void change_aspect(float width, float height);
+    void process_keyboard(GLFWwindow* window, double delta_time);
+    void attach_keyboard_listener(int key, void (*event_handler)(), bool repeat);
+    void remove_keyboard_listener(int key);
     void set_shader(const Shader* shader);
 };

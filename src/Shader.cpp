@@ -89,7 +89,7 @@ void Shader::use() const
 
 void Shader::set_bool(const std::string& name, const bool value) const
 {
-    glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
+    glUniform1i(glGetUniformLocation(ID, name.c_str()), static_cast<int>(value));
 }
 
 void Shader::set_float(const std::string& name, const float value) const

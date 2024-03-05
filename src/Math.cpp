@@ -18,6 +18,7 @@ glm::mat4 rot_z_mat(float angle)
 
 glm::mat4 rot_y_mat(float angle)
 {
+    angle = glm::radians(angle);
     return {
         glm::vec4(cos(angle), 0, sin(angle), 0),
         glm::vec4(0, 1, 0, 0),
@@ -65,7 +66,7 @@ glm::mat4 combine(const glm::mat4* mats...)
     while (mats != nullptr)
     {
         result *= *mats;
-        mats = va_arg(args, glm::mat4*);
+        mats = va_arg(args, glm::mat4 *);
     }
     return result;
 }
@@ -82,9 +83,9 @@ float lerp_shortest(float a, float b, float t)
 glm::vec3 euler_lerp(const glm::vec3& a, const glm::vec3& b, const float t)
 {
     return {
-       lerp_shortest(a.x, b.x, t),
-       lerp_shortest(a.y, b.y, t),
-       lerp_shortest(a.z, b.z, t)
+        lerp_shortest(a.x, b.x, t),
+        lerp_shortest(a.y, b.y, t),
+        lerp_shortest(a.z, b.z, t)
     };
 }
 

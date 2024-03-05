@@ -10,8 +10,8 @@ class Door final : public ITriangleObject
 
 public:
     Door();
-    void set_position(const glm::vec3 position);
-    void set_scale(const float scale);
-    void set_rotation(const float angle);
+    void set_position(glm::vec3 position);
+    void set_scale(float scale);
+    void set_rotation(float angle);
     void pre_draw() override;
 };

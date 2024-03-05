@@ -11,23 +11,26 @@
 
 #ifndef LERP
 #define LERP
-template<typename T>
+
+template <typename T>
 T lerp(const T& a, const T& b, const float t)
 {
     return a + (b - a) * t;
 }
+
 template <>
-Vertex lerp(const Vertex& a, const Vertex& b, const float t);
+Vertex lerp(const Vertex& a, const Vertex& b, float t);
 #endif
 
 #ifndef EULER_LERP
 #define EULER_LERP
-glm::vec3 euler_lerp(const glm::vec3& a, const glm::vec3& b, const float t);
+glm::vec3 euler_lerp(const glm::vec3& a, const glm::vec3& b, float t);
 #endif
 
 #ifndef CLAMP
 #define CLAMP
-template<typename T, typename U>
+
+template <typename T, typename U>
 T clamp(const T& value, const U& min, const U& max)
 {
     if (value < min)
@@ -45,6 +48,7 @@ template <typename T>
 struct Bezier
 {
     T p0, p1, p2, p3;
+
     Bezier() : p0(T()), p1(T()), p2(T()), p3(T())
     {
     }
