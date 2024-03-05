@@ -18,8 +18,8 @@ class Camera
 
 public:
     Camera();
-    Camera(const glm::vec3 position, const glm::vec3 up, const float yaw, const float pitch);
-    void set_position(const glm::vec3 position);
+    Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch);
+    void set_position(glm::vec3 position);
     void set_rotation(glm::vec3 euler);
     glm::mat4 get_view_matrix() const;
 };

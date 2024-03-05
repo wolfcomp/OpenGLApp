@@ -19,7 +19,7 @@ public:
         fopen_s(&file, path, mode);
     }
 
-    void printf(_Printf_format_string_ char const* const format, ...) const
+    void printf(_Printf_format_string_ const char* const format, ...) const
     {
         va_list args;
         va_start(args, format);
@@ -137,7 +137,7 @@ public:
     {
         glBufferData(GL_ARRAY_BUFFER, finalVertecies.size() * sizeof(Vertex), finalVertecies.data(), GL_STATIC_DRAW);
         glBindVertexArray(vao);
-        glDrawElements(GL_LINES, finalVertecies.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_LINES, finalVertecies.size(), GL_UNSIGNED_INT, nullptr);
     }
 };
 
@@ -219,7 +219,7 @@ public:
     {
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
         glBindVertexArray(vao);
-        glDrawElements(GL_LINE_STRIP, vertices.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_LINE_STRIP, vertices.size(), GL_UNSIGNED_INT, nullptr);
     }
 };
 
@@ -303,7 +303,7 @@ public:
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
         glBindVertexArray(vao);
-        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
     }
 };
 
@@ -423,6 +423,6 @@ public:
     {
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
         glBindVertexArray(vao);
-        glDrawElements(this->mode, indices.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(this->mode, indices.size(), GL_UNSIGNED_INT, nullptr);
     }
 };

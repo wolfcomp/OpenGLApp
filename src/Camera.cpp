@@ -24,8 +24,8 @@ void Camera::update_camera_vectors()
     new_front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
     new_front.y = sin(glm::radians(pitch));
     new_front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    glm::vec3 new_up = glm::vec3(0.0f, 1.0f, 0.0f);
-    new_up = glm::rotateZ(new_up, glm::radians(eulerAngles.z));
+    auto new_up = glm::vec3(0.0f, 1.0f, 0.0f);
+    new_up = rotateZ(new_up, glm::radians(eulerAngles.z));
     front = normalize(new_front);
     // also re-calculate the right and up vector
     right = normalize(cross(front, new_up));

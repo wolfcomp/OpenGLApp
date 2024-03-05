@@ -32,17 +32,33 @@ House::House()
     frontLeftInside->should_overlap = frontRightInside->should_overlap = backInside->should_overlap = leftInside->should_overlap = rightInside->should_overlap = doorOpen->should_overlap = true;
     collision->on_collision = handle_inside;
     doorOpen->on_collision = [](IObject* self_obj, ICollision* self, ICollision* other)
-        {
-            const auto house = dynamic_cast<House*>(self_obj);
-            auto doorLerp = TimeManager::get_door_lerp();
-            doorLerp += TimeManager::get_delta_time() * 1000;
-            doorLerp = clamp(doorLerp, 0, 1);
-            house->set_door_rotation(lerp(0, -90, doorLerp));
-            TimeManager::set_door_lerp(doorLerp);
-            house->collision->should_overlap = true;
-            house->set_inside(false);
-        };
+    {
+        const auto house = dynamic_cast<House*>(self_obj);
+        auto doorLerp = TimeManager::get_door_lerp();
+        doorLerp += TimeManager::get_delta_time() * 1000;
+        doorLerp = clamp(doorLerp, 0, 1);
+        house->set_door_rotation(lerp(0, -90, doorLerp));
+        TimeManager::set_door_lerp(doorLerp);
+        house->collision->should_overlap = true;
+        house->set_inside(false);
+    };
     generate_vertices();
+
+    //Cube inserted into the House
+    cube.set_scale(glm::vec3(0.2));
+    cube.set_position(glm::vec3(0.7, 0.1, 3.2));
+    cube.set_color(hsl(179, .62, .50));
+
+    //second cube inserted into the house
+    cube2.set_scale(glm::vec3(0.4));
+    cube2.set_position(glm::vec3(-0.5, 0.2, 2));
+    cube2.set_color(hsl(120, .77, .49));
+
+    //Sphere inserted into the house
+    sphere.set_radius(.4);
+    sphere.set_position(glm::vec3(-.8, 0.2, 0.7));
+    sphere.set_color(hsl(288, 1, .49));
+    sphere.set_subdivision(4);
 }
 
 void House::generate_vertices()
@@ -240,6 +256,9 @@ void House::pre_draw()
     if (vertices.empty())
         generate_vertices();
     door.draw();
+    cube.draw();
+    cube2.draw();
+    sphere.draw();
     leftSide.draw();
     rightSide.draw();
 }
@@ -247,6 +266,9 @@ void House::pre_draw()
 void House::set_position(const glm::vec3 position)
 {
     this->position = position;
+    cube.set_position(position + rotateY(glm::vec3(3.2, 0.1, 0.7) * this->scale, -angle));
+    cube2.set_position(position + rotateY(glm::vec3(2, 0.2, -0.5) * this->scale, -angle));
+    sphere.set_position(position + rotateY(glm::vec3(0.7, 0.2, -.8) * this->scale, -angle));
     vertices.clear();
 }
 
@@ -255,6 +277,9 @@ void House::set_rotation(const float angle)
     this->angle = angle;
     // this->collision->set_rotation(quat_cast(rot_y_mat(angle)));
     door.set_rotation(this->angle + doorAngle);
+    cube.set_rotation(quat_cast(rot_y_mat(-angle)));
+    cube2.set_rotation(quat_cast(rot_y_mat(-angle)));
+    sphere.set_rotation(quat_cast(rot_y_mat(-angle)));
     vertices.clear();
 }
 

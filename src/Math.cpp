@@ -66,7 +66,7 @@ glm::mat4 combine(const glm::mat4* mats...)
     while (mats != nullptr)
     {
         result *= *mats;
-        mats = va_arg(args, glm::mat4*);
+        mats = va_arg(args, glm::mat4 *);
     }
     return result;
 }
@@ -83,9 +83,9 @@ float lerp_shortest(float a, float b, float t)
 glm::vec3 euler_lerp(const glm::vec3& a, const glm::vec3& b, const float t)
 {
     return {
-       lerp_shortest(a.x, b.x, t),
-       lerp_shortest(a.y, b.y, t),
-       lerp_shortest(a.z, b.z, t)
+        lerp_shortest(a.x, b.x, t),
+        lerp_shortest(a.y, b.y, t),
+        lerp_shortest(a.z, b.z, t)
     };
 }
 

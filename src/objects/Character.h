@@ -25,14 +25,14 @@ class Character
 public:
     Character();
     ~Character();
-    void set_explicit_camera(const glm::vec3& position, const glm::vec3 euler, const bool was_explicit);
+    void set_explicit_camera(const glm::vec3& position, glm::vec3 euler, bool was_explicit);
     void set_position(const glm::vec3& position);
-    void set_look(const float yaw, const float pitch);
-    void process_mouse_movement(const double x_offset, const double y_offset, const bool constrain_pitch = true);
-    void process_mouse_scroll(const double y_offset);
+    void set_look(float yaw, float pitch);
+    void process_mouse_movement(double x_offset, double y_offset, bool constrain_pitch = true);
+    void process_mouse_scroll(double y_offset);
     void set_shader(Shader* shader);
     void update_shader(const Shader* shader) const;
-    void update_position(const glm::vec3& direction, const double delta_time, const ObjectBuffer& buffer);
+    void update_position(const glm::vec3& direction, double delta_time, const ObjectBuffer& buffer);
     void check_overlap(const ObjectBuffer& buffer) const;
     void draw();
     glm::vec3 get_camera_position() const;

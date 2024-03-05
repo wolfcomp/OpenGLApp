@@ -72,6 +72,6 @@ struct ICollision
 
     virtual std::vector<glm::vec2> get_points()
     {
-        return { position };
+        return {position};
     }
 };

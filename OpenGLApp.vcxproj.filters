@@ -96,9 +96,6 @@
     <ClCompile Include="src\primitives\Plane.cpp">
       <Filter>Source Files\primitives</Filter>
     </ClCompile>
-    <ClCompile Include="src\objects\PointRender.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\TimeManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1042,9 +1039,6 @@
     </ClInclude>
     <ClInclude Include="src\objects\Trophy.h">
       <Filter>Header Files\objects</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lerper.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

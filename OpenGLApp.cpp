@@ -129,28 +129,28 @@ void instantiate_trophies(float& offset_trop)
 void setup_npc_path(float offset_trop)
 {
     auto b1 = Bezier<glm::vec3>(trophy0.get_position(), trophy0.get_position() + glm::vec3(offset_trop, 0, 0),
-        trophy1.get_position() - glm::vec3(offset_trop, 0, 0), trophy1.get_position());
+                                trophy1.get_position() - glm::vec3(offset_trop, 0, 0), trophy1.get_position());
 
     auto b2 = Bezier<glm::vec3>(trophy1.get_position(), trophy1.get_position() + glm::vec3(offset_trop * 2, 0, 0),
-        trophy2.get_position() - glm::vec3(offset_trop * 2, 0, 0), trophy2.get_position());
+                                trophy2.get_position() - glm::vec3(offset_trop * 2, 0, 0), trophy2.get_position());
 
     auto b3 = Bezier<glm::vec3>(trophy2.get_position(), trophy2.get_position() + glm::vec3(offset_trop * 3, 0, 0),
-        trophy3.get_position() - glm::vec3(offset_trop * 3, 0, 0), trophy3.get_position());
+                                trophy3.get_position() - glm::vec3(offset_trop * 3, 0, 0), trophy3.get_position());
 
     auto b4 = Bezier<glm::vec3>(trophy3.get_position(), trophy3.get_position() + glm::vec3(offset_trop * 4, 0, 0),
-        trophy4.get_position() - glm::vec3(offset_trop * 4, 0, 0), trophy4.get_position());
+                                trophy4.get_position() - glm::vec3(offset_trop * 4, 0, 0), trophy4.get_position());
 
     auto b5 = Bezier<glm::vec3>(trophy4.get_position(), trophy4.get_position() + glm::vec3(offset_trop * 5, 0, 0),
-        trophy5.get_position() - glm::vec3(offset_trop * 5, 0, 0), trophy5.get_position());
+                                trophy5.get_position() - glm::vec3(offset_trop * 5, 0, 0), trophy5.get_position());
 
     auto b6 = Bezier<glm::vec3>(trophy5.get_position(), trophy5.get_position() + glm::vec3(offset_trop * 6, 0, 0),
-        trophy6.get_position() - glm::vec3(offset_trop * 6, 0, 0), trophy6.get_position());
+                                trophy6.get_position() - glm::vec3(offset_trop * 6, 0, 0), trophy6.get_position());
 
     auto b7 = Bezier<glm::vec3>(trophy6.get_position(), trophy6.get_position() + glm::vec3(offset_trop * 7, 0, 0),
-        trophy7.get_position() - glm::vec3(offset_trop * 7, 0, 0), trophy7.get_position());
+                                trophy7.get_position() - glm::vec3(offset_trop * 7, 0, 0), trophy7.get_position());
 
     auto b8 = Bezier<glm::vec3>(trophy7.get_position(), trophy7.get_position() + glm::vec3(offset_trop * 8, 0, 0),
-        trophy0.get_position() - glm::vec3(offset_trop * 8, 0, 0), trophy0.get_position());
+                                trophy0.get_position() - glm::vec3(offset_trop * 8, 0, 0), trophy0.get_position());
 
     splineObj.points.clear();
     splineObj.add_point(0, b1);
@@ -161,7 +161,7 @@ void setup_npc_path(float offset_trop)
     splineObj.add_point(.75, b6);
     splineObj.add_point(.9, b7);
     splineObj.add_point(1, Bezier<glm::vec3>(trophy7.get_position(), trophy7.get_position(), trophy7.get_position(),
-        trophy7.get_position()));
+                                             trophy7.get_position()));
 }
 
 void npc_movement()
@@ -333,10 +333,10 @@ int main()
         character.check_overlap(objBuffer);
         set_camera(house);
         ShaderStore::set_shader_params([](const Shader* shad)
-            {
-                input.set_shader(shad);
-                character.update_shader(shad);
-            });
+        {
+            input.set_shader(shad);
+            character.update_shader(shad);
+        });
         if (lastSubdivision != subdivision)
         {
             lastSubdivision = subdivision;
@@ -360,7 +360,7 @@ int main()
             TimeManager::set_door_lerp(doorLerp);
             house.set_door_rotation(lerp(0, -90, doorLerp));
         }
-        if(!house.is_inside())
+        if (!house.is_inside())
             house.collision->should_overlap = false;
 
         glBindVertexArray(0);

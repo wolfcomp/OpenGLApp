@@ -146,7 +146,6 @@
     <ClCompile Include="src\objects\Character.cpp" />
     <ClCompile Include="src\objects\Door.cpp" />
     <ClCompile Include="src\objects\House.cpp" />
-    <ClCompile Include="src\objects\PointRender.cpp" />
     <ClCompile Include="src\objects\Trophy.cpp" />
     <ClCompile Include="src\primitives\Capsule.cpp" />
     <ClCompile Include="src\primitives\Cone.cpp" />
@@ -453,7 +452,6 @@
     <ClInclude Include="src\InputProcessing.h" />
     <ClInclude Include="src\interfaces\IObject.h" />
     <ClInclude Include="src\interfaces\ITriangleObject.h" />
-    <ClInclude Include="src\Lerper.h" />
     <ClInclude Include="src\Math.h" />
     <ClInclude Include="src\Misc.h" />
     <ClInclude Include="src\ObjectBuffer.h" />
