@@ -30,16 +30,25 @@ void Camera::update_camera_vectors()
     // also re-calculate the right and up vector
     right = normalize(cross(front, new_up));
     up = normalize(cross(right, front));
+    this->viewMatrix = lookAt(this->position, this->position + this->front, this->up);
+    this->inverseViewMatrix = inverse(this->viewMatrix);
 }
 
 glm::mat4 Camera::get_view_matrix() const
 {
-    return lookAt(position, position + front, up);
+    return viewMatrix;
+}
+
+glm::mat4 Camera::get_inverse_view_matrix() const
+{
+    return inverseViewMatrix;
 }
 
 void Camera::set_position(const glm::vec3 position)
 {
     this->position = position;
+    this->viewMatrix = lookAt(this->position, this->position + this->front, this->up);
+    this->inverseViewMatrix = inverse(this->viewMatrix);
 }
 
 void Camera::set_rotation(glm::vec3 euler)
@@ -48,4 +57,9 @@ void Camera::set_rotation(glm::vec3 euler)
     this->pitch = euler.x;
     this->eulerAngles = euler;
     update_camera_vectors();
+}
+
+glm::vec3 Camera::get_view_pos() const
+{
+    return position;
 }

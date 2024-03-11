@@ -5,13 +5,13 @@
 struct Vertex
 {
     glm::vec3 position;
-    glm::vec3 color;
+    glm::vec3 normal;
     glm::vec2 texture_coord;
 
     Vertex()
     {
         position = glm::vec3(0.0f, 0.0f, 0.0f);
-        color = glm::vec3(1.0f, 1.0f, 1.0f);
+        normal = glm::vec3(1.0f, 1.0f, 1.0f);
         texture_coord = glm::vec2(0.0f, 0.0f);
     }
 
@@ -20,16 +20,16 @@ struct Vertex
         this->position = position;
     }
 
-    Vertex(const glm::vec3 position, const glm::vec3 color) : Vertex()
+    Vertex(const glm::vec3 position, const glm::vec3 normal) : Vertex()
     {
         this->position = position;
-        this->color = color;
+        this->normal = normal;
     }
 
-    Vertex(const glm::vec3 position, const glm::vec3 color, const glm::vec2 texture_coord)
+    Vertex(const glm::vec3 position, const glm::vec3 normal, const glm::vec2 texture_coord)
     {
         this->position = position;
-        this->color = color;
+        this->normal = normal;
         this->texture_coord = texture_coord;
     }
 

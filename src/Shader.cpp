@@ -1,6 +1,7 @@
 #include "Shader.h"
 
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 #include <fstream>
 #include <iostream>
 
@@ -102,14 +103,34 @@ void Shader::set_int(const std::string& name, const int value) const
     glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 }
 
+void Shader::set_vec2(const std::string& name, const float x, const float y) const
+{
+    glUniform2f(glGetUniformLocation(ID, name.c_str()), x, y);
+}
+
+void Shader::set_vec2(const std::string& name, glm::vec2 value) const
+{
+    set_vec2(name, value.x, value.y);
+}
+
 void Shader::set_vec3(const std::string& name, const float x, const float y, const float z) const
 {
     glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z);
 }
 
+void Shader::set_vec3(const std::string& name, glm::vec3 value) const
+{
+    set_vec3(name, value.x, value.y, value.z);
+}
+
 void Shader::set_vec4(const std::string& name, const float x, const float y, const float z, const float w) const
 {
     glUniform4f(glGetUniformLocation(ID, name.c_str()), x, y, z, w);
+}
+
+void Shader::set_vec4(const std::string& name, glm::vec4 value) const
+{
+    set_vec4(name, value.x, value.y, value.z, value.w);
 }
 
 void Shader::set_mat4(const std::string& name, const float* value) const

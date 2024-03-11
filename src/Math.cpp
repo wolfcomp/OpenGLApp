@@ -94,7 +94,7 @@ Vertex lerp(const Vertex& a, const Vertex& b, const float t)
 {
     return {
         lerp(a.position, b.position, t),
-        lerp(a.color, b.color, t),
+        lerp(a.normal, b.normal, t),
         lerp(a.texture_coord, b.texture_coord, t),
     };
 }

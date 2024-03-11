@@ -66,7 +66,7 @@ void House::generate_vertices()
     Vertex vertex;
     hsl wallColor(0, .4f, .52f);
     hsl roofColor(0, .4f, .3f);
-    vertex.color = wallColor.get_rgb_vec3();
+    vertex.normal = wallColor.get_rgb_vec3();
     vertex.position = glm::vec3(0, 0.f, 0);
     vertices.push_back(vertex); // 0
     vertex.position = glm::vec3(0, 1.5f, 0);
@@ -99,27 +99,27 @@ void House::generate_vertices()
     vertex.position.y *= 1.5f;
     vertices.push_back(vertex); // 13
     vertex = vertices[1];
-    vertex.color = roofColor.get_rgb_vec3();
+    vertex.normal = roofColor.get_rgb_vec3();
     vertex.position -= glm::vec3(0.25f, 0.25f, 0.25f);
     vertices.push_back(vertex); // 14
     vertex = vertices[2];
-    vertex.color = roofColor.get_rgb_vec3();
+    vertex.normal = roofColor.get_rgb_vec3();
     vertex.position -= glm::vec3(0.25f, 0.25f, -0.25f);
     vertices.push_back(vertex); // 15
     vertex = vertices[9];
-    vertex.color = roofColor.get_rgb_vec3();
+    vertex.normal = roofColor.get_rgb_vec3();
     vertex.position -= glm::vec3(-0.25f, 0.25f, 0.25f);
     vertices.push_back(vertex); // 16
     vertex = vertices[12];
-    vertex.color = roofColor.get_rgb_vec3();
+    vertex.normal = roofColor.get_rgb_vec3();
     vertex.position -= glm::vec3(-0.25f, 0.25f, -0.25f);
     vertices.push_back(vertex); // 17
     vertex = vertices[10];
-    vertex.color = roofColor.get_rgb_vec3();
+    vertex.normal = roofColor.get_rgb_vec3();
     vertex.position -= glm::vec3(0, 0, 0.25f);
     vertices.push_back(vertex); // 18
     vertex = vertices[13];
-    vertex.color = roofColor.get_rgb_vec3();
+    vertex.normal = roofColor.get_rgb_vec3();
     vertex.position -= glm::vec3(0, 0, -0.25f);
     vertices.push_back(vertex); // 19
 

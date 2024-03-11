@@ -12,7 +12,7 @@ Cone::Cone()
 void Cone::generate_vertices()
 {
     Vertex v;
-    v.color = color.get_rgb_vec3();
+    v.normal = color.get_rgb_vec3();
     v.position.y = height;
     vertices.push_back(v);
     v.position.y = 0;
@@ -78,7 +78,7 @@ void Cone::generate_vertices()
 
 void Cone::compute_half_vertex(const Vertex& a, const Vertex& b, Vertex& result) const
 {
-    result.color = a.color;
+    result.normal = a.normal;
     result.position = normalize(a.position + b.position);
     result.position *= radius / length(result.position);
 }

@@ -1457,6 +1457,9 @@
     <None Include="shader.vs">
       <Filter>Source Files\assets</Filter>
     </None>
+    <None Include="noLightShader.fs">
+      <Filter>Source Files\assets</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Library Include="Dependencies\libs\glfw3.lib" />

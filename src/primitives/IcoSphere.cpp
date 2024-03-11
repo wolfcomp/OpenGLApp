@@ -108,7 +108,7 @@ void IcoSphere::generate_vertices()
 
     for (auto& vert : vertices)
     {
-        vert.color = this->color.get_rgb_vec3();
+        vert.normal = this->color.get_rgb_vec3();
         vert.position = rotation * vert.position;
         vert.position += position;
     }
@@ -118,7 +118,7 @@ void IcoSphere::compute_half_vertex(const Vertex& a, const Vertex& b, Vertex& re
 {
     result.position = normalize(a.position + b.position);
     result.position *= radius / length(result.position);
-    result.color = a.color;
+    result.normal = a.normal;
 }
 
 void IcoSphere::set_color(const hsl& color)

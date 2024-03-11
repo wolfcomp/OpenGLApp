@@ -1,16 +1,11 @@
 ﻿#pragma once
 #include "../HSL.h"
-#include "glm/vec3.hpp"
-#include <glm/gtc/quaternion.hpp>
+#include "glm/fwd.hpp"
 
-#include "../interfaces/ITriangleObject.h"
+#include "../interfaces/IObject.h"
 
-class Cube final : public ITriangleObject
+class Cube final : public IObject
 {
-    hsl color;
-    glm::vec3 position;
-    glm::vec3 scale;
-    glm::quat rotation;
     void generate_vertices();
     void generate_indices();
 
@@ -21,4 +16,5 @@ public:
     void set_scale(glm::vec3 scale);
     void set_rotation(glm::quat quaternion);
     void set_euler_rotation(glm::vec3 angle);
+    void pre_draw() override;
 };

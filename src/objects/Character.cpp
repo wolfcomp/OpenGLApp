@@ -3,13 +3,12 @@
 #include "../Math.h"
 #include "../ObjectBuffer.h"
 #include "../collision/OBB.h"
-#include "glm/gtc/type_ptr.inl"
 #include "glm/gtx/rotate_normalized_axis.inl"
 #include "glm/gtx/rotate_vector.hpp"
 
 #define MOVEMENT_SPEED 5000.f
 #define MOUSE_SENSITIVITY 0.1f
-#define PITCH_CONSTRAINT 25.0f
+#define PITCH_CONSTRAINT 89.0f
 
 Character::Character()
 {
@@ -172,6 +171,8 @@ glm::vec2 Character::get_look_angles() const
 void Character::update_shader(const Shader* shader) const
 {
     shader->set_mat4("view", value_ptr(camera.get_view_matrix()));
+    shader->set_mat4("camView", value_ptr(camera.get_view_matrix()));
+    shader->set_vec3("camPos", camera.get_view_pos());
 }
 
 Character::~Character()

@@ -85,7 +85,7 @@ void Sphere::generate_vertices()
 
     for (auto& vert : vertices)
     {
-        vert.color = this->color.get_rgb_vec3();
+        vert.normal = this->color.get_rgb_vec3();
         vert.position = rotation * vert.position;
         vert.position += position;
     }

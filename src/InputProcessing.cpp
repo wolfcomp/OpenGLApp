@@ -18,7 +18,6 @@ void InputProcessing::change_aspect(const float width, const float height)
 
 void InputProcessing::set_shader(const Shader* shader)
 {
-    shader->set_mat4("model", value_ptr(model));
     shader->set_mat4("projection", value_ptr(projection));
 }
 

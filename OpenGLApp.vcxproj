@@ -612,11 +612,15 @@
     <Content Include="shader.fs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="noLightShader.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="shader.vs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <None Include="noLightShader.fs" />
     <None Include="shader.fs" />
     <None Include="shader.vs" />
   </ItemGroup>

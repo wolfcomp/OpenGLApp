@@ -31,7 +31,7 @@ void Door::generate_vertices()
     auto darkWoodColor = hsl(30, 0.27f, .37f);
     auto ironColor = hsl(0, 0.0f, .37f);
     unsigned handleRight, handleLeft;
-    vertex.color = woodColor.get_rgb_vec3();
+    vertex.normal = woodColor.get_rgb_vec3();
     vertex.position = glm::vec3(-0.025f, 0.f, 0.5f);
     vertices.push_back(vertex); // 0
     vertex.position = glm::vec3(0.025f, 0.f, 0.5f);
@@ -71,32 +71,32 @@ void Door::generate_vertices()
     vertices.push_back(vertex.translate(vecInset)); // 15
     vertex = vertices[8];
     inset = 0.015f;
-    vertex.color = darkWoodColor.get_rgb_vec3();
+    vertex.normal = darkWoodColor.get_rgb_vec3();
     vertices.push_back(vertex.translate(inset, 0, 0)); // 16
     vertex = vertices[9];
-    vertex.color = darkWoodColor.get_rgb_vec3();
+    vertex.normal = darkWoodColor.get_rgb_vec3();
     vertices.push_back(vertex.translate(-inset, 0, 0)); // 17
     vertex = vertices[10];
-    vertex.color = darkWoodColor.get_rgb_vec3();
+    vertex.normal = darkWoodColor.get_rgb_vec3();
     vertices.push_back(vertex.translate(-inset, 0, 0)); // 18
     vertex = vertices[11];
-    vertex.color = darkWoodColor.get_rgb_vec3();
+    vertex.normal = darkWoodColor.get_rgb_vec3();
     vertices.push_back(vertex.translate(inset, 0, 0)); // 19
     vertex = vertices[12];
-    vertex.color = darkWoodColor.get_rgb_vec3();
+    vertex.normal = darkWoodColor.get_rgb_vec3();
     vertices.push_back(vertex.translate(inset, 0, 0)); // 20
     vertex = vertices[13];
-    vertex.color = darkWoodColor.get_rgb_vec3();
+    vertex.normal = darkWoodColor.get_rgb_vec3();
     vertices.push_back(vertex.translate(-inset, 0, 0)); // 21
     vertex = vertices[14];
-    vertex.color = darkWoodColor.get_rgb_vec3();
+    vertex.normal = darkWoodColor.get_rgb_vec3();
     vertices.push_back(vertex.translate(-inset, 0, 0)); // 22
     vertex = vertices[15];
-    vertex.color = darkWoodColor.get_rgb_vec3();
+    vertex.normal = darkWoodColor.get_rgb_vec3();
     vertices.push_back(vertex.translate(inset, 0, 0)); // 23
 
     // handles
-    vertex.color = ironColor.get_rgb_vec3();
+    vertex.normal = ironColor.get_rgb_vec3();
     handleRight = vertices.size();
     vertex.position = glm::vec3(-0.025f, 0.45f, 0.45f);
     vertices.push_back(vertex);

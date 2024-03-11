@@ -85,9 +85,9 @@ public:
             auto vertex = vertices[i];
             auto nextVertex = vertices[i + 1];
             if (nextVertex.position.y < vertex.position.y)
-                vertex.color.r = 1;
+                vertex.normal.r = 1;
             else
-                vertex.color.g = 1;
+                vertex.normal.g = 1;
             vertices[i] = vertex;
         }
         FILE* outpFile;
@@ -95,7 +95,7 @@ public:
         fprintf(outpFile, "%d points\n", vertices.size());
         for (auto vertex : vertices)
         {
-            fprintf(outpFile, "%.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f\n", vertex.position.x, vertex.position.y, vertex.position.z, vertex.color.r, vertex.color.g, vertex.color.b, vertex.texture_coord.x, vertex.texture_coord.y);
+            fprintf(outpFile, "%.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f\n", vertex.position.x, vertex.position.y, vertex.position.z, vertex.normal.r, vertex.normal.g, vertex.normal.b, vertex.texture_coord.x, vertex.texture_coord.y);
         }
         fclose(outpFile);
     }
@@ -112,9 +112,9 @@ public:
             betweenVertex.position.x = nextVertex.position.x;
             betweenVertex.position.y = nextVertex.position.y;
             betweenVertex.position.z = vertex.position.z;
-            betweenVertex.color.r = vertex.color.r;
-            betweenVertex.color.g = vertex.color.g;
-            betweenVertex.color.b = vertex.color.b;
+            betweenVertex.normal.r = vertex.normal.r;
+            betweenVertex.normal.g = vertex.normal.g;
+            betweenVertex.normal.b = vertex.normal.b;
             finalVertecies.push_back(betweenVertex);
             indices.push_back(finalVertecies.size() - 1);
         }
@@ -159,9 +159,9 @@ class vertexFunc
             v.position.z = min / 10;
             hsl.shift(min);
             auto rgb = hsl.get_rgb();
-            v.color.r = rgb[0];
-            v.color.g = rgb[1];
-            v.color.b = rgb[2];
+            v.normal.r = rgb[0];
+            v.normal.g = rgb[1];
+            v.normal.b = rgb[2];
             min += step;
             vertices.push_back(v);
         }
@@ -171,9 +171,9 @@ class vertexFunc
         v.position.z = min / 10;
         hsl.shift(min);
         auto rgb = hsl.get_rgb();
-        v.color.r = rgb[0];
-        v.color.g = rgb[1];
-        v.color.b = rgb[2];
+        v.normal.r = rgb[0];
+        v.normal.g = rgb[1];
+        v.normal.b = rgb[2];
         vertices.push_back(v);
         return vertices;
     }
@@ -190,7 +190,7 @@ public:
         file.printf("%d points\n", vertices.size());
         for (auto vertex : vertices)
         {
-            file.printf("%.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f\n", vertex.position.x, vertex.position.y, vertex.position.z, vertex.color.r, vertex.color.g, vertex.color.b, vertex.texture_coord.x, vertex.texture_coord.y);
+            file.printf("%.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f\n", vertex.position.x, vertex.position.y, vertex.position.z, vertex.normal.r, vertex.normal.g, vertex.normal.b, vertex.texture_coord.x, vertex.texture_coord.y);
         }
     }
 
@@ -243,9 +243,9 @@ class twoVarFunc
                 v.position.z = sin(v.position.x * v.position.y);
                 hsl.shift(v.position.z);
                 auto rgb = hsl.get_rgb();
-                v.color.r = rgb[0];
-                v.color.g = rgb[1];
-                v.color.b = rgb[2];
+                v.normal.r = rgb[0];
+                v.normal.g = rgb[1];
+                v.normal.b = rgb[2];
                 vertices.push_back(v);
             }
         }
@@ -266,7 +266,7 @@ public:
         file.printf("%d points\n", vertices.size());
         for (auto vertex : vertices)
         {
-            file.printf("%.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f\n", vertex.position.x, vertex.position.y, vertex.position.z, vertex.color.r, vertex.color.g, vertex.color.b, vertex.texture_coord.x, vertex.texture_coord.y);
+            file.printf("%.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f\n", vertex.position.x, vertex.position.y, vertex.position.z, vertex.normal.r, vertex.normal.g, vertex.normal.b, vertex.texture_coord.x, vertex.texture_coord.y);
         }
     }
 
@@ -333,7 +333,7 @@ public:
                 continue;
             }
             auto v = Vertex();
-            ss >> v.position.x >> v.position.y >> v.position.z >> v.color.r >> v.color.g >> v.color.b >> v.texture_coord.x >> v.texture_coord.y;
+            ss >> v.position.x >> v.position.y >> v.position.z >> v.normal.r >> v.normal.g >> v.normal.b >> v.texture_coord.x >> v.texture_coord.y;
             vertices.push_back(v);
             if (!optimized)
                 indices.push_back(indices.size());
@@ -414,7 +414,7 @@ public:
         // ReSharper disable CppCStyleCast
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
         glEnableVertexAttribArray(1);
         // ReSharper restore CppCStyleCast
     }

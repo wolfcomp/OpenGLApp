@@ -30,11 +30,11 @@ class hsl
     }
 
 public:
-    hsl() : h(0), s(0), l(0), rgb{0, 0, 0}
+    hsl() : h(0), s(0), l(0), rgb{ 0, 0, 0 }
     {
     }
 
-    hsl(float h, float s, float l) : h(h), s(s), l(l), rgb{0, 0, 0}
+    hsl(float h, float s, float l) : h(h), s(s), l(l), rgb{ 0, 0, 0 }
     {
     }
 
@@ -53,6 +53,20 @@ public:
         h = static_cast<int>(time) % 360;
         s = 1;
         l = clamp(get_modif(time, sin), 0.25f, 0.75f);
+    }
+
+    void blend(int h, float s, float l, float amount)
+    {
+        this->h = static_cast<int>(this->h + (h - this->h) * amount) % 360;
+        this->s = this->s + (s - this->s) * amount;
+        this->l = this->l + (l - this->l) * amount;
+    }
+
+    void blend(hsl& other, float amount)
+    {
+        h = static_cast<int>(h + (other.h - h) * amount) % 360;
+        s = s + (other.s - s) * amount;
+        l = l + (other.l - l) * amount;
     }
 
     float* get_rgb()
@@ -109,6 +123,6 @@ public:
     glm::vec3 get_rgb_vec3()
     {
         get_rgb();
-        return {rgb[0], rgb[1], rgb[2]};
+        return { rgb[0], rgb[1], rgb[2] };
     }
 };
