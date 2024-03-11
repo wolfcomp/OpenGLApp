@@ -1,21 +1,23 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(OpenGLApp
-    VERSION 1.0
-    DESCRIPTION "OpenGL Application"
-    LANGUAGES CXX
-)
+if (POLICY CMP0141)
+  cmake_policy(SET CMP0141 NEW)
+  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
+endif()
 
-set(CMAKE_CXX_STANDARD 17)
+project(OpenGLApp)
+
+set(CMAKE_CXX_STANDARD 20)
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 file(GLOB_RECURSE HEADERS "src/*.h")
 
-add_subdirectory(Dependencies/includes/glm)
-add_subdirectory(Dependencies/includes/glfw)
-add_subdirectory(Dependencies/includes/KHR)
-add_subdirectory(Dependencies/includes/glad)
-add_dependencies(OpenGLApp glm)
-add_dependencies(OpenGLApp glfw)
-add_dependencies(OpenGLApp glad)
-add_dependencies(OpenGLApp KHR)
+include_directories(Dependencies/includes)
+
+add_executable(OpenGLApp "OpenGLApp.cpp" "glad.c" ${SOURCES} ${HEADERS})
+
+target_link_directories(OpenGLApp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/libs)
+target_link_libraries(OpenGLApp PRIVATE "glfw3.lib")
+target_link_libraries(OpenGLApp PRIVATE "opengl32.lib")
+
+add_custom_command(TARGET OpenGLApp POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/shaders $<TARGET_FILE_DIR:OpenGLApp>/shaders)

@@ -26,13 +26,12 @@ void InputProcessing::process_keyboard(GLFWwindow* window, const double delta_ti
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    for (const auto& listener : keyboard_listeners)
+    for (const auto& [key, func] : keyboard_listeners)
     {
-        auto key = listener.first;
         if (glfwGetKey(window, key) == GLFW_PRESS && (should_repeat[key] || !key_pressed[key]))
         {
             key_pressed[key] = true;
-            listener.second();
+            func();
         }
         else if (glfwGetKey(window, key) == GLFW_RELEASE)
         {

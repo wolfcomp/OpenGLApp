@@ -1,8 +1,8 @@
 ﻿#include "Cube.h"
+#include <array>
 
 Cube::Cube()
 {
-    color = hsl(0, 1, 0.5);
     position = glm::vec3(0.0f, 0.0f, 0.0f);
     scale = glm::vec3(1.0f, 1.0f, 1.0f);
     rotation = glm::quat(1, 0, 0, 0);
@@ -10,109 +10,74 @@ Cube::Cube()
     generate_vertices();
 }
 
-void Cube::generate_indices()
+void Cube::push_face(std::vector<Vertex> face, std::vector<unsigned> indices)
 {
-    indices = {
-        0, 1, 2, 3, 2, 1, // front
-        5, 4, 6, 6, 7, 5, // back
-        4, 5, 1, 1, 0, 4, // top
-        7, 6, 3, 2, 3, 6, // bottom
-        4, 0, 6, 2, 6, 0, // left
-        1, 5, 7, 7, 3, 1 // right
-    };
+    auto start = vertices.size();
+    for (auto &v : face)
+    {
+        vertices.push_back(v);
+    }
+    for (auto &i : indices)
+    {
+        this->indices.push_back(start + i);
+    }
 }
-
 
 void Cube::generate_vertices()
 {
-    generate_indices();
-    vertices.resize(8);
-    Vertex v0, v1, v2, v3, v4, v5, v6, v7;
+    Vertex v0, v1, v2, v3;
     v0 = Vertex(glm::vec3(1));
     memcpy(&v1, &v0, sizeof(Vertex));
     memcpy(&v2, &v0, sizeof(Vertex));
     memcpy(&v3, &v0, sizeof(Vertex));
-    memcpy(&v4, &v0, sizeof(Vertex));
-    memcpy(&v5, &v0, sizeof(Vertex));
-    memcpy(&v6, &v0, sizeof(Vertex));
-    memcpy(&v7, &v0, sizeof(Vertex));
 
     // set the correct position for each vertex
-    v1.position.x = v5.position.x = -1;
-    v2.position.y = v6.position.y = -1;
-    v3.position.x = v7.position.x = -1;
-    v3.position.y = v7.position.y = -1;
+    v1.position.x = -1;
+    v2.position.y = -1;
+    v2.position.x = -1;
+    v3.position.y = -1;
 
-    // opposite face
-    v4.position.z = v5.position.z = v6.position.z = v7.position.z = -1;
+    glm::quat y = glm::angleAxis(glm::radians(90.0f), glm::vec3(0, 1, 0));
+    glm::quat x = glm::angleAxis(glm::radians(90.0f), glm::vec3(1, 0, 0));
 
-    vertices[0] = v0;
-    vertices[1] = v1;
-    vertices[2] = v2;
-    vertices[3] = v3;
-    vertices[4] = v4;
-    vertices[5] = v5;
-    vertices[6] = v6;
-    vertices[7] = v7;
+    std::vector<Vertex> tmpVertices = {v0, v1, v2, v3};
+    std::vector<unsigned> tmpIndices = {0, 3, 1, 3, 2, 1};
+    vertices.reserve(24);
+    indices.reserve(36);
+    glm::vec3 normal = cross(tmpVertices[1].position - tmpVertices[0].position, tmpVertices[2].position - tmpVertices[0].position);
 
-    auto newVertices = std::vector<Vertex>();
-    auto newIndices = std::vector<unsigned>();
-
-    // split vertexes and calculate the normals based on the face from indices
-    for (unsigned i = 0; i < indices.size(); i += 3)
+    tmpVertices[0].texture_coord = glm::vec2(0, 0);
+    tmpVertices[1].texture_coord = glm::vec2(1, 0);
+    tmpVertices[2].texture_coord = glm::vec2(1, 1);
+    tmpVertices[3].texture_coord = glm::vec2(0, 1);
+    for (int i = 0; i < 4; i++)
     {
-        auto v0 = vertices[indices[i]];
-        auto v1 = vertices[indices[i + 1]];
-        auto v2 = vertices[indices[i + 2]];
-        auto normal = glm::normalize(glm::cross(v1.position - v0.position, v2.position - v0.position));
-        v0.normal = normal;
-        v1.normal = normal;
-        v2.normal = normal;
-        newVertices.push_back(v0);
-        newVertices.push_back(v1);
-        newVertices.push_back(v2);
-        newIndices.push_back(i);
-        newIndices.push_back(i + 1);
-        newIndices.push_back(i + 2);
+        for (auto &v : tmpVertices)
+        {
+            v.position = y * v.position;
+            v.normal = y * v.normal;
+        }
+        push_face(tmpVertices, tmpIndices);
     }
-    vertices = newVertices;
-    indices = newIndices;
-}
-
-
-void Cube::set_color(const hsl color)
-{
-    this->color = color;
-}
-
-void Cube::set_position(const glm::vec3 position)
-{
-    this->position = position;
-    compute_model_matrix();
-}
-
-void Cube::set_scale(const glm::vec3 scale)
-{
-    this->scale = scale;
-    compute_model_matrix();
-}
-
-void Cube::set_rotation(const glm::quat quaternion)
-{
-    this->rotation = quaternion;
-    compute_model_matrix();
-}
-
-void Cube::set_euler_rotation(const glm::vec3 angle)
-{
-    this->rotation = glm::quat(angle);
-    compute_model_matrix();
+    for (auto &v : tmpVertices)
+    {
+        v.position = x * v.position;
+        v.normal = x * v.normal;
+    }
+    push_face(tmpVertices, tmpIndices);
+    for (int i = 0; i < 2; i++)
+    {
+        for (auto &v : tmpVertices)
+        {
+            v.position = x * v.position;
+            v.normal = x * v.normal;
+        }
+    }
+    push_face(tmpVertices, tmpIndices);
 }
 
 void Cube::pre_draw()
 {
     if (vertices.empty())
         generate_vertices();
-
-    shader->set_vec3("albedo", color.get_rgb_vec3());
 }

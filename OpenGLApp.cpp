@@ -9,9 +9,9 @@
 #include "src/ShaderStore.h"
 #include "src/TimeManager.h"
 #include "src/objects/Character.h"
-#include "src/objects/House.h"
 #include "src/primitives/Plane.h"
 #include "src/objects/PointRender.h"
+#include "src/primitives/Cube.h"
 
 constexpr int width = 1600;
 constexpr int height = 900;
@@ -27,15 +27,15 @@ float curveAggressiveness = 1;
 bool lastCharacterStateObserved = false;
 float prevYawExplicit;
 float prevPitchExplicit;
-hsl skyColor = hsl(180, .65, .95);
-hsl ambientColor = hsl(0, 1, .4);
-glm::vec3 lightPos = glm::vec3(1, 3, -5);
+hsl skyColor = hsl(180, .85f, .75);
+hsl ambientColor = hsl(0, 1, .4f);
+glm::vec3 lightPos = glm::vec3(-10, 10, -10);
 
 InputProcessing input;
 ObjectBuffer objBuffer;
 Character character;
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
     glViewport(0, 0, width, height);
     input.change_aspect(static_cast<float>(width), static_cast<float>(height));
@@ -57,7 +57,7 @@ void decrease_subdivision()
     }
 }
 
-void process_mouse_input(GLFWwindow* window, const double x_pos, const double y_pos)
+void process_mouse_input(GLFWwindow *window, const double x_pos, const double y_pos)
 {
     if (firstMouse)
     {
@@ -74,12 +74,12 @@ void process_mouse_input(GLFWwindow* window, const double x_pos, const double y_
     character.process_mouse_movement(xOffset, yOffset);
 }
 
-void scroll_callback(GLFWwindow* window, double x_offset, double y_offset)
+void scroll_callback(GLFWwindow *window, double x_offset, double y_offset)
 {
     character.process_mouse_scroll(y_offset);
 }
 
-void move_character(const glm::vec3& direction)
+void move_character(const glm::vec3 &direction)
 {
     character.update_position(direction, TimeManager::get_delta_time(), objBuffer);
 }
@@ -97,7 +97,7 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(width, height, "OpenGLApp", nullptr, nullptr);
+    GLFWwindow *window = glfwCreateWindow(width, height, "OpenGLApp", nullptr, nullptr);
     if (window == nullptr)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -121,15 +121,36 @@ int main()
 
     input.attach_keyboard_listener(GLFW_KEY_UP, increase_subdivision, false);
     input.attach_keyboard_listener(GLFW_KEY_DOWN, decrease_subdivision, false);
-    input.attach_keyboard_listener(GLFW_KEY_F, []() { wireframe = !wireframe; }, false);
-    input.attach_keyboard_listener(GLFW_KEY_W, []() { move_character(glm::vec3(1, 0, 0)); }, true);
-    input.attach_keyboard_listener(GLFW_KEY_S, []() { move_character(glm::vec3(-1, 0, 0)); }, true);
-    input.attach_keyboard_listener(GLFW_KEY_A, []() { move_character(glm::vec3(0, 0, -1)); }, true);
-    input.attach_keyboard_listener(GLFW_KEY_D, []() { move_character(glm::vec3(0, 0, 1)); }, true);
-    input.attach_keyboard_listener(GLFW_KEY_SPACE, []() { move_character(glm::vec3(0, 1, 0)); }, true);
-    input.attach_keyboard_listener(GLFW_KEY_LEFT_CONTROL, []() { move_character(glm::vec3(0, -1, 0)); }, true);
+    input.attach_keyboard_listener(
+        GLFW_KEY_F, []()
+        { wireframe = !wireframe; },
+        false);
+    input.attach_keyboard_listener(
+        GLFW_KEY_W, []()
+        { move_character(glm::vec3(1, 0, 0)); },
+        true);
+    input.attach_keyboard_listener(
+        GLFW_KEY_S, []()
+        { move_character(glm::vec3(-1, 0, 0)); },
+        true);
+    input.attach_keyboard_listener(
+        GLFW_KEY_A, []()
+        { move_character(glm::vec3(0, 0, -1)); },
+        true);
+    input.attach_keyboard_listener(
+        GLFW_KEY_D, []()
+        { move_character(glm::vec3(0, 0, 1)); },
+        true);
+    input.attach_keyboard_listener(
+        GLFW_KEY_SPACE, []()
+        { move_character(glm::vec3(0, 1, 0)); },
+        true);
+    input.attach_keyboard_listener(
+        GLFW_KEY_LEFT_CONTROL, []()
+        { move_character(glm::vec3(0, -1, 0)); },
+        true);
 
-    ShaderStore::add_shader("default", "shader.vs", "shader.fs");
+    ShaderStore::add_shader("default", "shader.vs", "texCoordVisual.fs");
 
     objBuffer.init_buffers();
 
@@ -137,14 +158,12 @@ int main()
 
     cube->set_position(glm::vec3(3, 3, 3));
     cube->set_scale(glm::vec3(3, 3, 3));
-    cube->set_color(hsl(0, .85, 1));
     cube->set_shader(ShaderStore::get_shader("default"));
 
     objBuffer.add_object(cube);
 
     auto cube2 = new Cube();
 
-    cube2->set_color(hsl(0, 1, 1));
     cube2->set_position(lightPos);
     cube2->set_scale(glm::vec3(.1f, .1f, .1f));
     cube2->set_shader(ShaderStore::get_shader("default"));
@@ -162,21 +181,20 @@ int main()
         TimeManager::set_delta_time((TimeManager::get_current_frame() - TimeManager::get_last_frame()) / 1000);
         TimeManager::set_last_frame(TimeManager::get_current_frame());
         input.process_keyboard(window, TimeManager::get_delta_time());
-        ShaderStore::set_shader_params([](const Shader* shad)
-            {
+        ShaderStore::set_shader_params([](const Shader *shad)
+                                       {
                 shad->set_vec3("ambientColor", ambientColor.get_rgb_vec3());
                 shad->set_vec3("lightColor", skyColor.get_rgb_vec3());
                 shad->set_vec3("lightPos", lightPos);
                 input.set_shader(shad);
-                character.update_shader(shad);
-            });
+                character.update_shader(shad); });
         if (lastSubdivision != subdivision)
         {
             lastSubdivision = subdivision;
         }
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glPointSize(5);
-        //enable gl wireframe mode
+        // enable gl wireframe mode
         if (wireframe)
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         else

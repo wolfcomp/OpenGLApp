@@ -1,13 +1,16 @@
 #include "Shader.h"
 
+#include <filesystem>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <fstream>
 #include <iostream>
 
-Shader::Shader(const char* vertex_path, const char* fragment_path)
+Shader::Shader(const char* vertex_filename, const char* fragment_filename)
 {
     // 1. retrieve the vertex/fragment source code from filePath
+    std::filesystem::path vertexPath("shaders");
+    std::filesystem::path fragmentPath("shaders");
     std::string vertexCode;
     std::string fragmentCode;
     std::ifstream vShaderFile;
@@ -15,11 +18,13 @@ Shader::Shader(const char* vertex_path, const char* fragment_path)
     // ensure ifstream objects can throw exceptions:
     vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    vertexPath /= vertex_filename;
+    fragmentPath /= fragment_filename;
     try
     {
         // open files
-        vShaderFile.open(vertex_path);
-        fShaderFile.open(fragment_path);
+        vShaderFile.open(vertexPath);
+        fShaderFile.open(fragmentPath);
         std::stringstream vShaderStream, fShaderStream;
         vShaderStream << vShaderFile.rdbuf();
         fShaderStream << fShaderFile.rdbuf();
@@ -33,6 +38,8 @@ Shader::Shader(const char* vertex_path, const char* fragment_path)
     catch (std::ifstream::failure e)
     {
         std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
+        std::cout << "Tried to read: " << vertexPath << std::endl;
+        std::cout << "" << fragmentPath << std::endl << std::endl;
     }
     const char* vShaderCode = vertexCode.c_str();
     const char* fShaderCode = fragmentCode.c_str();
