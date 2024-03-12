@@ -12,6 +12,8 @@
 
 class IObject : public IRender
 {
+    std::vector<IObject *> childern;
+
 public:
     virtual ~IObject() = default;
     IObject() = default;
@@ -26,7 +28,7 @@ public:
 
     void draw() override
     {
-        if (!this->should_draw || shader == nullptr || material == nullptr)
+        if (!this->should_draw || shader == nullptr || vertices.empty() || indices.empty())
             return;
         IRender::draw();
         pre_draw();
@@ -67,5 +69,28 @@ public:
     virtual std::vector<ICollision *> get_collisions()
     {
         return {collision};
+    }
+
+    void add_child(IObject *child)
+    {
+        childern.push_back(child);
+    }
+
+    void remove_child(IObject *child)
+    {
+        childern.erase(std::remove(childern.begin(), childern.end(), child), childern.end());
+    }
+
+    void remove_all_children()
+    {
+        childern.clear();
+    }
+
+    void draw_children()
+    {
+        for (auto &child : childern)
+        {
+            child->draw();
+        }
     }
 };

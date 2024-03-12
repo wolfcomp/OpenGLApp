@@ -3,9 +3,12 @@
 #include "TimeManager.h"
 #include "ObjectBuffer.h"
 #include "objects/Character.h"
+#include "debug/Arrow.h"
 #include "ShaderStore.h"
 #include "primitives/Cube.h"
 #include "InputProcessing.h"
+#include "Light.h"
+#include "Math.h"
 
 constexpr int width = 1600;
 constexpr int height = 900;
@@ -21,9 +24,22 @@ float curveAggressiveness = 1;
 bool lastCharacterStateObserved = false;
 float prevYawExplicit;
 float prevPitchExplicit;
-hsl skyColor = hsl(180, .85f, .75);
-hsl ambientColor = hsl(0, 1, .4f);
-glm::vec3 lightPos = glm::vec3(-10, 10, -10);
+hsl pointColor = hsl(180, .85f, .75);
+hsl ambientColor = hsl(0, 0, .3f);
+glm::vec3 lightPos = glm::vec3(0, 0, 4);
+Light light;
+
+glm::vec3 cubePositions[] = {
+    glm::vec3(0.0f, 0.0f, 0.0f),
+    glm::vec3(2.0f, 5.0f, -15.0f),
+    glm::vec3(-1.5f, -2.2f, -2.5f),
+    glm::vec3(-3.8f, -2.0f, -12.3f),
+    glm::vec3(2.4f, -0.4f, -3.5f),
+    glm::vec3(-1.7f, 3.0f, -7.5f),
+    glm::vec3(1.3f, -2.0f, -2.5f),
+    glm::vec3(1.5f, 2.0f, -2.5f),
+    glm::vec3(1.5f, 0.2f, -1.5f),
+    glm::vec3(-1.3f, 1.0f, -1.5f)};
 
 InputProcessing input;
 ObjectBuffer objBuffer;
@@ -86,7 +102,7 @@ int Window::init()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow *window = glfwCreateWindow(width, height, "OpenGLApp", nullptr, nullptr);
+    window = glfwCreateWindow(width, height, "OpenGLApp", nullptr, nullptr);
     if (window == nullptr)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -138,45 +154,79 @@ int Window::init()
         GLFW_KEY_LEFT_CONTROL, []()
         { move_character(glm::vec3(0, -1, 0)); },
         true);
+    return 0;
 }
 
 void Window::create_objects()
 {
     objBuffer.init_buffers();
 
-    auto cube = new Cube();
+    const auto material = new Material();
 
-    cube->set_position(glm::vec3(3, 3, 3));
-    cube->set_scale(glm::vec3(3, 3, 3));
-    cube->set_shader(ShaderStore::get_shader("uvVisual"));
+    material->load_texture("container", "container.png");
 
-    objBuffer.add_object(cube);
+    for (int i = 0; i < 10; i++)
+    {
+        const auto cube = new Cube();
 
-    auto cube2 = new Cube();
+        cube->set_position(cubePositions[i]);
+        const auto angle = 20.0f * i;
+        cube->set_euler_rotation(glm::vec3(1.0f, 0.3f, 0.5f) * angle);
+        cube->set_scale(glm::vec3(.5f, .5f, .5f));
+        cube->set_albedo(hsl(0, .6f, .5f));
+        cube->set_shader(ShaderStore::get_shader("default"));
+        cube->material = material;
+
+        objBuffer.add_object(cube);
+    }
+
+    const auto cube2 = new Cube();
 
     cube2->set_position(lightPos);
     cube2->set_scale(glm::vec3(.1f, .1f, .1f));
-    cube2->set_shader(ShaderStore::get_shader("default"));
+    cube2->set_albedo(pointColor);
+    cube2->set_shader(ShaderStore::get_shader("noLight"));
 
     objBuffer.add_object(cube2);
 
-    character.set_position(glm::vec3(-5, 0.75f, 0));
-    character.set_shader(ShaderStore::get_shader("default"));
+    const auto arrow = new Arrow();
+    arrow->set_position(lightPos);
+    arrow->set_rotation(glm::vec3(0, M_PI / 2, 0));
+    arrow->set_albedo(hsl(0, .5, .5));
+    arrow->set_shader(ShaderStore::get_shader("noLight"));
+
+    objBuffer.add_object(arrow);
+
+    light.position = lightPos;
+    light.direction = eulerAngles(arrow->rotation);
+    light.color = pointColor;
+    light.lightType = LightType::SPOT;
+    light.specular = glm::vec3(1.0f);
+    light.constant = 1.0f;
+    light.linear = 0.0014f;
+    light.quadratic = 0.000007f;
+    light.cutOff = 12.5f;
+    light.outerCutOff = 15.0f;
+
+    character.set_position(lightPos - glm::vec3(2, 0, 0));
+    character.set_shader(ShaderStore::get_shader("noLight"));
+
+    ShaderStore::set_shader_params(
+        [](const Shader *shad)
+        {
+            shad->set_vec3("light.ambient", ambientColor.get_rgb_vec3());
+            light.set_shader(shad);
+            input.set_shader(shad);
+            character.update_shader(shad);
+        });
 }
 
-void Window::update()
+void Window::update() const
 {
     TimeManager::set_current_frame(glfwGetTime());
     TimeManager::set_delta_time((TimeManager::get_current_frame() - TimeManager::get_last_frame()) / 1000);
     TimeManager::set_last_frame(TimeManager::get_current_frame());
     input.process_keyboard(window, TimeManager::get_delta_time());
-    ShaderStore::set_shader_params([](const Shader *shad)
-                                   {
-                shad->set_vec3("ambientColor", ambientColor.get_rgb_vec3());
-                shad->set_vec3("lightColor", skyColor.get_rgb_vec3());
-                shad->set_vec3("lightPos", lightPos);
-                input.set_shader(shad);
-                character.update_shader(shad); });
     if (lastSubdivision != subdivision)
     {
         lastSubdivision = subdivision;
@@ -197,7 +247,7 @@ void Window::update()
     glfwPollEvents();
 }
 
-bool Window::should_close()
+bool Window::should_close() const
 {
     return glfwWindowShouldClose(window);
 }

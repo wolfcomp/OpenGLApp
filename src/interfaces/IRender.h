@@ -18,7 +18,7 @@ public:
     IRender &operator=(const IRender &) = default;
     IRender(IRender &&) = default;
     IRender &operator=(IRender &&) = default;
-    glm::quat rotation;
+    glm::quat rotation = glm::quat(1, 0, 0, 0);
     glm::vec3 position;
     glm::vec3 scale = glm::vec3(1.0f);
     glm::mat4 model = glm::mat4(1.0f);
@@ -32,8 +32,8 @@ public:
         shader->use();
         if (material != nullptr)
             material->set_shader(shader);
-        else
-            shader->set_vec3("albedo", albedo.get_rgb_vec3());
+        shader->set_vec3("albedo", albedo.get_rgb_vec3());
+        shader->set_mat4("model", value_ptr(model));
     }
 
     virtual void pre_draw()
@@ -44,7 +44,7 @@ public:
     {
     }
 
-    void set_shader(Shader *shader)
+    virtual void set_shader(Shader *shader)
     {
         this->shader = shader;
     }
@@ -52,8 +52,8 @@ public:
     void compute_model_matrix()
     {
         model = glm::mat4(1.0f);
-        model *= mat4_cast(rotation);
-        model = translate(model, position);
+        model = glm::translate(model, position);
+        model = model * glm::mat4_cast(rotation);
         model = glm::scale(model, scale);
     }
 
@@ -62,19 +62,27 @@ public:
         this->position = position;
         compute_model_matrix();
     }
+
     void set_scale(glm::vec3 scale)
     {
         this->scale = scale;
         compute_model_matrix();
     }
+
     void set_rotation(glm::quat quaternion)
     {
         this->rotation = quaternion;
         compute_model_matrix();
     }
+
     void set_euler_rotation(glm::vec3 angle)
     {
         this->rotation = glm::quat(angle);
         compute_model_matrix();
+    }
+
+    void set_albedo(hsl color)
+    {
+        albedo = color;
     }
 };

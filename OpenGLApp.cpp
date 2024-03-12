@@ -17,7 +17,8 @@ int main()
     ShaderStore::add_shader("default", "default.vs", "default.fs");
     ShaderStore::add_shader("uvVisual", "default.vs", "texCoordVisual.fs");
     ShaderStore::add_shader("noLight", "default.vs", "noLight.fs");
-    ShaderStore::add_shader("lightSource", "default.vs", "lightSource.fs");
+
+    window.create_objects();
 
     TimeManager::set_last_frame(glfwGetTime());
 

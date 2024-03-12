@@ -7,7 +7,7 @@ struct Window
     GLFWwindow *window;
 
     int init();
-    void create_objects();
-    void update();
-    bool should_close();
+    static void create_objects();
+    void update() const;
+    bool should_close() const;
 };

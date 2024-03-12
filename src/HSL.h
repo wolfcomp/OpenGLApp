@@ -1,7 +1,7 @@
 #pragma once
 #include <cmath>
 
-#include "glm/vec3.hpp"
+#include <glm/vec3.hpp>
 
 class hsl
 {
@@ -30,11 +30,11 @@ class hsl
     }
 
 public:
-    hsl() : h(0), s(0), l(0), rgb{ 0, 0, 0 }
+    hsl() : h(0), s(0), l(0), rgb{0, 0, 0}
     {
     }
 
-    hsl(float h, float s, float l) : h(h), s(s), l(l), rgb{ 0, 0, 0 }
+    hsl(float h, float s, float l) : h(h), s(s), l(l), rgb{0, 0, 0}
     {
     }
 
@@ -62,14 +62,14 @@ public:
         this->l = this->l + (l - this->l) * amount;
     }
 
-    void blend(hsl& other, float amount)
+    void blend(hsl &other, float amount)
     {
         h = static_cast<int>(h + (other.h - h) * amount) % 360;
         s = s + (other.s - s) * amount;
         l = l + (other.l - l) * amount;
     }
 
-    float* get_rgb()
+    float *get_rgb()
     {
         float c = (1.0f - abs(2.0f * l - 1.0f)) * s;
         float x = c * (1.0f - abs(mod(h / 60.0f, 2) - 1.0f));
@@ -123,6 +123,6 @@ public:
     glm::vec3 get_rgb_vec3()
     {
         get_rgb();
-        return { rgb[0], rgb[1], rgb[2] };
+        return {rgb[0], rgb[1], rgb[2]};
     }
 };
