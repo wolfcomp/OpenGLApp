@@ -21,3 +21,4 @@ target_link_libraries(OpenGLApp PRIVATE "glfw3.lib")
 target_link_libraries(OpenGLApp PRIVATE "opengl32.lib")
 
 add_custom_command(TARGET OpenGLApp POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/shaders $<TARGET_FILE_DIR:OpenGLApp>/shaders)
+add_custom_command(TARGET OpenGLApp POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/textures $<TARGET_FILE_DIR:OpenGLApp>/textures)

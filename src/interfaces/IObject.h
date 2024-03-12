@@ -28,11 +28,7 @@ public:
     {
         if (!this->should_draw || shader == nullptr || material == nullptr)
             return;
-        shader->use();
-        shader->set_int("material.diffuse", material->diffuseTexture);
-        shader->set_int("material.specular", material->specularTexture);
-        shader->set_float("material.shininess", material->shininess);
-        shader->set_mat4("model", value_ptr(model));
+        IRender::draw();
         pre_draw();
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);

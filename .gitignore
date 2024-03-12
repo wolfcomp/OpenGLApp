@@ -407,3 +407,6 @@ include/*
 lib/*
 bin/*
 test/test_runner
+
+# vscode
+.vscode/

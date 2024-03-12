@@ -25,9 +25,15 @@ public:
     GLenum draw_mode = GL_POINTS;
     Shader *shader = nullptr;
     Material *material = nullptr;
+    hsl albedo = hsl(0, 0, 0);
 
     virtual void draw()
     {
+        shader->use();
+        if (material != nullptr)
+            material->set_shader(shader);
+        else
+            shader->set_vec3("albedo", albedo.get_rgb_vec3());
     }
 
     virtual void pre_draw()

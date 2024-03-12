@@ -8,7 +8,7 @@ struct Material
     unsigned int specularTexture = 0;
     float shininess = 32.0f;
 
-    void load_texture(const char *path);
+    void load_texture(const std::string block, const std::string path);
     void set_shininess(float shininess);
     void set_shader(const Shader *shader);
 };

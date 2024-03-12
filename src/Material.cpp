@@ -32,10 +32,23 @@ unsigned int create_texture(const char *path)
     return texture;
 }
 
-void Material::load_texture(const char *path)
+void Material::load_texture(const std::string block, const std::string path)
 {
     // load and create textures
-    std::filesystem::path p = path;
+    std::filesystem::path p = block;
+    p /= path;
     diffuseTexture = create_texture((p.stem().generic_string() + "_d" + p.extension().generic_string()).c_str());
     specularTexture = create_texture((p.stem().generic_string() + "_s" + p.extension().generic_string()).c_str());
+}
+
+void Material::set_shader(const Shader *shader)
+{
+    shader->use();
+    shader->set_int("material.diffuse", 0);
+    shader->set_int("material.specular", 1);
+    shader->set_float("material.shininess", shininess);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, diffuseTexture);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, specularTexture);
 }
