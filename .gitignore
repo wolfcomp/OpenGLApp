@@ -410,3 +410,5 @@ test/test_runner
 
 # vscode
 .vscode/
+
+!src/debug
