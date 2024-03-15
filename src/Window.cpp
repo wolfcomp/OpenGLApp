@@ -24,10 +24,21 @@ float curveAggressiveness = 1;
 bool lastCharacterStateObserved = false;
 float prevYawExplicit;
 float prevPitchExplicit;
-hsl pointColor = hsl(180, .85f, .75);
-hsl ambientColor = hsl(0, 0, .3f);
+hsl pointColor = hsl(0, 0, 0);
+hsl ambientColor = hsl(0, 0, .05f);
 glm::vec3 lightPos = glm::vec3(0, 0, 4);
-Light light;
+DirectionalLight dirLight;
+PointLight light0;
+PointLight light1;
+PointLight light2;
+PointLight light3;
+SpotLight spotLight;
+
+glm::vec3 pointLightPositions[] = {
+    glm::vec3(0.7f, 0.2f, 2.0f),
+    glm::vec3(2.3f, -3.3f, -4.0f),
+    glm::vec3(-4.0f, 2.0f, -12.0f),
+    glm::vec3(0.0f, 0.0f, -3.0f)};
 
 glm::vec3 cubePositions[] = {
     glm::vec3(0.0f, 0.0f, 0.0f),
@@ -41,6 +52,7 @@ glm::vec3 cubePositions[] = {
     glm::vec3(1.5f, 0.2f, -1.5f),
     glm::vec3(-1.3f, 1.0f, -1.5f)};
 
+Material *material = nullptr;
 InputProcessing input;
 ObjectBuffer objBuffer;
 Character character;
@@ -161,7 +173,7 @@ void Window::create_objects()
 {
     objBuffer.init_buffers();
 
-    const auto material = new Material();
+    material = new Material();
 
     material->load_texture("container", "container.png");
 
@@ -182,7 +194,7 @@ void Window::create_objects()
 
     const auto cube2 = new Cube();
 
-    cube2->set_position(lightPos);
+    cube2->set_position(pointLightPositions[0]);
     cube2->set_scale(glm::vec3(.1f, .1f, .1f));
     cube2->set_albedo(pointColor);
     cube2->set_shader(ShaderStore::get_shader("noLight"));
@@ -190,32 +202,56 @@ void Window::create_objects()
     objBuffer.add_object(cube2);
 
     const auto arrow = new Arrow();
-    arrow->set_position(lightPos);
+    arrow->set_position(pointLightPositions[0]);
     arrow->set_rotation(glm::vec3(0, M_PI / 2, 0));
     arrow->set_albedo(hsl(0, .5, .5));
     arrow->set_shader(ShaderStore::get_shader("noLight"));
 
     objBuffer.add_object(arrow);
 
-    light.position = lightPos;
-    light.direction = eulerAngles(arrow->rotation);
-    light.color = pointColor;
-    light.lightType = LightType::SPOT;
-    light.specular = glm::vec3(1.0f);
-    light.constant = 1.0f;
-    light.linear = 0.0014f;
-    light.quadratic = 0.000007f;
-    light.cutOff = 12.5f;
-    light.outerCutOff = 15.0f;
+    light0.index = 0;
+    light0.position = pointLightPositions[0];
+    light0.diffuse = pointColor;
+    light0.ambient = ambientColor;
+    light0.specular = glm::vec3(0);
+    light0.constant = 1.0f;
+    light0.linear = 0.09f;
+    light0.quadratic = 0.032f;
 
-    character.set_position(lightPos - glm::vec3(2, 0, 0));
+    light1 = light2 = light3 = light0;
+    light1.index = 1;
+    light2.index = 2;
+    light3.index = 3;
+    light1.position = pointLightPositions[1];
+    light2.position = pointLightPositions[2];
+    light3.position = pointLightPositions[3];
+
+    dirLight.ambient = hsl(0, 0, .05f);
+    dirLight.diffuse = hsl(0, 0, 0);
+    dirLight.specular = glm::vec3(0);
+    dirLight.direction = glm::vec3(-0.2f, -1.0f, -0.3f);
+
+    spotLight.position = staticCameraPos;
+    spotLight.direction = glm::vec3(0, 0, 0);
+    spotLight.constant = 1.0f;
+    spotLight.linear = 0.09f;
+    spotLight.quadratic = 0.032f;
+    spotLight.ambient = hsl(0, 0, .05f);
+    spotLight.diffuse = hsl(0, 0, 0);
+    spotLight.specular = glm::vec3(0);
+
+    character.set_position(pointLightPositions[0] - glm::vec3(2, 0, 0));
     character.set_shader(ShaderStore::get_shader("noLight"));
 
     ShaderStore::set_shader_params(
         [](const Shader *shad)
         {
-            shad->set_vec3("light.ambient", ambientColor.get_rgb_vec3());
-            light.set_shader(shad);
+            light0.set_shader(shad);
+            light1.set_shader(shad);
+            light2.set_shader(shad);
+            light3.set_shader(shad);
+            dirLight.set_shader(shad);
+            spotLight.set_shader(shad);
             input.set_shader(shad);
             character.update_shader(shad);
         });

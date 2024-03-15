@@ -3,39 +3,80 @@
 #include "HSL.h"
 #include "Shader.h"
 
-enum class LightType
-{
-    DIRECTIONAL,
-    POINT,
-    SPOT
-};
-
 struct Light
 {
-    LightType lightType;
-    glm::vec3 position;
-    glm::vec3 direction;
-
-    hsl color;
+    hsl ambient;
+    hsl diffuse;
     glm::vec3 specular;
 
+    virtual void set_shader(const Shader *shader)
+    {
+        shader->set_vec3(get_name() + ".ambient", ambient.get_rgb_vec3());
+        shader->set_vec3(get_name() + ".diffuse", diffuse.get_rgb_vec3());
+        shader->set_vec3(get_name() + ".specular", glm::vec3(1.0f));
+    }
+
+    virtual std::string get_name()
+    {
+        return "light";
+    }
+};
+
+struct DirectionalLight : public Light
+{
+    glm::vec3 direction;
+
+    void set_shader(const Shader *shader) override
+    {
+        Light::set_shader(shader);
+        shader->set_vec3(get_name() + ".direction", direction);
+    }
+
+    std::string get_name() override
+    {
+        return "dirLight";
+    }
+};
+
+struct PointLight : public Light
+{
+    int index;
+    glm::vec3 position;
     float constant;
     float linear;
     float quadratic;
 
+    void set_shader(const Shader *shader) override
+    {
+        Light::set_shader(shader);
+        shader->set_vec3(get_name() + ".position", position);
+        shader->set_float(get_name() + ".constant", constant);
+        shader->set_float(get_name() + ".linear", linear);
+        shader->set_float(get_name() + ".quadratic", quadratic);
+    }
+
+    std::string get_name() override
+    {
+        return "pointLights[" + std::to_string(index) + "]";
+    }
+};
+
+struct SpotLight : public PointLight
+{
+    glm::vec3 direction;
     float cutOff;
     float outerCutOff;
 
-    void set_shader(const Shader *shader)
+    void set_shader(const Shader *shader) override
     {
-        shader->set_int("light.type", static_cast<int>(lightType));
-        shader->set_vec3("light.position", position);
-        shader->set_vec3("light.diffuse", color.get_rgb_vec3());
-        shader->set_vec3("light.specular", glm::vec3(1.0f));
-        shader->set_float("light.constant", constant);
-        shader->set_float("light.linear", linear);
-        shader->set_float("light.quadratic", quadratic);
-        shader->set_float("light.cutOff", cutOff);
-        shader->set_float("light.outerCutOff", outerCutOff);
+        PointLight::set_shader(shader);
+        shader->set_vec3(get_name() + ".direction", direction);
+        shader->set_float(get_name() + ".cutOff", cutOff);
+        shader->set_float(get_name() + ".outerCutOff", outerCutOff);
+    }
+
+    std::string get_name() override
+    {
+        return "spotLight";
     }
 };
