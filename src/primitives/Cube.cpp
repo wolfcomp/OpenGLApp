@@ -26,7 +26,7 @@ void Cube::push_face(std::vector<Vertex> face, std::vector<unsigned> indices)
 void Cube::generate_vertices()
 {
     Vertex v0, v1, v2, v3;
-    v0 = Vertex(glm::vec3(1));
+    v0 = Vertex(glm::vec3(1), glm::vec3(0, 0, 1));
     memcpy(&v1, &v0, sizeof(Vertex));
     memcpy(&v2, &v0, sizeof(Vertex));
     memcpy(&v3, &v0, sizeof(Vertex));
@@ -44,7 +44,6 @@ void Cube::generate_vertices()
     std::vector<unsigned> tmpIndices = {0, 3, 1, 3, 2, 1};
     vertices.reserve(24);
     indices.reserve(36);
-    glm::vec3 normal = glm::vec3(0, 0, 1);
 
     tmpVertices[0].texture_coord = glm::vec2(0, 0);
     tmpVertices[1].texture_coord = glm::vec2(1, 0);

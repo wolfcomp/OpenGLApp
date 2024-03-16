@@ -97,8 +97,9 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir) {
     vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
     vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoords));
     vec3 specular = light.specular * spec * vec3(texture(material.specular, TexCoords));
-    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
-    float shadow = ShadowCalcuation(FragPosLightSpace, bias);
+    float dotProduct = max(dot(normal, lightDir), 0.0);
+    float bias = 0.005 * tan(acos(dotProduct));
+    float shadow = ShadowCalcuation(FragPosLightSpace, clamp(bias, 0, 0.01));
     return (ambient + (diffuse + specular) * (1 - shadow));
 }
 

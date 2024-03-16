@@ -39,4 +39,5 @@ public:
     glm::vec3 get_position() const;
     glm::quat get_look() const;
     glm::vec2 get_look_angles() const;
+    glm::mat4 get_view() const;
 };

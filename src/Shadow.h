@@ -9,8 +9,8 @@ class ShadowProcessor
     unsigned int depth_map_fbo;
     unsigned int depth_map;
 
-    const unsigned int SHADOW_WIDTH = 1024;
-    const unsigned int SHADOW_HEIGHT = 1024;
+    const unsigned int SHADOW_WIDTH = 2048;
+    const unsigned int SHADOW_HEIGHT = 2048;
 
 public:
     ShadowProcessor() = default;

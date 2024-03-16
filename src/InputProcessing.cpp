@@ -16,17 +16,17 @@ void InputProcessing::change_aspect(const float width, const float height)
     projection = glm::perspective(glm::radians(zoom), aspect, 0.1f, 100.0f);
 }
 
-void InputProcessing::set_shader(const Shader* shader)
+void InputProcessing::set_shader(const Shader *shader)
 {
     shader->set_mat4("projection", value_ptr(projection));
 }
 
-void InputProcessing::process_keyboard(GLFWwindow* window, const double delta_time)
+void InputProcessing::process_keyboard(GLFWwindow *window, const double delta_time)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    for (const auto& [key, func] : keyboard_listeners)
+    for (const auto &[key, func] : keyboard_listeners)
     {
         if (glfwGetKey(window, key) == GLFW_PRESS && (should_repeat[key] || !key_pressed[key]))
         {
@@ -50,4 +50,9 @@ void InputProcessing::attach_keyboard_listener(const int key, void (*event_handl
 void InputProcessing::remove_keyboard_listener(const int key)
 {
     keyboard_listeners.erase(key);
+}
+
+glm::mat4 InputProcessing::get_projection() const
+{
+    return projection;
 }
