@@ -3,14 +3,13 @@
 
 #include "../Shader.h"
 #include "../Vertex.h"
-#include "../collision/ICollision.h"
 #include "glad/glad.h"
 #include "../HSL.h"
 #include "glm/gtc/type_ptr.hpp"
 #include "../Material.h"
 #include "IRender.h"
 
-class IObject : public IRender
+class IObject : public IRenderOld
 {
     std::vector<IObject *> childern;
 
@@ -21,16 +20,16 @@ public:
     IObject &operator=(const IObject &) = default;
     IObject(IObject &&) = default;
     IObject &operator=(IObject &&) = default;
-    ICollision *collision = nullptr;
+    ICollisionOld *collision = nullptr;
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
     bool should_draw = true;
 
-    void draw() override
+    void draw(Shader *override = nullptr) override
     {
         if (!this->should_draw || shader == nullptr || vertices.empty() || indices.empty())
             return;
-        IRender::draw();
+        IRenderOld::draw(override);
         pre_draw();
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
@@ -66,7 +65,7 @@ public:
         push_vector(vector, args...);
     }
 
-    virtual std::vector<ICollision *> get_collisions()
+    virtual std::vector<ICollisionOld *> get_collisions()
     {
         return {collision};
     }

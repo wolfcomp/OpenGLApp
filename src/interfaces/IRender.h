@@ -3,21 +3,21 @@
 
 #include "../Shader.h"
 #include "../Vertex.h"
-#include "../collision/ICollision.h"
+#include "../collision/ICollider.h"
 #include "glad/glad.h"
 #include "../HSL.h"
 #include "glm/gtc/type_ptr.hpp"
 #include "../Material.h"
 
-class IRender
+class IRenderOld
 {
 public:
-    virtual ~IRender() = default;
-    IRender() = default;
-    IRender(const IRender &) = default;
-    IRender &operator=(const IRender &) = default;
-    IRender(IRender &&) = default;
-    IRender &operator=(IRender &&) = default;
+    virtual ~IRenderOld() = default;
+    IRenderOld() = default;
+    IRenderOld(const IRenderOld &) = default;
+    IRenderOld &operator=(const IRenderOld &) = default;
+    IRenderOld(IRenderOld &&) = default;
+    IRenderOld &operator=(IRenderOld &&) = default;
     glm::quat rotation = glm::quat(1, 0, 0, 0);
     glm::vec3 position;
     glm::vec3 scale = glm::vec3(1.0f);
@@ -26,14 +26,18 @@ public:
     Shader *shader = nullptr;
     Material *material = nullptr;
     hsl albedo = hsl(0, 0, 0);
+    bool no_depth = false;
 
-    virtual void draw()
+    virtual void draw(Shader *override = nullptr)
     {
-        shader->use();
+        auto use_shader = shader;
+        if (override)
+            use_shader = override;
+        use_shader->use();
         if (material != nullptr)
-            material->set_shader(shader);
-        shader->set_vec3("albedo", albedo.get_rgb_vec3());
-        shader->set_mat4("model", value_ptr(model));
+            material->set_shader(use_shader);
+        use_shader->set_vec3("albedo", albedo.get_rgb_vec3());
+        use_shader->set_mat4("model", value_ptr(model));
     }
 
     virtual void pre_draw()
@@ -85,4 +89,17 @@ public:
     {
         albedo = color;
     }
+};
+
+class IRender
+{
+public:
+    virtual ~IRender() = default;
+    IRender() = default;
+    IRender(const IRender &) = default;
+    IRender &operator=(const IRender &) = default;
+    IRender(IRender &&) = default;
+    IRender &operator=(IRender &&) = default;
+
+    virtual void draw(const class Shader * = nullptr) = 0;
 };

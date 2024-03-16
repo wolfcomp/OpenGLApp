@@ -6,7 +6,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-unsigned int create_texture(const char *path)
+unsigned int create_texture(const char *path, bool gamma_correct = false)
 {
     unsigned int texture;
     glGenTextures(1, &texture);
@@ -22,15 +22,24 @@ unsigned int create_texture(const char *path)
     if (data)
     {
         GLenum format;
+        GLenum internal_format;
         if (nrChannels == 1)
-            format = GL_RED;
+            internal_format = format = GL_RED;
         else if (nrChannels == 3)
+        {
             format = GL_RGB;
+            internal_format = gamma_correct ? GL_SRGB : GL_RGB;
+        }
         else if (nrChannels == 4)
+        {
             format = GL_RGBA;
+            internal_format = gamma_correct ? GL_SRGB_ALPHA : GL_RGBA;
+        }
         else
-            format = GL_RGB;
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        {
+            internal_format = format = GL_RGB;
+        }
+        glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
@@ -52,7 +61,7 @@ void Material::load_texture(const std::string block, const std::string path)
     std::filesystem::path p = "textures";
     p /= block;
     p /= path;
-    diffuseTexture = create_texture(get_path(p, "_d").c_str());
+    diffuseTexture = create_texture(get_path(p, "_d").c_str(), true);
     specularTexture = create_texture(get_path(p, "_s").c_str());
 }
 

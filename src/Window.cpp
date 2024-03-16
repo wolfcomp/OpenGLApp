@@ -9,6 +9,8 @@
 #include "InputProcessing.h"
 #include "Light.h"
 #include "Math.h"
+#include "Shadow.h"
+#include "primitives/Plane.h"
 
 constexpr int width = 1600;
 constexpr int height = 900;
@@ -24,7 +26,7 @@ float curveAggressiveness = 1;
 bool lastCharacterStateObserved = false;
 float prevYawExplicit;
 float prevPitchExplicit;
-hsl pointColor = hsl(0, 0, 0);
+hsl pointColor = hsl(0, 0, .8f);
 hsl ambientColor = hsl(0, 0, .05f);
 glm::vec3 lightPos = glm::vec3(0, 0, 4);
 DirectionalLight dirLight;
@@ -52,10 +54,12 @@ glm::vec3 cubePositions[] = {
     glm::vec3(1.5f, 0.2f, -1.5f),
     glm::vec3(-1.3f, 1.0f, -1.5f)};
 
-Material *material = nullptr;
+Material *container = nullptr;
+Material *brick = nullptr;
 InputProcessing input;
 ObjectBuffer objBuffer;
 Character character;
+ShadowProcessor shadowProcessor;
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
@@ -172,10 +176,15 @@ int Window::init()
 void Window::create_objects()
 {
     objBuffer.init_buffers();
+    shadowProcessor.init();
 
-    material = new Material();
+    container = new Material();
 
-    material->load_texture("container", "container.png");
+    container->load_texture("container", "container.png");
+
+    brick = new Material();
+
+    brick->load_texture("brick", "brick.jpg");
 
     for (int i = 0; i < 10; i++)
     {
@@ -187,7 +196,7 @@ void Window::create_objects()
         cube->set_scale(glm::vec3(.5f, .5f, .5f));
         cube->set_albedo(hsl(0, .6f, .5f));
         cube->set_shader(ShaderStore::get_shader("default"));
-        cube->material = material;
+        cube->material = container;
 
         objBuffer.add_object(cube);
     }
@@ -198,6 +207,7 @@ void Window::create_objects()
     cube2->set_scale(glm::vec3(.1f, .1f, .1f));
     cube2->set_albedo(pointColor);
     cube2->set_shader(ShaderStore::get_shader("noLight"));
+    cube2->no_depth = true;
 
     objBuffer.add_object(cube2);
 
@@ -206,14 +216,24 @@ void Window::create_objects()
     arrow->set_rotation(glm::vec3(0, M_PI / 2, 0));
     arrow->set_albedo(hsl(0, .5, .5));
     arrow->set_shader(ShaderStore::get_shader("noLight"));
+    arrow->no_depth = true;
 
     objBuffer.add_object(arrow);
+
+    const auto plane = new Plane();
+    plane->set_position(glm::vec3(0, -1, 0));
+    plane->set_size(glm::vec2(10, 10));
+    plane->set_albedo(hsl(0, 0, .5f));
+    plane->set_shader(ShaderStore::get_shader("default"));
+    plane->material = brick;
+
+    objBuffer.add_object(plane);
 
     light0.index = 0;
     light0.position = pointLightPositions[0];
     light0.diffuse = pointColor;
     light0.ambient = ambientColor;
-    light0.specular = glm::vec3(0);
+    light0.specular = glm::vec3(1);
     light0.constant = 1.0f;
     light0.linear = 0.09f;
     light0.quadratic = 0.032f;
@@ -227,18 +247,20 @@ void Window::create_objects()
     light3.position = pointLightPositions[3];
 
     dirLight.ambient = hsl(0, 0, .05f);
-    dirLight.diffuse = hsl(0, 0, 0);
-    dirLight.specular = glm::vec3(0);
+    dirLight.diffuse = hsl(0, 0, .4f);
+    dirLight.specular = glm::vec3(.5f);
     dirLight.direction = glm::vec3(-0.2f, -1.0f, -0.3f);
 
-    spotLight.position = staticCameraPos;
-    spotLight.direction = glm::vec3(0, 0, 0);
+    spotLight.position = pointLightPositions[0];
+    spotLight.direction = normalize(glm::vec3(0, 0, -1));
     spotLight.constant = 1.0f;
     spotLight.linear = 0.09f;
     spotLight.quadratic = 0.032f;
     spotLight.ambient = hsl(0, 0, .05f);
-    spotLight.diffuse = hsl(0, 0, 0);
-    spotLight.specular = glm::vec3(0);
+    spotLight.diffuse = hsl(0, 0, .8f);
+    spotLight.specular = glm::vec3(1);
+    spotLight.cutOff = glm::cos(glm::radians(12.5f));
+    spotLight.outerCutOff = glm::cos(glm::radians(17.5f));
 
     character.set_position(pointLightPositions[0] - glm::vec3(2, 0, 0));
     character.set_shader(ShaderStore::get_shader("noLight"));
@@ -254,6 +276,9 @@ void Window::create_objects()
             spotLight.set_shader(shad);
             input.set_shader(shad);
             character.update_shader(shad);
+            shad->set_float("gammaCorrection", 2.2f);
+            shad->set_mat4("lightSpaceMatrix", value_ptr(shadowProcessor.get_light_space_matrix(character.get_position(), dirLight.direction, glm::eulerAngles(character.get_look()))));
+            shadowProcessor.bind_depth_map(shad);
         });
 }
 
@@ -274,13 +299,25 @@ void Window::update() const
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     else
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    objBuffer.draw();
+
+    shadowProcessor.bind_buffer();
+    objBuffer.draw(true);
+    shadowProcessor.unbind_buffer(glm::vec2(width, height));
+    glCullFace(GL_FRONT);
+    objBuffer.draw(false);
+    glCullFace(GL_BACK);
     // character.draw();
 
     glBindVertexArray(0);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
+}
+
+void Window::render() const
+{
+    // first run the update
+    update();
 }
 
 bool Window::should_close() const

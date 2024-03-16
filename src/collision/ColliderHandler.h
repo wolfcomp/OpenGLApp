@@ -1,10 +1,10 @@
 #pragma once
-#include "ICollision.h"
+#include "ICollider.h"
 
 class ColliderHandler
 {
 public:
-    // static void check_collision(ICollision* a, ICollision* b)
+    // static void check_collision(ICollisionOld* a, ICollisionOld* b)
     // {
     //     for (auto element : a->get_points())
     //     {

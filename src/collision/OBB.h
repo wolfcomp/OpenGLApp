@@ -1,16 +1,16 @@
 #pragma once
 #include <iostream>
 
-#include "ICollision.h"
+#include "ICollider.h"
 #include "../objects/PointRender.h"
 #include "glm/ext/quaternion_exponential.hpp"
 #include "glm/gtx/rotate_vector.hpp"
 
-struct OBB : ICollision
+struct OBB : ICollisionOld
 {
     std::vector<glm::vec2> points;
 
-    bool contains(ICollision* collider) override
+    bool contains(ICollisionOld *collider) override
     {
         const auto colPoints = position == glm::vec2() ? points : get_points();
         for (auto point : collider->get_points())
@@ -38,7 +38,7 @@ struct OBB : ICollision
         return false;
     }
 
-    void check_overlap(ICollision* collider) override
+    void check_overlap(ICollisionOld *collider) override
     {
         const auto colPoints = get_points();
         for (auto point : collider->get_points())
@@ -64,12 +64,12 @@ struct OBB : ICollision
         }
     }
 
-    float det(const glm::vec2& a, const glm::vec2& b)
+    float det(const glm::vec2 &a, const glm::vec2 &b)
     {
         return a.x * b.y - a.y * b.x;
     }
 
-    glm::vec2 cross(const glm::vec2& a, const glm::vec2& b)
+    glm::vec2 cross(const glm::vec2 &a, const glm::vec2 &b)
     {
         return glm::vec2(a.x * b.y - a.y * b.x);
     }
@@ -96,14 +96,14 @@ struct OBB : ICollision
             draw_object = new PointRender();
         if (draw_object)
         {
-            dynamic_cast<PointRender*>(draw_object)->clear_points();
+            dynamic_cast<PointRender *>(draw_object)->clear_points();
             std::vector<glm::vec2> points;
             points.reserve(this->points.size());
             for (auto point : this->points)
             {
                 points.push_back(rotate(point, glm::radians(angle)) + position);
             }
-            dynamic_cast<PointRender*>(draw_object)->add_points(points);
+            dynamic_cast<PointRender *>(draw_object)->add_points(points);
             draw_object->draw();
         }
     }

@@ -55,30 +55,30 @@ void Character::update_sub_objects()
     }
     if (collision)
     {
-        dynamic_cast<OBB *>(collision)->points = {
+        dynamic_cast<OBB*>(collision)->points = {
             glm::vec2(-radius, -radius),
             glm::vec2(radius, -radius),
             glm::vec2(-radius, radius),
-            glm::vec2(radius, radius)};
+            glm::vec2(radius, radius) };
         collision->set_position(glm::vec2(position.x, position.z));
         collision->set_rotation(yaw);
     }
 }
 
-void Character::set_shader(Shader *shader)
+void Character::set_shader(Shader* shader)
 {
     model.shader = shader;
     look.shader = shader;
 }
 
-void Character::set_explicit_camera(const glm::vec3 &position, const glm::vec3 euler, const bool was_explicit)
+void Character::set_explicit_camera(const glm::vec3& position, const glm::vec3 euler, const bool was_explicit)
 {
     cameraExplicit = was_explicit;
     camera.set_position(position);
     camera.set_rotation(euler);
 }
 
-void Character::set_position(const glm::vec3 &position)
+void Character::set_position(const glm::vec3& position)
 {
     this->position = position;
     update_sub_objects();
@@ -116,7 +116,7 @@ void Character::process_mouse_scroll(const double y_offset)
     camera.set_position(get_camera_position());
 }
 
-void Character::update_position(const glm::vec3 &direction, const double delta_time, const ObjectBuffer &buffer)
+void Character::update_position(const glm::vec3& direction, const double delta_time, const ObjectBuffer& buffer)
 {
     const double velocityD = MOVEMENT_SPEED * delta_time;
     const float velocity = static_cast<float>(velocityD);
@@ -124,8 +124,8 @@ void Character::update_position(const glm::vec3 &direction, const double delta_t
     const auto objsInRange = buffer.get_objects_in_range(newPos, 10);
     collision->set_position(glm::vec2(newPos.x, newPos.z));
     if (!objsInRange.empty())
-        for (const auto &obj : objsInRange)
-            for (const auto &objCollision : obj->get_collisions())
+        for (const auto& obj : objsInRange)
+            for (const auto& objCollision : obj->get_collisions())
                 if (objCollision != nullptr && objCollision->contains(collision))
                     return;
 
@@ -133,12 +133,12 @@ void Character::update_position(const glm::vec3 &direction, const double delta_t
     update_sub_objects();
 }
 
-void Character::check_overlap(const ObjectBuffer &buffer) const
+void Character::check_overlap(const ObjectBuffer& buffer) const
 {
     const auto objsInRange = buffer.get_objects_in_range(position, 10);
     if (!objsInRange.empty())
-        for (const auto &obj : objsInRange)
-            for (const auto &objCollision : obj->get_collisions())
+        for (const auto& obj : objsInRange)
+            for (const auto& objCollision : obj->get_collisions())
                 if (objCollision != nullptr)
                     objCollision->check_overlap(collision);
 }
@@ -162,13 +162,13 @@ glm::quat Character::get_look() const
 
 glm::vec2 Character::get_look_angles() const
 {
-    return {pitch, yaw};
+    return { pitch, yaw };
 }
 
-void Character::update_shader(const Shader *shader) const
+void Character::update_shader(const Shader* shader) const
 {
     shader->set_mat4("view", value_ptr(camera.get_view_matrix()));
-    shader->set_vec3("camPos", camera.get_view_pos());
+    shader->set_vec3("viewPos", camera.get_view_pos());
 }
 
 Character::~Character()

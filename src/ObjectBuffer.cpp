@@ -1,6 +1,8 @@
 ﻿#include "ObjectBuffer.h"
 
 #include "glad/glad.h"
+#include <glm/gtx/norm.hpp>
+#include "ShaderStore.h"
 
 ObjectBuffer::~ObjectBuffer()
 {
@@ -21,30 +23,30 @@ void ObjectBuffer::init_buffers()
     // ReSharper disable CppCStyleCast
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, normal));
     glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texture_coord));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, texture_coord));
     // ReSharper restore CppCStyleCast
     glBindVertexArray(0);
 }
 
-
-void ObjectBuffer::draw() const
+void ObjectBuffer::draw(bool depth_draw) const
 {
     glBindVertexArray(vao);
-    for (const auto& object : objects)
+    for (const auto &object : objects)
     {
-        object->draw();
+        if (object->no_depth && depth_draw)
+            continue;
+        object->draw(depth_draw ? ShaderStore::get_shader("shadowMap") : nullptr);
     }
 }
 
-
-void ObjectBuffer::add_object(IObject* object)
+void ObjectBuffer::add_object(IObject *object)
 {
     objects.push_back(object);
 }
 
-void ObjectBuffer::destroy_object(IObject* object)
+void ObjectBuffer::destroy_object(IObject *object)
 {
     const auto it = std::find(objects.begin(), objects.end(), object);
     if (it != objects.end())
@@ -53,15 +55,15 @@ void ObjectBuffer::destroy_object(IObject* object)
     }
 }
 
-std::vector<IObject*> ObjectBuffer::get_objects() const
+std::vector<IObject *> ObjectBuffer::get_objects() const
 {
     return objects;
 }
 
-std::vector<IObject*> ObjectBuffer::get_objects_in_range(glm::vec3 position, float radius) const
+std::vector<IObject *> ObjectBuffer::get_objects_in_range(glm::vec3 position, float radius) const
 {
-    std::vector<IObject*> objectsInRange;
-    for (const auto& object : objects)
+    std::vector<IObject *> objectsInRange;
+    for (const auto &object : objects)
     {
         glm::vec3 min, max;
         if (object->vertices.empty())
@@ -79,8 +81,8 @@ std::vector<IObject*> ObjectBuffer::get_objects_in_range(glm::vec3 position, flo
             }
         }
         auto objectCenter = (min + max) / 2.0f;
-        auto distance = glm::distance(position, objectCenter);
-        if (distance <= radius)
+        auto distance = glm::distance2(position, objectCenter);
+        if (distance <= radius * radius)
         {
             objectsInRange.push_back(object);
         }
