@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "../Shader.h"
-#include "../Vertex.h"
+#include "../Mesh.h"
 #include "glad/glad.h"
 #include "../HSL.h"
 #include "glm/gtc/type_ptr.hpp"

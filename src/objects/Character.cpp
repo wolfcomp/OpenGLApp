@@ -167,7 +167,7 @@ glm::vec2 Character::get_look_angles() const
 
 void Character::update_shader(const Shader *shader) const
 {
-    shader->set_mat4("view", value_ptr(camera.get_view_matrix()));
+    shader->set_mat4("view", camera.get_view_matrix());
     shader->set_vec3("viewPos", camera.get_view_pos());
 }
 

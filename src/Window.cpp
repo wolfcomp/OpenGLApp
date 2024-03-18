@@ -11,6 +11,7 @@
 #include "Math.h"
 #include "Shadow.h"
 #include "primitives/Plane.h"
+#include "Model.h"
 
 constexpr int width = 1600;
 constexpr int height = 900;
@@ -34,7 +35,7 @@ PointLight light0;
 PointLight light1;
 PointLight light2;
 PointLight light3;
-SpotLight spotLight;
+SpotLight *spotLight;
 
 glm::vec3 pointLightPositions[] = {
     glm::vec3(0.7f, 0.2f, 2.0f),
@@ -177,6 +178,7 @@ void Window::create_objects()
 {
     objBuffer.init_buffers();
     shadowProcessor.init();
+    const auto model = new Model("assets/models/Sponza/Sponza.fbx");
 
     container = new Material();
 
@@ -251,16 +253,18 @@ void Window::create_objects()
     dirLight.specular = glm::vec3(.5f);
     dirLight.direction = glm::vec3(-0.2f, -1.0f, -0.3f);
 
-    spotLight.position = pointLightPositions[0];
-    spotLight.direction = normalize(glm::vec3(0, 0, -1));
-    spotLight.constant = 1.0f;
-    spotLight.linear = 0.09f;
-    spotLight.quadratic = 0.032f;
-    spotLight.ambient = hsl(0, 0, .05f);
-    spotLight.diffuse = hsl(0, 0, .8f);
-    spotLight.specular = glm::vec3(1);
-    spotLight.cutOff = glm::cos(glm::radians(12.5f));
-    spotLight.outerCutOff = glm::cos(glm::radians(17.5f));
+    spotLight = new SpotLight();
+
+    spotLight->position = pointLightPositions[0];
+    spotLight->direction = normalize(glm::vec3(0, 0, -1));
+    spotLight->constant = 1.0f;
+    spotLight->linear = 0.09f;
+    spotLight->quadratic = 0.032f;
+    spotLight->ambient = hsl(0, 0, .05f);
+    spotLight->diffuse = hsl(0, 0, .8f);
+    spotLight->specular = glm::vec3(1);
+    spotLight->cutOff = glm::cos(glm::radians(12.5f));
+    spotLight->outerCutOff = glm::cos(glm::radians(17.5f));
 
     character.set_position(pointLightPositions[0] - glm::vec3(2, 0, 0));
     character.set_shader(ShaderStore::get_shader("noLight"));
@@ -273,11 +277,11 @@ void Window::create_objects()
             light2.set_shader(shad);
             light3.set_shader(shad);
             dirLight.set_shader(shad);
-            spotLight.set_shader(shad);
+            spotLight->set_shader(shad);
             input.set_shader(shad);
             character.update_shader(shad);
             shad->set_float("gammaCorrection", 2.2f);
-            shad->set_mat4("lightSpaceMatrix", value_ptr(shadowProcessor.get_light_space_matrix(character.get_position(), dirLight.direction, glm::eulerAngles(character.get_look()))));
+            shad->set_mat4("lightSpaceMatrix", shadowProcessor.get_light_space_matrix(character.get_position(), dirLight.direction, glm::eulerAngles(character.get_look())));
             shadowProcessor.bind_depth_map(shad);
         });
 }

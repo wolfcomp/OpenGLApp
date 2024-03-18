@@ -412,3 +412,4 @@ test/test_runner
 .vscode/
 
 !src/debug
+*.blend1

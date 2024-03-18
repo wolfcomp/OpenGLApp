@@ -54,6 +54,6 @@ void ShaderStore::set_shader_params(void func(const Shader *))
 {
     for (const auto &[id, shader] : shaders)
     {
-        shader->set_shader_params(func);
+        shader->set_params_callback(func);
     }
 }

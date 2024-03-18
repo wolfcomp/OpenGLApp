@@ -69,12 +69,23 @@ struct SpotLight : public PointLight
     float outerCutOff;
     ShadowProcessor *shadowProcessor;
 
+    SpotLight()
+    {
+        shadowProcessor = new ShadowProcessor();
+        shadowProcessor->init(16, get_name() + ".shadowMap");
+    }
+
     void set_shader(const Shader *shader) override
     {
         PointLight::set_shader(shader);
         shader->set_vec3(get_name() + ".direction", direction);
         shader->set_float(get_name() + ".cutOff", cutOff);
         shader->set_float(get_name() + ".outerCutOff", outerCutOff);
+    }
+
+    void bind_depth_map(const Shader *shader)
+    {
+        shadowProcessor->bind_depth_map(shader);
     }
 
     std::string get_name() override

@@ -42,6 +42,7 @@ struct SpotLight {
     vec3 specular;
 
     sampler2D shadowMap;
+    vec4 lightSpaceMatrix;
 };
 
 #define NR_POINT_LIGHTS 4

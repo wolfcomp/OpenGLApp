@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-#include "Vertex.h"
+#include "Mesh.h"
 #include "glm/fwd.hpp"
 
 #ifdef M_PI
@@ -13,25 +13,25 @@
 #define LERP
 
 template <typename T>
-T lerp(const T& a, const T& b, const float t)
+T lerp(const T &a, const T &b, const float t)
 {
     return a + (b - a) * t;
 }
 
 template <>
-Vertex lerp(const Vertex& a, const Vertex& b, float t);
+Vertex lerp(const Vertex &a, const Vertex &b, float t);
 #endif
 
 #ifndef EULER_LERP
 #define EULER_LERP
-glm::vec3 euler_lerp(const glm::vec3& a, const glm::vec3& b, float t);
+glm::vec3 euler_lerp(const glm::vec3 &a, const glm::vec3 &b, float t);
 #endif
 
 #ifndef CLAMP
 #define CLAMP
 
 template <typename T, typename U>
-T clamp(const T& value, const U& min, const U& max)
+T clamp(const T &value, const U &min, const U &max)
 {
     if (value < min)
         return min;
@@ -119,5 +119,5 @@ glm::mat4 scale_mat(float x, float y, float z);
 
 glm::mat4 translate_mat(float x, float y, float z);
 
-glm::mat4 combine(const glm::mat4* mats...);
+glm::mat4 combine(const glm::mat4 *mats...);
 #endif

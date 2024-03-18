@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "../Shader.h"
-#include "../Vertex.h"
+#include "../Mesh.h"
 #include "../collision/ICollider.h"
 #include "glad/glad.h"
 #include "../HSL.h"
@@ -37,7 +37,7 @@ public:
         if (material != nullptr)
             material->set_shader(use_shader);
         use_shader->set_vec3("albedo", albedo.get_rgb_vec3());
-        use_shader->set_mat4("model", value_ptr(model));
+        use_shader->set_mat4("model", model);
     }
 
     virtual void pre_draw()
