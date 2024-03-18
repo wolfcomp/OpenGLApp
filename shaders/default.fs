@@ -40,6 +40,8 @@ struct SpotLight {
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
+
+    sampler2D shadowMap;
 };
 
 #define NR_POINT_LIGHTS 4
@@ -80,7 +82,7 @@ void main() {
     // phase 2: point lights
     // for(int i = 0; i < NR_POINT_LIGHTS; i++) result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);    
     // // phase 3: spot light
-    // result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
+    result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
 
     FragColor = vec4(GammaCorrect(result), 1.0);
 }

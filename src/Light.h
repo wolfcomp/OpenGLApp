@@ -2,6 +2,7 @@
 #include <glm/vec3.hpp>
 #include "HSL.h"
 #include "Shader.h"
+#include "Shadow.h"
 
 struct Light
 {
@@ -66,6 +67,7 @@ struct SpotLight : public PointLight
     glm::vec3 direction;
     float cutOff;
     float outerCutOff;
+    ShadowProcessor *shadowProcessor;
 
     void set_shader(const Shader *shader) override
     {

@@ -23,6 +23,17 @@ void ShadowProcessor::init()
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    const float near_plane = 0.1f;
+    const float far_plane = 10.0f;
+    projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+}
+
+void ShadowProcessor::init(const glm::mat4 &projection, int shadow_map_index, const std::string &shadow_map_name)
+{
+    init();
+    this->projection = projection;
+    this->shadow_map_index = shadow_map_index;
+    this->shadow_map_name = shadow_map_name;
 }
 
 void ShadowProcessor::bind_buffer()
@@ -41,18 +52,15 @@ void ShadowProcessor::unbind_buffer(const glm::vec2 &window_size)
 
 void ShadowProcessor::bind_depth_map(const Shader *shader)
 {
-    glActiveTexture(GL_TEXTURE15);
+    glActiveTexture(GL_TEXTURE0 + shadow_map_index);
     glBindTexture(GL_TEXTURE_2D, depth_map);
-    shader->set_int("shadowMap", 15);
+    shader->set_int(shadow_map_name, shadow_map_index);
 }
 
 glm::mat4 ShadowProcessor::get_light_space_matrix(const glm::vec3 &character_pos, const glm::vec3 &light_dir, const glm::vec3 &character_dir)
 {
-    const float near_plane = 0.1f;
-    const float far_plane = 10.0f;
     const glm::vec3 character_vector = rotateY(glm::vec3(0.0f, 0.0f, 1.0f), glm::radians(character_dir.y));
-    const glm::mat4 light_projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
     const glm::vec3 light_pos = character_pos - 5.0f * light_dir + 2.5f * normalize(character_vector);
     const glm::mat4 light_view = glm::lookAt(light_pos, light_pos + light_dir, glm::vec3(0.0f, 1.0f, 0.0f));
-    return light_projection * light_view;
+    return projection * light_view;
 }
