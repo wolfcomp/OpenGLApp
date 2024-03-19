@@ -221,83 +221,81 @@ private:
     vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, string typeName, const aiScene *scene)
     {
         vector<Texture> textures;
-        MaterialProperties properties;
-        vector<aiMaterialProperty> properties_list;
-        properties_list.reserve(mat->mNumProperties);
-        for (int i = 0; i < mat->mNumProperties; ++i)
-        {
-            const auto prop = mat->mProperties[i];
-            properties_list.push_back(*prop);
-            const auto key = std::string(prop->mKey.C_Str());
-            const auto indexer = key[0];
-            const auto loc = key.substr(1, 3);
-            if (indexer == '?')
-            {
-                properties.name = ((aiString *)prop->mData)->C_Str();
-            }
-            else
-            {
-                if (loc == "mat")
-                {
-                    if (key == "$mat.shadingm")
-                        properties.group.shading_mode = (aiShadingMode)(*(int *)prop->mData);
-                    else if (key == "$mat.shinpercent")
-                        properties.group.shininess_strength = *(float *)prop->mData;
-                    else if (key == "$mat.shininess")
-                        properties.group.shininess = *(float *)prop->mData;
-                    else if (key == "$mat.roughnessFactor")
-                        properties.group.roughness = *(float *)prop->mData;
-                    else if (key == "$mat.transparencyFactor")
-                        properties.group.transparency_factor = *(float *)prop->mData;
-                    else if (key == "$mat.opacity")
-                        properties.group.opacity = *(float *)prop->mData;
-                    else if (key == "$mat.reflectivity")
-                        properties.group.reflectivity = *(float *)prop->mData;
-                    else if (key == "$mat.bumpscaling")
-                        properties.group.bump_scaling = *(float *)prop->mData;
-                    else if (key == "$mat.displacementscaling")
-                        properties.group.displacement_scaling = *(float *)prop->mData;
-                }
-                else if (loc == "clr")
-                {
-                    const auto value = (aiColor4D *)prop->mData;
-                    if (key == "$clr.diffuse")
-                        properties.colors.diffuse = glm::vec4(value->r, value->g, value->b, 1);
-                    else if (key == "$clr.ambient")
-                        properties.colors.ambient = glm::vec4(value->r, value->g, value->b, 1);
-                    else if (key == "$clr.specular")
-                        properties.colors.specular = glm::vec4(value->r, value->g, value->b, 1);
-                    else if (key == "$clr.emissive")
-                        properties.colors.emissive = glm::vec4(value->r, value->g, value->b, 1);
-                    else if (key == "$clr.transparent")
-                        properties.colors.transparent = glm::vec4(value->r, value->g, value->b, 1);
-                    else if (key == "$clr.reflective")
-                        properties.colors.reflective = glm::vec4(value->r, value->g, value->b, 1);
-                }
-                else if (loc == "raw")
-                {
-                    const auto name_key = key.substr(5);
-                    const auto name = name_key.substr(0, name_key.find("|"));
-                    if (name == "Shininess")
-                        continue;
-                    if (name_key.ends_with("file"))
-                    {
-                        // can start with an integer
-                        const auto name_index = *(int *)prop->mData;
-                        bool valid = true;
-                        if (name_index > scene->mNumTextures)
-                            valid = false;
-                        const auto byte_vec = std::vector<char>(prop->mData + (valid ? 4 : 0), prop->mData + prop->mDataLength);
-                        properties.raw_groups[name].name = (valid ? to_string(name_index) : "") + "*" + std::string(byte_vec.begin(), byte_vec.end());
-                        properties.raw_groups[name].name_length = prop->mDataLength;
-                    }
-                    else if (name_key.ends_with("uvtrafo"))
-                        properties.raw_groups[name].uvtrafo = *(float *)prop->mData;
-                    else if (name_key.ends_with("uvwsrc"))
-                        properties.raw_groups[name].uvwsrc = *(int *)prop->mData;
-                }
-            }
-        }
+        // MaterialProperties properties;
+        // for (int i = 0; i < mat->mNumProperties; ++i)
+        // {
+        //     const auto prop = mat->mProperties[i];
+        //     properties_list.push_back(*prop);
+        //     const auto key = std::string(prop->mKey.C_Str());
+        //     const auto indexer = key[0];
+        //     const auto loc = key.substr(1, 3);
+        //     if (indexer == '?')
+        //     {
+        //         properties.name = ((aiString *)prop->mData)->C_Str();
+        //     }
+        //     else
+        //     {
+        //         if (loc == "mat")
+        //         {
+        //             if (key == "$mat.shadingm")
+        //                 properties.group.shading_mode = (aiShadingMode)(*(int *)prop->mData);
+        //             else if (key == "$mat.shinpercent")
+        //                 properties.group.shininess_strength = *(float *)prop->mData;
+        //             else if (key == "$mat.shininess")
+        //                 properties.group.shininess = *(float *)prop->mData;
+        //             else if (key == "$mat.roughnessFactor")
+        //                 properties.group.roughness = *(float *)prop->mData;
+        //             else if (key == "$mat.transparencyFactor")
+        //                 properties.group.transparency_factor = *(float *)prop->mData;
+        //             else if (key == "$mat.opacity")
+        //                 properties.group.opacity = *(float *)prop->mData;
+        //             else if (key == "$mat.reflectivity")
+        //                 properties.group.reflectivity = *(float *)prop->mData;
+        //             else if (key == "$mat.bumpscaling")
+        //                 properties.group.bump_scaling = *(float *)prop->mData;
+        //             else if (key == "$mat.displacementscaling")
+        //                 properties.group.displacement_scaling = *(float *)prop->mData;
+        //         }
+        //         else if (loc == "clr")
+        //         {
+        //             const auto value = (aiColor4D *)prop->mData;
+        //             if (key == "$clr.diffuse")
+        //                 properties.colors.diffuse = glm::vec4(value->r, value->g, value->b, 1);
+        //             else if (key == "$clr.ambient")
+        //                 properties.colors.ambient = glm::vec4(value->r, value->g, value->b, 1);
+        //             else if (key == "$clr.specular")
+        //                 properties.colors.specular = glm::vec4(value->r, value->g, value->b, 1);
+        //             else if (key == "$clr.emissive")
+        //                 properties.colors.emissive = glm::vec4(value->r, value->g, value->b, 1);
+        //             else if (key == "$clr.transparent")
+        //                 properties.colors.transparent = glm::vec4(value->r, value->g, value->b, 1);
+        //             else if (key == "$clr.reflective")
+        //                 properties.colors.reflective = glm::vec4(value->r, value->g, value->b, 1);
+        //         }
+        //         else if (loc == "raw")
+        //         {
+        //             const auto name_key = key.substr(5);
+        //             const auto name = name_key.substr(0, name_key.find("|"));
+        //             if (name == "Shininess")
+        //                 continue;
+        //             if (name_key.ends_with("file"))
+        //             {
+        //                 // can start with an integer
+        //                 const auto name_index = *(int *)prop->mData;
+        //                 bool valid = true;
+        //                 if (name_index > scene->mNumTextures)
+        //                     valid = false;
+        //                 const auto byte_vec = std::vector<char>(prop->mData + (valid ? 4 : 0), prop->mData + prop->mDataLength);
+        //                 properties.raw_groups[name].name = (valid ? to_string(name_index) : "") + "*" + std::string(byte_vec.begin(), byte_vec.end());
+        //                 properties.raw_groups[name].name_length = prop->mDataLength;
+        //             }
+        //             else if (name_key.ends_with("uvtrafo"))
+        //                 properties.raw_groups[name].uvtrafo = *(float *)prop->mData;
+        //             else if (name_key.ends_with("uvwsrc"))
+        //                 properties.raw_groups[name].uvwsrc = *(int *)prop->mData;
+        //         }
+        //     }
+        // }
 
         for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
         {
@@ -322,10 +320,9 @@ private:
                 aiString texture_file;
                 mat->Get(AI_MATKEY_SHADER_COMPUTE(type, i), texture_file);
                 std::cout << "Texture: " << str.C_Str() << "\n";
-                if (texture_file.data[0] == '*')
+                if (auto embeded = scene->GetEmbeddedTexture(texture_file.C_Str()))
                 {
-                    const auto index = atoi(&texture_file.C_Str()[1]);
-                    texture.id = TextureFromEmbed(scene->mTextures[index], type, alpha, gamma);
+                    texture.id = TextureFromEmbed(embeded, type, alpha, gamma);
                 }
                 else
                     texture.id = TextureFromFile(str.C_Str(), this->directory, gamma);
