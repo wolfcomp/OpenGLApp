@@ -22,6 +22,49 @@
 using namespace std;
 
 unsigned int TextureFromFile(const char *path, const string &directory, bool gamma = false);
+unsigned int TextureFromEmbed(const aiTexture *texture, const aiTextureType &type, bool has_alpha = false, bool gamma = false);
+
+struct MaterialProperties
+{
+    struct MaterialGroup
+    {
+        aiShadingMode shading_mode; // $mat.shadingm
+        float shininess_strength;   // $mat.shinpercent
+        float shininess;            // $mat.shininess
+        float roughness;            // $mat.roughnessFactor
+        float transparency_factor;  // $mat.transparencyFactor
+        float opacity;              // $mat.opacity
+        float reflectivity;         // $mat.reflectivity
+        float bump_scaling;         // $mat.bumpscaling
+        float displacement_scaling; // $mat.displacementscaling
+    };
+
+    struct FileGroup
+    {
+        unsigned name_length;
+        // if name contains ** then its an embedded texture to be loaded
+        // if name contains * then its a file texture to be loaded
+        std::string name; // file
+        float uvtrafo;    // uvtrafo
+        int uvwsrc;       // uvwsrc
+    };
+
+    struct ColorGroup
+    {
+        glm::vec4 diffuse;     // $clr.diffuse
+        glm::vec4 ambient;     // $clr.ambient
+        glm::vec4 specular;    // $clr.specular
+        glm::vec4 emissive;    // $clr.emissive
+        glm::vec4 transparent; // $clr.transparent
+        glm::vec4 reflective;  // $clr.reflective
+    };
+
+    std::string name;
+    MaterialGroup group;
+    std::map<std::string, FileGroup> raw_groups; // $raw.<name>|
+    std::map<unsigned, FileGroup> textures;      // $tex
+    ColorGroup colors;
+};
 
 class Model
 {
@@ -157,16 +200,16 @@ private:
         // normal: texture_normalN
 
         // 1. diffuse maps
-        vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+        vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse", scene);
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
         // 2. specular maps
-        vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+        vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular", scene);
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
         // 3. normal maps
-        std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+        std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal", scene);
         textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
         // 4. height maps
-        std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+        std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height", scene);
         textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
         // return a mesh object created from the extracted mesh data
@@ -175,43 +218,93 @@ private:
 
     // checks all material textures of a given type and loads the textures if they're not loaded yet.
     // the required info is returned as a Texture struct.
-    vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, string typeName)
+    vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, string typeName, const aiScene *scene)
     {
-        for (unsigned i = 0; i < mat->mNumProperties; ++i)
+        vector<Texture> textures;
+        MaterialProperties properties;
+        vector<aiMaterialProperty> properties_list;
+        properties_list.reserve(mat->mNumProperties);
+        for (int i = 0; i < mat->mNumProperties; ++i)
         {
             const auto prop = mat->mProperties[i];
-            cout << prop->mKey.C_Str() << endl;
-            switch (prop->mType)
+            properties_list.push_back(*prop);
+            const auto key = std::string(prop->mKey.C_Str());
+            const auto indexer = key[0];
+            const auto loc = key.substr(1, 3);
+            if (indexer == '?')
             {
-            case aiPTI_Float:
-                cout << "float: " << (*(float *)prop->mData) << endl;
-                break;
-            case aiPTI_String:
-                cout << "string: " << (*(aiString *)prop->mData).C_Str() << endl;
-                break;
-            case aiPTI_Integer:
-                cout << "int: " << (*(int *)prop->mData) << endl;
-                break;
-            case aiPTI_Buffer:
-                if (string(prop->mKey.C_Str()) == "$mat.shadingm")
+                properties.name = ((aiString *)prop->mData)->C_Str();
+            }
+            else
+            {
+                if (loc == "mat")
                 {
-                    cout << "buffer: " << (*(int *)prop->mData) << endl;
+                    if (key == "$mat.shadingm")
+                        properties.group.shading_mode = (aiShadingMode)(*(int *)prop->mData);
+                    else if (key == "$mat.shinpercent")
+                        properties.group.shininess_strength = *(float *)prop->mData;
+                    else if (key == "$mat.shininess")
+                        properties.group.shininess = *(float *)prop->mData;
+                    else if (key == "$mat.roughnessFactor")
+                        properties.group.roughness = *(float *)prop->mData;
+                    else if (key == "$mat.transparencyFactor")
+                        properties.group.transparency_factor = *(float *)prop->mData;
+                    else if (key == "$mat.opacity")
+                        properties.group.opacity = *(float *)prop->mData;
+                    else if (key == "$mat.reflectivity")
+                        properties.group.reflectivity = *(float *)prop->mData;
+                    else if (key == "$mat.bumpscaling")
+                        properties.group.bump_scaling = *(float *)prop->mData;
+                    else if (key == "$mat.displacementscaling")
+                        properties.group.displacement_scaling = *(float *)prop->mData;
                 }
-                else
-                    cout << "buffer: " << prop->mData << endl;
-                break;
-            case aiPTI_Double:
-                cout << "double: " << (*(double *)prop->mData) << endl;
-                break;
-            default:
-                break;
+                else if (loc == "clr")
+                {
+                    const auto value = (aiColor4D *)prop->mData;
+                    if (key == "$clr.diffuse")
+                        properties.colors.diffuse = glm::vec4(value->r, value->g, value->b, 1);
+                    else if (key == "$clr.ambient")
+                        properties.colors.ambient = glm::vec4(value->r, value->g, value->b, 1);
+                    else if (key == "$clr.specular")
+                        properties.colors.specular = glm::vec4(value->r, value->g, value->b, 1);
+                    else if (key == "$clr.emissive")
+                        properties.colors.emissive = glm::vec4(value->r, value->g, value->b, 1);
+                    else if (key == "$clr.transparent")
+                        properties.colors.transparent = glm::vec4(value->r, value->g, value->b, 1);
+                    else if (key == "$clr.reflective")
+                        properties.colors.reflective = glm::vec4(value->r, value->g, value->b, 1);
+                }
+                else if (loc == "raw")
+                {
+                    const auto name_key = key.substr(5);
+                    const auto name = name_key.substr(0, name_key.find("|"));
+                    if (name == "Shininess")
+                        continue;
+                    if (name_key.ends_with("file"))
+                    {
+                        // can start with an integer
+                        const auto name_index = *(int *)prop->mData;
+                        bool valid = true;
+                        if (name_index > scene->mNumTextures)
+                            valid = false;
+                        const auto byte_vec = std::vector<char>(prop->mData + (valid ? 4 : 0), prop->mData + prop->mDataLength);
+                        properties.raw_groups[name].name = (valid ? to_string(name_index) : "") + "*" + std::string(byte_vec.begin(), byte_vec.end());
+                        properties.raw_groups[name].name_length = prop->mDataLength;
+                    }
+                    else if (name_key.ends_with("uvtrafo"))
+                        properties.raw_groups[name].uvtrafo = *(float *)prop->mData;
+                    else if (name_key.ends_with("uvwsrc"))
+                        properties.raw_groups[name].uvwsrc = *(int *)prop->mData;
+                }
             }
         }
-        vector<Texture> textures;
+
         for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
         {
             aiString str;
             mat->GetTexture(type, i, &str);
+            const auto alpha = string(str.C_Str()).find(".png") != string::npos;
+            const auto gamma = type == aiTextureType_DIFFUSE;
             // check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
             bool skip = false;
             for (unsigned int j = 0; j < textures_loaded.size(); j++)
@@ -226,7 +319,16 @@ private:
             if (!skip)
             { // if texture hasn't been loaded already, load it
                 Texture texture;
-                texture.id = TextureFromFile(str.C_Str(), this->directory);
+                aiString texture_file;
+                mat->Get(AI_MATKEY_SHADER_COMPUTE(type, i), texture_file);
+                std::cout << "Texture: " << str.C_Str() << "\n";
+                if (texture_file.data[0] == '*')
+                {
+                    const auto index = atoi(&texture_file.C_Str()[1]);
+                    texture.id = TextureFromEmbed(scene->mTextures[index], type, alpha, gamma);
+                }
+                else
+                    texture.id = TextureFromFile(str.C_Str(), this->directory, gamma);
                 texture.type = typeName;
                 texture.path = str.C_Str();
                 textures.push_back(texture);
@@ -250,12 +352,22 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
     if (data)
     {
         GLenum format;
+        GLenum internal_format;
         if (nrComponents == 1)
+        {
             format = GL_RED;
+            internal_format = GL_RED;
+        }
         else if (nrComponents == 3)
+        {
             format = GL_RGB;
+            internal_format = gamma ? GL_SRGB : GL_RGB;
+        }
         else if (nrComponents == 4)
+        {
             format = GL_RGBA;
+            internal_format = gamma ? GL_SRGB_ALPHA : GL_RGBA;
+        }
 
         glBindTexture(GL_TEXTURE_2D, textureID);
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
@@ -277,22 +389,57 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
     return textureID;
 }
 
-unsigned int TextureFromEmbed(const aiTexture *texture, const aiTextureType &type)
+enum class TextureFormat
+{
+    RGBA8888,
+    ARGB8888,
+    RGBA5650,
+    RGBA0010
+};
+
+inline TextureFormat get_texture_format(const std::string &format)
+{
+    if (format == "rgba8888")
+        return TextureFormat::RGBA8888;
+    else if (format == "argb8888")
+        return TextureFormat::ARGB8888;
+    else if (format == "rgba5650")
+        return TextureFormat::RGBA5650;
+    else if (format == "rgba0010")
+        return TextureFormat::RGBA0010;
+    else
+        return TextureFormat::RGBA8888;
+};
+
+unsigned int TextureFromEmbed(const aiTexture *texture, const aiTextureType &type, bool has_alpha, bool gamma)
 {
     unsigned int textureID;
     glGenTextures(1, &textureID);
 
+    const auto format_string = std::string(texture->achFormatHint);
+    std::cout << "Loading texture with format: " << format_string << "\n";
+
+    GLenum format;
+    GLenum internal_format;
+
+    switch (get_texture_format(format_string))
+    {
+    case TextureFormat::RGBA8888:
+        format = GL_RGBA;
+        internal_format = gamma ? GL_SRGB_ALPHA : GL_RGBA;
+        break;
+    case TextureFormat::ARGB8888:
+        format = GL_BGRA;
+        internal_format = gamma ? GL_SRGB_ALPHA : GL_BGRA;
+        break;
+    default:
+        format = GL_RGB;
+        internal_format = gamma ? GL_SRGB : GL_RGB;
+        break;
+    }
+
     glBindTexture(GL_TEXTURE_2D, textureID);
-    if (type == aiTextureType_DIFFUSE)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, texture->mWidth, texture->mHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->pcData);
-    else if (type == aiTextureType_SPECULAR)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->mWidth, texture->mHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->pcData);
-    else if (type == aiTextureType_NORMALS)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, texture->mWidth, texture->mHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->pcData);
-    else if (type == aiTextureType_HEIGHT)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB, texture->mWidth, texture->mHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, texture->pcData);
-    else
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB, texture->mWidth, texture->mHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, texture->pcData);
+    glTexImage2D(GL_TEXTURE_2D, 0, internal_format, texture->mWidth, texture->mHeight, 0, format, GL_UNSIGNED_BYTE, texture->pcData);
 
     return textureID;
 }

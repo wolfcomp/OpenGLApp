@@ -10,7 +10,13 @@ Window window;
 
 int main()
 {
-    std::cout << std::filesystem::current_path() << std::endl;
+    auto path = std::filesystem::current_path();
+    // check if path ends with Debug if not append Debug and set as current path
+    if (path.string().find("Debug") == std::string::npos)
+    {
+        path = path / "Debug";
+        std::filesystem::current_path(path);
+    }
 
     auto winRet = window.init();
     if (winRet != 0)
