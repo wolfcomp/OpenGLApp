@@ -317,10 +317,8 @@ private:
             if (!skip)
             { // if texture hasn't been loaded already, load it
                 Texture texture;
-                aiString texture_file;
-                mat->Get(AI_MATKEY_SHADER_COMPUTE(type, i), texture_file);
                 std::cout << "Texture: " << str.C_Str() << "\n";
-                if (auto embeded = scene->GetEmbeddedTexture(texture_file.C_Str()))
+                if (auto embeded = scene->GetEmbeddedTexture(str.C_Str()))
                 {
                     texture.id = TextureFromEmbed(embeded, type, alpha, gamma);
                 }
