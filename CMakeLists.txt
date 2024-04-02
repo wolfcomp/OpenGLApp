@@ -14,11 +14,14 @@ set(CMAKE_CXX_STANDARD 20)
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 file(GLOB_RECURSE HEADERS "src/*.h")
+file(GLOB_RECURSE IMGUI_SOURCES "Dependencies/includes/imgui/*.cpp")
+file(GLOB_RECURSE IMGUI_HEADERS "Dependencies/includes/imgui/*.h")
 
 include_directories(Dependencies/includes)
+include_directories(Dependencies/includes/imgui)
 include_directories(Dependencies/includes/assimp/include)
 
-add_executable(OpenGLApp "OpenGLApp.cpp" "glad.c" ${SOURCES} ${HEADERS})
+add_executable(OpenGLApp "OpenGLApp.cpp" "glad.c" ${SOURCES} ${HEADERS} ${IMGUI_SOURCES} ${IMGUI_HEADERS})
 
 target_link_directories(OpenGLApp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/libs)
 target_link_libraries(OpenGLApp PRIVATE "glfw3.lib")

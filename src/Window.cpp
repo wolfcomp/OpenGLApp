@@ -11,8 +11,11 @@
 #include "Math.h"
 #include "Shadow.h"
 #include "primitives/Plane.h"
-#include "Model.h"
 #include "ImGuiManager.h"
+#include "windows/PositionDisplay.h"
+#include "Model.h"
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 constexpr int width = 1600;
 constexpr int height = 900;
@@ -63,6 +66,7 @@ InputProcessing input;
 ObjectBuffer objBuffer;
 Character character;
 ShadowProcessor shadowProcessor;
+ImGuiManager imguiManager;
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
@@ -286,6 +290,8 @@ void Window::create_objects()
             shad->set_mat4("lightSpaceMatrix", shadowProcessor.get_light_space_matrix(character.get_position(), dirLight.direction, glm::eulerAngles(character.get_look())));
             shadowProcessor.bind_depth_map(shad);
         });
+
+    imguiManager.add_window(new PositionDisplay(&character));
 }
 
 void Window::update() const
@@ -298,6 +304,7 @@ void Window::update() const
     {
         lastSubdivision = subdivision;
     }
+    imguiManager.render();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glPointSize(5);
     // enable gl wireframe mode
@@ -311,6 +318,7 @@ void Window::update() const
     shadowProcessor.unbind_buffer(glm::vec2(width, height));
     glCullFace(GL_FRONT);
     model->Draw(*ShaderStore::get_shader("default"));
+    imguiManager.render_draw_data();
     glCullFace(GL_BACK);
     // character.draw();
 

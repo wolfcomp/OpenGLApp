@@ -1,12 +1,15 @@
+#pragma once
 #include <string>
 
-struct ImGuiWindow
+class ImGuiWindow
 {
     std::string name;
     bool open;
     float x, y, width, height;
     float opacity;
 
+public:
+    virtual ~ImGuiWindow() = default;
     ImGuiWindow(const std::string &name, bool open, float x, float y, float width, float height, float opacity)
         : name(name), open(open), x(x), y(y), width(width), height(height), opacity(opacity) {}
 
@@ -34,6 +37,9 @@ struct ImGuiWindow
     void show() { open = true; }
     void hide() { open = false; }
     void toggle() { open = !open; }
+
+    bool is_open() const { return open; }
+    std::string get_name() const { return name; }
 
     virtual void render() = 0;
 };

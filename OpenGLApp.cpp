@@ -6,6 +6,8 @@
 #include "src/TimeManager.h"
 #include <filesystem>
 
+#include <GLFW/glfw3.h>
+
 Window window;
 
 int main()

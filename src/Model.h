@@ -306,7 +306,7 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
     }
 
     return textureID;
-}
+};
 
 // Embeded texture is always in ARGB8888 format so we need to convert it to RGBA8888
 unsigned int TextureFromEmbed(const aiTexture *texture, const aiTextureType &type, bool has_alpha, bool gamma)
@@ -335,5 +335,5 @@ unsigned int TextureFromEmbed(const aiTexture *texture, const aiTextureType &typ
     delete[] tmpData;
 
     return textureID;
-}
+};
 #endif
