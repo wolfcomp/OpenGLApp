@@ -12,6 +12,7 @@
 #include "Shadow.h"
 #include "primitives/Plane.h"
 #include "Model.h"
+#include "ImGuiManager.h"
 
 constexpr int width = 1600;
 constexpr int height = 900;
@@ -36,6 +37,7 @@ PointLight light1;
 PointLight light2;
 PointLight light3;
 SpotLight *spotLight;
+Model *model;
 
 glm::vec3 pointLightPositions[] = {
     glm::vec3(0.7f, 0.2f, 2.0f),
@@ -178,7 +180,7 @@ void Window::create_objects()
 {
     objBuffer.init_buffers();
     shadowProcessor.init();
-    const auto model = new Model("assets/models/Sponza/Sponza.fbx");
+    model = new Model("assets/models/Sponza/Sponza.fbx");
 
     container = new Material();
 
@@ -305,10 +307,10 @@ void Window::update() const
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     shadowProcessor.bind_buffer();
-    objBuffer.draw(true);
+    model->Draw(*ShaderStore::get_shader("shadowMap"));
     shadowProcessor.unbind_buffer(glm::vec2(width, height));
     glCullFace(GL_FRONT);
-    objBuffer.draw(false);
+    model->Draw(*ShaderStore::get_shader("default"));
     glCullFace(GL_BACK);
     // character.draw();
 

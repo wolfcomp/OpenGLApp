@@ -221,82 +221,6 @@ private:
     vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, string typeName, const aiScene *scene)
     {
         vector<Texture> textures;
-        // MaterialProperties properties;
-        // for (int i = 0; i < mat->mNumProperties; ++i)
-        // {
-        //     const auto prop = mat->mProperties[i];
-        //     properties_list.push_back(*prop);
-        //     const auto key = std::string(prop->mKey.C_Str());
-        //     const auto indexer = key[0];
-        //     const auto loc = key.substr(1, 3);
-        //     if (indexer == '?')
-        //     {
-        //         properties.name = ((aiString *)prop->mData)->C_Str();
-        //     }
-        //     else
-        //     {
-        //         if (loc == "mat")
-        //         {
-        //             if (key == "$mat.shadingm")
-        //                 properties.group.shading_mode = (aiShadingMode)(*(int *)prop->mData);
-        //             else if (key == "$mat.shinpercent")
-        //                 properties.group.shininess_strength = *(float *)prop->mData;
-        //             else if (key == "$mat.shininess")
-        //                 properties.group.shininess = *(float *)prop->mData;
-        //             else if (key == "$mat.roughnessFactor")
-        //                 properties.group.roughness = *(float *)prop->mData;
-        //             else if (key == "$mat.transparencyFactor")
-        //                 properties.group.transparency_factor = *(float *)prop->mData;
-        //             else if (key == "$mat.opacity")
-        //                 properties.group.opacity = *(float *)prop->mData;
-        //             else if (key == "$mat.reflectivity")
-        //                 properties.group.reflectivity = *(float *)prop->mData;
-        //             else if (key == "$mat.bumpscaling")
-        //                 properties.group.bump_scaling = *(float *)prop->mData;
-        //             else if (key == "$mat.displacementscaling")
-        //                 properties.group.displacement_scaling = *(float *)prop->mData;
-        //         }
-        //         else if (loc == "clr")
-        //         {
-        //             const auto value = (aiColor4D *)prop->mData;
-        //             if (key == "$clr.diffuse")
-        //                 properties.colors.diffuse = glm::vec4(value->r, value->g, value->b, 1);
-        //             else if (key == "$clr.ambient")
-        //                 properties.colors.ambient = glm::vec4(value->r, value->g, value->b, 1);
-        //             else if (key == "$clr.specular")
-        //                 properties.colors.specular = glm::vec4(value->r, value->g, value->b, 1);
-        //             else if (key == "$clr.emissive")
-        //                 properties.colors.emissive = glm::vec4(value->r, value->g, value->b, 1);
-        //             else if (key == "$clr.transparent")
-        //                 properties.colors.transparent = glm::vec4(value->r, value->g, value->b, 1);
-        //             else if (key == "$clr.reflective")
-        //                 properties.colors.reflective = glm::vec4(value->r, value->g, value->b, 1);
-        //         }
-        //         else if (loc == "raw")
-        //         {
-        //             const auto name_key = key.substr(5);
-        //             const auto name = name_key.substr(0, name_key.find("|"));
-        //             if (name == "Shininess")
-        //                 continue;
-        //             if (name_key.ends_with("file"))
-        //             {
-        //                 // can start with an integer
-        //                 const auto name_index = *(int *)prop->mData;
-        //                 bool valid = true;
-        //                 if (name_index > scene->mNumTextures)
-        //                     valid = false;
-        //                 const auto byte_vec = std::vector<char>(prop->mData + (valid ? 4 : 0), prop->mData + prop->mDataLength);
-        //                 properties.raw_groups[name].name = (valid ? to_string(name_index) : "") + "*" + std::string(byte_vec.begin(), byte_vec.end());
-        //                 properties.raw_groups[name].name_length = prop->mDataLength;
-        //             }
-        //             else if (name_key.ends_with("uvtrafo"))
-        //                 properties.raw_groups[name].uvtrafo = *(float *)prop->mData;
-        //             else if (name_key.ends_with("uvwsrc"))
-        //                 properties.raw_groups[name].uvwsrc = *(int *)prop->mData;
-        //         }
-        //     }
-        // }
-
         for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
         {
             aiString str;
@@ -384,57 +308,31 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
     return textureID;
 }
 
-enum class TextureFormat
-{
-    RGBA8888,
-    ARGB8888,
-    RGBA5650,
-    RGBA0010
-};
-
-inline TextureFormat get_texture_format(const std::string &format)
-{
-    if (format == "rgba8888")
-        return TextureFormat::RGBA8888;
-    else if (format == "argb8888")
-        return TextureFormat::ARGB8888;
-    else if (format == "rgba5650")
-        return TextureFormat::RGBA5650;
-    else if (format == "rgba0010")
-        return TextureFormat::RGBA0010;
-    else
-        return TextureFormat::RGBA8888;
-};
-
+// Embeded texture is always in ARGB8888 format so we need to convert it to RGBA8888
 unsigned int TextureFromEmbed(const aiTexture *texture, const aiTextureType &type, bool has_alpha, bool gamma)
 {
     unsigned int textureID;
     glGenTextures(1, &textureID);
 
-    const auto format_string = std::string(texture->achFormatHint);
-    std::cout << "Loading texture with format: " << format_string << "\n";
+    GLenum format = GL_RGBA;
+    GLenum internal_format = GL_SRGB_ALPHA;
 
-    GLenum format;
-    GLenum internal_format;
+    auto size = texture->mWidth * texture->mHeight;
+    auto tmpData = new unsigned char[size * 4];
 
-    switch (get_texture_format(format_string))
+    for (size_t i = 0; i < size; i++)
     {
-    case TextureFormat::RGBA8888:
-        format = GL_RGBA;
-        internal_format = gamma ? GL_SRGB_ALPHA : GL_RGBA;
-        break;
-    case TextureFormat::ARGB8888:
-        format = GL_BGRA;
-        internal_format = gamma ? GL_SRGB_ALPHA : GL_BGRA;
-        break;
-    default:
-        format = GL_RGB;
-        internal_format = gamma ? GL_SRGB : GL_RGB;
-        break;
+        auto index = i * 4;
+        tmpData[index] = texture->pcData[i].r;
+        tmpData[index + 1] = texture->pcData[i].g;
+        tmpData[index + 2] = texture->pcData[i].b;
+        tmpData[index + 3] = texture->pcData[i].a;
     }
 
     glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, internal_format, texture->mWidth, texture->mHeight, 0, format, GL_UNSIGNED_BYTE, texture->pcData);
+    glTexImage2D(GL_TEXTURE_2D, 0, internal_format, texture->mWidth, texture->mHeight, 0, format, GL_UNSIGNED_BYTE, tmpData);
+
+    delete[] tmpData;
 
     return textureID;
 }

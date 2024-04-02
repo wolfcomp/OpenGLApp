@@ -23,10 +23,10 @@ int main()
     {
         return winRet;
     }
-    ShaderStore::add_shader("default", "default.vs", "default.fs");
-    ShaderStore::add_shader("uvVisual", "default.vs", "texCoordVisual.fs");
-    ShaderStore::add_shader("noLight", "default.vs", "noLight.fs");
-    ShaderStore::add_shader("shadowMap", "shadowMap.vs", "shadowMap.fs");
+    ShaderStore::add_shader("default", "shaders/default.vs", "shaders/default.fs");
+    ShaderStore::add_shader("uvVisual", "shaders/default.vs", "shaders/texCoordVisual.fs");
+    ShaderStore::add_shader("noLight", "shaders/default.vs", "shaders/noLight.fs");
+    ShaderStore::add_shader("shadowMap", "shaders/shadowMap.vs", "shaders/shadowMap.fs");
 
     window.create_objects();
 
