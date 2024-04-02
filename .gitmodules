@@ -1,3 +1,6 @@
 [submodule "Dependencies/includes/assimp"]
 	path = Dependencies/includes/assimp
 	url = https://github.com/assimp/assimp.git
+[submodule "Dependencies/includes/imgui"]
+	path = Dependencies/includes/imgui
+	url = https://github.com/ocornut/imgui.git
