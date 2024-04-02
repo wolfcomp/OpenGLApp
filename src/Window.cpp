@@ -140,6 +140,17 @@ int Window::init()
         glfwTerminate();
         return -1;
     }
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO &io = ImGui::GetIO();
+    (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window, false);
+    ImGui_ImplOpenGL3_Init("#version 330");
+
     glViewport(0, 0, width, height);
     glEnable(GL_DEPTH_TEST);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -184,7 +195,7 @@ void Window::create_objects()
 {
     objBuffer.init_buffers();
     shadowProcessor.init();
-    model = new Model("assets/models/Sponza/Sponza.fbx");
+    // model = new Model("assets/models/Sponza/Sponza.fbx");
 
     container = new Material();
 
@@ -292,6 +303,7 @@ void Window::create_objects()
         });
 
     imguiManager.add_window(new PositionDisplay(&character));
+    TimeManager::set_last_frame(glfwGetTime());
 }
 
 void Window::update() const
@@ -314,10 +326,12 @@ void Window::update() const
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     shadowProcessor.bind_buffer();
-    model->Draw(*ShaderStore::get_shader("shadowMap"));
+    // model->Draw(*ShaderStore::get_shader("shadowMap"));
+    objBuffer.draw(true);
     shadowProcessor.unbind_buffer(glm::vec2(width, height));
     glCullFace(GL_FRONT);
-    model->Draw(*ShaderStore::get_shader("default"));
+    // model->Draw(*ShaderStore::get_shader("default"));
+    objBuffer.draw(false);
     imguiManager.render_draw_data();
     glCullFace(GL_BACK);
     // character.draw();
@@ -337,4 +351,17 @@ void Window::render() const
 bool Window::should_close() const
 {
     return glfwWindowShouldClose(window);
+}
+
+Window::~Window()
+{
+    delete model;
+    delete container;
+    delete brick;
+    delete spotLight;
+    glfwDestroyWindow(window);
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+    glfwTerminate();
 }

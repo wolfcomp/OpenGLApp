@@ -6,8 +6,6 @@
 #include "src/TimeManager.h"
 #include <filesystem>
 
-#include <GLFW/glfw3.h>
-
 Window window;
 
 int main()
@@ -32,14 +30,10 @@ int main()
 
     window.create_objects();
 
-    TimeManager::set_last_frame(glfwGetTime());
-
     while (!window.should_close())
     {
         window.update();
     }
-
-    glfwTerminate();
 
     return 0;
 }

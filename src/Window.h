@@ -6,6 +6,8 @@ struct Window
 {
     GLFWwindow *window;
 
+    ~Window();
+
     int init();
     static void create_objects();
     void update() const;
