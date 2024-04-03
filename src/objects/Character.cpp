@@ -102,6 +102,10 @@ void Character::process_mouse_movement(const double x_offset, const double y_off
         if (pitch < -PITCH_CONSTRAINT)
             pitch = -PITCH_CONSTRAINT;
     }
+    if (yaw > 180.0f)
+        yaw -= 360.0f;
+    if (yaw < -180.0f)
+        yaw += 360.0f;
     update_sub_objects();
 }
 

@@ -67,6 +67,7 @@ ObjectBuffer objBuffer;
 Character character;
 ShadowProcessor shadowProcessor;
 ImGuiManager imguiManager;
+PositionDisplay *positionDisplay;
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
@@ -302,7 +303,9 @@ void Window::create_objects()
             shadowProcessor.bind_depth_map(shad);
         });
 
-    imguiManager.add_window(new PositionDisplay(&character));
+    positionDisplay = new PositionDisplay(&character);
+
+    imguiManager.add_window(positionDisplay);
     TimeManager::set_last_frame(glfwGetTime());
 }
 
@@ -316,6 +319,7 @@ void Window::update() const
     {
         lastSubdivision = subdivision;
     }
+    positionDisplay->update();
     imguiManager.render();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glPointSize(5);
