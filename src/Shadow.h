@@ -28,6 +28,6 @@ public:
     void bind_buffer();
     void unbind_buffer(const glm::vec2 &window_size);
     void bind_depth_map(const Shader *shader);
-    glm::mat4 get_light_space_matrix(const glm::vec3 &character_pos, const glm::vec3 &light_dir, const glm::vec3 &character_dir);
+    glm::mat4 get_light_space_matrix(const glm::vec3 &character_pos, const glm::vec3 &light_dir, const float &character_yaw);
     glm::mat4 get_light_space_matrix(const glm::vec3 &light_pos, const glm::vec3 &light_dir, const glm::mat4 &light_projection);
 };

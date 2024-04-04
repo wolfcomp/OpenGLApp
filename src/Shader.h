@@ -76,6 +76,10 @@ public:
     void use() const
     {
         glUseProgram(ID);
+        if (set_params)
+        {
+            set_params(this);
+        }
     }
     // utility uniform functions
     // ------------------------------------------------------------------------

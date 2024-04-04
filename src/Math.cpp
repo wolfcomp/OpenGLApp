@@ -86,9 +86,8 @@ glm::vec3 euler_lerp(const glm::vec3 &a, const glm::vec3 &b, const float t)
 template <>
 Vertex lerp(const Vertex &a, const Vertex &b, const float t)
 {
-    return {
+    return Vertex(
         lerp(a.position, b.position, t),
         lerp(a.normal, b.normal, t),
-        lerp(a.texture_coords, b.texture_coords, t),
-    };
+        lerp(a.texture_coord, b.texture_coord, t));
 }

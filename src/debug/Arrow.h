@@ -7,12 +7,12 @@ public:
     Arrow()
     {
         vertices = {
-            Vertex{glm::vec3(0)},
-            Vertex{glm::vec3(1, 0, 0)},
-            Vertex{glm::vec3(0.5f, 0.45f, 0)},
-            Vertex{glm::vec3(0.5f, -0.45f, 0)},
-            Vertex{glm::vec3(0.5f, 0, 0.45f)},
-            Vertex{glm::vec3(0.5f, 0, -0.45f)}};
+            Vertex(glm::vec3(0)),
+            Vertex(glm::vec3(1, 0, 0)),
+            Vertex(glm::vec3(0.5f, 0.45f, 0)),
+            Vertex(glm::vec3(0.5f, -0.45f, 0)),
+            Vertex(glm::vec3(0.5f, 0, 0.45f)),
+            Vertex(glm::vec3(0.5f, 0, -0.45f))};
         indices = {
             0, 1, // line
             1, 2, // top

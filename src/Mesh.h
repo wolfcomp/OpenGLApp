@@ -21,7 +21,7 @@ struct Vertex
     // normal
     glm::vec3 normal;
     // texCoords
-    glm::vec2 texture_coords;
+    glm::vec2 texture_coord;
     // tangent
     glm::vec3 Tangent;
     // bitangent
@@ -30,6 +30,53 @@ struct Vertex
     int m_BoneIDs[MAX_BONE_INFLUENCE];
     // weights from each bone
     float m_Weights[MAX_BONE_INFLUENCE];
+
+    Vertex()
+    {
+        memset(m_BoneIDs, 0, sizeof(m_BoneIDs));
+        memset(m_Weights, 0, sizeof(m_Weights));
+        position = glm::vec3(0.0f);
+        normal = glm::vec3(0.0f);
+        texture_coord = glm::vec2(0.0f);
+        Tangent = glm::vec3(0.0f);
+        Bitangent = glm::vec3(0.0f);
+    }
+
+    Vertex(const glm::vec3 &pos)
+    {
+        position = pos;
+        normal = glm::vec3(0.0f);
+        texture_coord = glm::vec2(0.0f);
+        Tangent = glm::vec3(0.0f);
+        Bitangent = glm::vec3(0.0f);
+    }
+
+    Vertex(const glm::vec3 &pos, const glm::vec3 &norm)
+    {
+        position = pos;
+        normal = norm;
+        texture_coord = glm::vec2(0.0f);
+        Tangent = glm::vec3(0.0f);
+        Bitangent = glm::vec3(0.0f);
+    }
+
+    Vertex(const glm::vec3 &pos, const glm::vec3 &norm, const glm::vec2 &texCoord)
+    {
+        position = pos;
+        normal = norm;
+        texture_coord = texCoord;
+        Tangent = glm::vec3(0.0f);
+        Bitangent = glm::vec3(0.0f);
+    }
+
+    Vertex(const glm::vec3 &pos, const glm::vec3 &norm, const glm::vec2 &texCoord, const glm::vec3 &tangent, const glm::vec3 &bitangent)
+    {
+        position = pos;
+        normal = norm;
+        texture_coord = texCoord;
+        Tangent = tangent;
+        Bitangent = bitangent;
+    }
 };
 
 struct Texture
@@ -129,7 +176,7 @@ private:
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, normal));
         // vertex texture coords
         glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, texture_coords));
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, texture_coord));
         // vertex tangent
         glEnableVertexAttribArray(3);
         glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, Tangent));

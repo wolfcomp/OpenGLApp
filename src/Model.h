@@ -165,7 +165,7 @@ private:
                 // use models where a vertex can have multiple texture coordinates so we always take the first set (0).
                 vec.x = mesh->mTextureCoords[0][i].x;
                 vec.y = mesh->mTextureCoords[0][i].y;
-                vertex.texture_coords = vec;
+                vertex.texture_coord = vec;
                 // tangent
                 vector.x = mesh->mTangents[i].x;
                 vector.y = mesh->mTangents[i].y;
@@ -178,7 +178,7 @@ private:
                 vertex.Bitangent = vector;
             }
             else
-                vertex.texture_coords = glm::vec2(0.0f, 0.0f);
+                vertex.texture_coord = glm::vec2(0.0f, 0.0f);
 
             vertices.push_back(vertex);
         }

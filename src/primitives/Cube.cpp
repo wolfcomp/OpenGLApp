@@ -45,10 +45,10 @@ void Cube::generate_vertices()
     vertices.reserve(24);
     indices.reserve(36);
 
-    tmpVertices[0].texture_coords = glm::vec2(0, 0);
-    tmpVertices[1].texture_coords = glm::vec2(1, 0);
-    tmpVertices[2].texture_coords = glm::vec2(1, 1);
-    tmpVertices[3].texture_coords = glm::vec2(0, 1);
+    tmpVertices[0].texture_coord = glm::vec2(0, 0);
+    tmpVertices[1].texture_coord = glm::vec2(1, 0);
+    tmpVertices[2].texture_coord = glm::vec2(1, 1);
+    tmpVertices[3].texture_coord = glm::vec2(0, 1);
     for (int i = 0; i < 4; i++)
     {
         for (auto &v : tmpVertices)

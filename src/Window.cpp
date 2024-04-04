@@ -299,7 +299,7 @@ void Window::create_objects()
             input.set_shader(shad);
             character.update_shader(shad);
             shad->set_float("gammaCorrection", 2.2f);
-            shad->set_mat4("lightSpaceMatrix", shadowProcessor.get_light_space_matrix(character.get_position(), dirLight.direction, glm::eulerAngles(character.get_look())));
+            shad->set_mat4("lightSpaceMatrix", shadowProcessor.get_light_space_matrix(character.get_position(), dirLight.direction, character.get_look_angles().y));
             shadowProcessor.bind_depth_map(shad);
         });
 
