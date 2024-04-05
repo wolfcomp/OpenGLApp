@@ -23,9 +23,9 @@ struct Vertex
     // texCoords
     glm::vec2 texture_coord;
     // tangent
-    glm::vec3 Tangent;
+    glm::vec3 tangent;
     // bitangent
-    glm::vec3 Bitangent;
+    glm::vec3 bitangent;
     // bone indexes which will influence this vertex
     int m_BoneIDs[MAX_BONE_INFLUENCE];
     // weights from each bone
@@ -38,8 +38,8 @@ struct Vertex
         position = glm::vec3(0.0f);
         normal = glm::vec3(0.0f);
         texture_coord = glm::vec2(0.0f);
-        Tangent = glm::vec3(0.0f);
-        Bitangent = glm::vec3(0.0f);
+        tangent = glm::vec3(0.0f);
+        bitangent = glm::vec3(0.0f);
     }
 
     Vertex(const glm::vec3 &pos)
@@ -47,8 +47,8 @@ struct Vertex
         position = pos;
         normal = glm::vec3(0.0f);
         texture_coord = glm::vec2(0.0f);
-        Tangent = glm::vec3(0.0f);
-        Bitangent = glm::vec3(0.0f);
+        tangent = glm::vec3(0.0f);
+        bitangent = glm::vec3(0.0f);
     }
 
     Vertex(const glm::vec3 &pos, const glm::vec3 &norm)
@@ -56,8 +56,8 @@ struct Vertex
         position = pos;
         normal = norm;
         texture_coord = glm::vec2(0.0f);
-        Tangent = glm::vec3(0.0f);
-        Bitangent = glm::vec3(0.0f);
+        tangent = glm::vec3(0.0f);
+        bitangent = glm::vec3(0.0f);
     }
 
     Vertex(const glm::vec3 &pos, const glm::vec3 &norm, const glm::vec2 &texCoord)
@@ -65,8 +65,8 @@ struct Vertex
         position = pos;
         normal = norm;
         texture_coord = texCoord;
-        Tangent = glm::vec3(0.0f);
-        Bitangent = glm::vec3(0.0f);
+        tangent = glm::vec3(0.0f);
+        bitangent = glm::vec3(0.0f);
     }
 
     Vertex(const glm::vec3 &pos, const glm::vec3 &norm, const glm::vec2 &texCoord, const glm::vec3 &tangent, const glm::vec3 &bitangent)
@@ -74,8 +74,8 @@ struct Vertex
         position = pos;
         normal = norm;
         texture_coord = texCoord;
-        Tangent = tangent;
-        Bitangent = bitangent;
+        this->tangent = tangent;
+        this->bitangent = bitangent;
     }
 };
 
@@ -179,10 +179,10 @@ private:
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, texture_coord));
         // vertex tangent
         glEnableVertexAttribArray(3);
-        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, Tangent));
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, tangent));
         // vertex bitangent
         glEnableVertexAttribArray(4);
-        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, Bitangent));
+        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, bitangent));
         // ids
         glEnableVertexAttribArray(5);
         glVertexAttribIPointer(5, 4, GL_INT, sizeof(Vertex), (void *)offsetof(Vertex, m_BoneIDs));

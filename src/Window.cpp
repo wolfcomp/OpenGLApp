@@ -14,6 +14,8 @@
 #include "ImGuiManager.h"
 #include "windows/PositionDisplay.h"
 #include "Model.h"
+#include "objects/Terrain.h"
+#include "primitives/Line.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -41,6 +43,7 @@ PointLight light2;
 PointLight light3;
 SpotLight *spotLight;
 Model *model;
+Terrain terrain;
 
 glm::vec3 pointLightPositions[] = {
     glm::vec3(0.7f, 0.2f, 2.0f),
@@ -206,20 +209,24 @@ void Window::create_objects()
 
     brick->load_texture("brick", "brick.jpg");
 
-    for (int i = 0; i < 10; i++)
-    {
-        const auto cube = new Cube();
+    terrain.generate_terrain("textures/terrain_height.png", 100, .5f);
+    terrain.set_albedo(hsl(120, .5f, .8f));
+    terrain.set_shader(ShaderStore::get_shader("noLight"));
 
-        cube->set_position(cubePositions[i]);
-        const auto angle = 20.0f * i;
-        cube->set_euler_rotation(glm::vec3(1.0f, 0.3f, 0.5f) * angle);
-        cube->set_scale(glm::vec3(.5f, .5f, .5f));
-        cube->set_albedo(hsl(0, .6f, .5f));
-        cube->set_shader(ShaderStore::get_shader("default"));
-        cube->material = container;
+    objBuffer.add_object(&terrain);
 
-        objBuffer.add_object(cube);
-    }
+    const auto line = new Line({glm::vec3(0, 0, 0), glm::vec3(0, 0, 10), glm::vec3(0, -10, 0)}, hsl(0, .9, .2), 1.0f);
+    line->set_shader(ShaderStore::get_shader("noLight"));
+    objBuffer.add_object(line);
+
+    const auto cube = new Cube();
+
+    cube->set_position(terrain.get_collider().get_height_at_coord(glm::vec3(-4.5f, 0, -10.2f)));
+    cube->set_scale(glm::vec3(.1f, .1f, .1f));
+    cube->set_albedo(pointColor);
+    cube->set_shader(ShaderStore::get_shader("noLight"));
+
+    objBuffer.add_object(cube);
 
     const auto cube2 = new Cube();
 
@@ -239,15 +246,6 @@ void Window::create_objects()
     arrow->no_depth = true;
 
     objBuffer.add_object(arrow);
-
-    const auto plane = new Plane();
-    plane->set_position(glm::vec3(0, -1, 0));
-    plane->set_size(glm::vec2(10, 10));
-    plane->set_albedo(hsl(0, 0, .5f));
-    plane->set_shader(ShaderStore::get_shader("default"));
-    plane->material = brick;
-
-    objBuffer.add_object(plane);
 
     light0.index = 0;
     light0.position = pointLightPositions[0];

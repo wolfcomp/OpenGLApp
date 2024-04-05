@@ -71,7 +71,7 @@ struct OBB : ICollisionOld
 
     glm::vec2 cross(const glm::vec2 &a, const glm::vec2 &b)
     {
-        return glm::vec2(a.x * b.y - a.y * b.x);
+        return glm::vec2(a.x * b.y, a.y * b.x);
     }
 
     glm::vec2 get_center() const override
