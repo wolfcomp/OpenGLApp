@@ -5,6 +5,7 @@
 #include "glm/vec3.hpp"
 
 class ObjectBuffer;
+struct Material;
 
 class Character
 {
@@ -14,6 +15,7 @@ class Character
     float cameraOffset = 2.0f;
     float height = 0.75f;
     float radius = 0.25f;
+    Material *material;
     Capsule model;
     Cone look;
     Camera camera;
@@ -34,7 +36,9 @@ public:
     void update_shader(const Shader *shader) const;
     void update_position(const glm::vec3 &direction, double delta_time, const ObjectBuffer &buffer);
     void check_overlap(const ObjectBuffer &buffer) const;
+    void set_material(Material *material);
     void draw();
+    void draw_shadow();
     glm::vec3 get_camera_position() const;
     glm::vec3 get_position() const;
     glm::quat get_look() const;

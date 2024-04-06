@@ -11,6 +11,7 @@
 #include "Math.h"
 #include "Shadow.h"
 #include "primitives/Plane.h"
+#include "primitives/IcoSphere.h"
 #include "ImGuiManager.h"
 #include "windows/PositionDisplay.h"
 #include "Model.h"
@@ -44,6 +45,11 @@ PointLight light3;
 SpotLight *spotLight;
 Model *model;
 Terrain terrain;
+Bezier<glm::vec3> curve{
+    glm::vec3(3.5f, 0, 33.5f),
+    glm::vec3(3.5f, 0, 17),
+    glm::vec3(-15, 0, 33.5),
+    glm::vec3(-15, 0, 17)};
 
 glm::vec3 pointLightPositions[] = {
     glm::vec3(0.7f, 0.2f, 2.0f),
@@ -65,6 +71,8 @@ glm::vec3 cubePositions[] = {
 
 Material *container = nullptr;
 Material *brick = nullptr;
+Material *emptyMat = nullptr;
+IcoSphere *sphere = nullptr;
 InputProcessing input;
 ObjectBuffer objBuffer;
 Character character;
@@ -119,6 +127,7 @@ void decrease_subdivision()
 void move_character(const glm::vec3 &direction)
 {
     character.update_position(direction, TimeManager::get_delta_time(), objBuffer);
+    character.set_position(terrain.get_collider().get_height_at_coord(character.get_position()));
 }
 
 int Window::init()
@@ -209,14 +218,28 @@ void Window::create_objects()
 
     brick->load_texture("brick", "brick.jpg");
 
-    terrain.generate_terrain("textures/terrain_height.png", 100, .5f);
-    terrain.set_albedo(hsl(120, .5f, .8f));
-    terrain.set_shader(ShaderStore::get_shader("noLight"));
+    emptyMat = new Material();
+    emptyMat->load_texture("empty", "empty.png");
+
+    terrain.generate_terrain("textures/terrain_height_crop.png", 100, .5f);
+    terrain.set_albedo(hsl(120, 1, .5f));
+    terrain.set_shader(ShaderStore::get_shader("default"));
+    terrain.material = emptyMat;
 
     objBuffer.add_object(&terrain);
 
-    const auto line = new Line({glm::vec3(0, 0, 0), glm::vec3(0, 0, 10), glm::vec3(0, -10, 0)}, hsl(0, .9, .2), 1.0f);
+    auto vecLine = std::vector<glm::vec3>();
+    vecLine.reserve(500);
+
+    for (int i = 0; i < 500; i++)
+    {
+        auto p = curve(i / 500.0f);
+        vecLine.push_back(terrain.get_collider().get_height_at_coord(p));
+    }
+
+    const auto line = new Line({vecLine}, hsl(0, .9, .2), 5.0f);
     line->set_shader(ShaderStore::get_shader("noLight"));
+    line->no_depth = true;
     objBuffer.add_object(line);
 
     const auto cube = new Cube();
@@ -224,7 +247,8 @@ void Window::create_objects()
     cube->set_position(terrain.get_collider().get_height_at_coord(glm::vec3(-4.5f, 0, -10.2f)));
     cube->set_scale(glm::vec3(.1f, .1f, .1f));
     cube->set_albedo(pointColor);
-    cube->set_shader(ShaderStore::get_shader("noLight"));
+    cube->set_shader(ShaderStore::get_shader("default"));
+    cube->material = container;
 
     objBuffer.add_object(cube);
 
@@ -264,8 +288,8 @@ void Window::create_objects()
     light2.position = pointLightPositions[2];
     light3.position = pointLightPositions[3];
 
-    dirLight.ambient = hsl(0, 0, .05f);
-    dirLight.diffuse = hsl(0, 0, .4f);
+    dirLight.ambient = hsl(120, .4f, .2f);
+    dirLight.diffuse = hsl(0, 0, .8f);
     dirLight.specular = glm::vec3(.5f);
     dirLight.direction = glm::vec3(-0.2f, -1.0f, -0.3f);
 
@@ -282,8 +306,9 @@ void Window::create_objects()
     spotLight->cutOff = glm::cos(glm::radians(12.5f));
     spotLight->outerCutOff = glm::cos(glm::radians(17.5f));
 
-    character.set_position(pointLightPositions[0] - glm::vec3(2, 0, 0));
-    character.set_shader(ShaderStore::get_shader("noLight"));
+    character.set_position(terrain.get_collider().get_height_at_coord(pointLightPositions[0] - glm::vec3(2, 0, 0)));
+    character.set_shader(ShaderStore::get_shader("default"));
+    character.set_material(emptyMat);
 
     ShaderStore::set_shader_params(
         [](const Shader *shad)
@@ -330,13 +355,14 @@ void Window::update() const
     shadowProcessor.bind_buffer();
     // model->Draw(*ShaderStore::get_shader("shadowMap"));
     objBuffer.draw(true);
+    character.draw_shadow();
     shadowProcessor.unbind_buffer(glm::vec2(width, height));
     glCullFace(GL_FRONT);
     // model->Draw(*ShaderStore::get_shader("default"));
     objBuffer.draw(false);
+    character.draw();
     imguiManager.render_draw_data();
     glCullFace(GL_BACK);
-    // character.draw();
 
     glBindVertexArray(0);
 

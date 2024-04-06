@@ -5,6 +5,7 @@
 #include "../collision/OBB.h"
 #include "glm/gtx/rotate_normalized_axis.inl"
 #include "glm/gtx/rotate_vector.hpp"
+#include "../Material.h"
 
 #define MOVEMENT_SPEED 5000.f
 #define MOUSE_SENSITIVITY 0.1f
@@ -17,11 +18,11 @@ Character::Character()
     camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
     pitch = -20.0f;
     set_position(glm::vec3(0.0f, 0.0f, 0.0f));
-    model.set_subdivision(5);
-    look.set_subdivision(5);
+    model.set_subdivision(3);
+    look.set_subdivision(3);
     look.set_color(hsl(188, 0.42f, 0.44f));
-    model.set_color(hsl(278, 0.42f, 0.44f));
-    model.set_euler_rotation(glm::vec3(glm::radians(90.f), 0, 0));
+    model.set_albedo(hsl(278, 0.42f, 0.44f));
+    // model.set_euler_rotation(glm::vec3(0, glm::radians(90.f), 0));
     model.set_height(height);
     model.set_radius(radius);
     look.set_height(height / 2);
@@ -63,6 +64,13 @@ void Character::update_sub_objects()
         collision->set_position(glm::vec2(position.x, position.z));
         collision->set_rotation(yaw);
     }
+}
+
+void Character::set_material(Material *material)
+{
+    model.material = material;
+    look.material = material;
+    material = material;
 }
 
 void Character::set_shader(Shader *shader)
@@ -147,11 +155,15 @@ void Character::check_overlap(const ObjectBuffer &buffer) const
                     objCollision->check_overlap(collision);
 }
 
+void Character::draw_shadow()
+{
+    model.draw(ShaderStore::get_shader("shadowMap"));
+}
+
 void Character::draw()
 {
     model.draw();
     look.draw();
-    collision->draw_bounds();
 }
 
 glm::vec3 Character::get_position() const

@@ -2,7 +2,6 @@
 
 Capsule::Capsule()
 {
-    color = hsl(0, 1, 0.5);
     position = glm::vec3(0, 0, 0);
     radius = .5f;
     height = 1;
@@ -16,39 +15,48 @@ void Capsule::generate_vertices()
     vertices.clear();
     indices.clear();
     vertices.reserve(10);
-    Vertex vertex;
+    Vertex vertex = Vertex();
     Vertex new_v1, new_v2, new_v3, v1, v2, v3;
     float radius_mod = radius;
-    vertex.normal = color.get_rgb_vec3();
     vertex.position.z = radius_mod;
+    vertex.normal = glm::vec3(0, 0, 1);
     vertices.push_back(vertex); // 0
     vertex.position.z = .000001f;
     vertex.position.y = radius_mod;
+    vertex.normal = glm::vec3(0, 1, 0);
     vertices.push_back(vertex); // 1
     vertex.position.x = radius_mod;
     vertex.position.y = 0;
+    vertex.normal = glm::vec3(1, 0, 0);
     vertices.push_back(vertex); // 2
     vertex.position.y = -radius_mod;
     vertex.position.x = 0;
+    vertex.normal = glm::vec3(0, -1, 0);
     vertices.push_back(vertex); // 3
     vertex.position.x = -radius_mod;
     vertex.position.y = 0;
+    vertex.normal = glm::vec3(-1, 0, 0);
     vertices.push_back(vertex); // 4
     vertex.position.z = -.000001f;
     vertex.position.y = radius_mod;
     vertex.position.x = 0;
+    vertex.normal = glm::vec3(0, 0, 1);
     vertices.push_back(vertex); // 5
     vertex.position.x = radius_mod;
     vertex.position.y = 0;
+    vertex.normal = glm::vec3(1, 0, 0);
     vertices.push_back(vertex); // 6
     vertex.position.y = -radius_mod;
     vertex.position.x = 0;
+    vertex.normal = glm::vec3(0, -1, 0);
     vertices.push_back(vertex); // 7
     vertex.position.x = -radius_mod;
     vertex.position.y = 0;
+    vertex.normal = glm::vec3(-1, 0, 0);
     vertices.push_back(vertex); // 8
     vertex.position.x = 0;
     vertex.position.z = -radius_mod;
+    vertex.normal = glm::vec3(0, 0, -1);
     vertices.push_back(vertex); // 9
 
     indices = {
@@ -67,8 +75,7 @@ void Capsule::generate_vertices()
         9, 5, 6,
         9, 6, 7,
         9, 7, 8,
-        9, 8, 5
-    };
+        9, 8, 5};
 
     if (subdivision > 0)
     {
@@ -107,7 +114,7 @@ void Capsule::generate_vertices()
         }
     }
 
-    for (auto& vertex : vertices)
+    for (auto &vertex : vertices)
     {
         if (height - radius > 0)
         {
@@ -122,57 +129,30 @@ void Capsule::generate_vertices()
     }
 }
 
-void Capsule::compute_half_vertex(const Vertex& a, const Vertex& b, Vertex& result)
+void Capsule::compute_half_vertex(const Vertex &a, const Vertex &b, Vertex &result)
 {
-    result.normal = color.get_rgb_vec3();
+    result.normal = normalize(a.normal + b.normal);
     result.position = normalize(a.position + b.position);
     result.position *= radius / length(result.position);
-}
-
-void Capsule::set_color(const hsl& color)
-{
-    this->color = color;
-    vertices.clear();
-}
-
-void Capsule::set_euler_rotation(const glm::vec3 angle)
-{
-    rotation = glm::quat(angle);
-    vertices.clear();
-}
-
-void Capsule::set_position(const glm::vec3 position)
-{
-    this->position = position;
-    vertices.clear();
 }
 
 void Capsule::set_radius(const float radius)
 {
     this->radius = radius;
     vertices.clear();
+    generate_vertices();
 }
 
 void Capsule::set_height(const float height)
 {
     this->height = height;
     vertices.clear();
-}
-
-void Capsule::set_rotation(const glm::quat quaternion)
-{
-    rotation = quaternion;
-    vertices.clear();
+    generate_vertices();
 }
 
 void Capsule::set_subdivision(const unsigned int subdivision)
 {
     this->subdivision = subdivision;
     vertices.clear();
-}
-
-void Capsule::pre_draw()
-{
-    if (vertices.empty())
-        generate_vertices();
+    generate_vertices();
 }

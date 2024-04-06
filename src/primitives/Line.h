@@ -32,4 +32,14 @@ public:
         this->albedo = color;
         this->width = width;
     }
+
+    void pre_draw() override
+    {
+        glLineWidth(width);
+    }
+
+    void post_draw() override
+    {
+        glLineWidth(1.0f);
+    }
 };

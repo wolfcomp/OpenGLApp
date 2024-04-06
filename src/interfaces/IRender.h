@@ -37,6 +37,7 @@ public:
         if (material != nullptr)
             material->set_shader(use_shader);
         use_shader->set_vec3("albedo", albedo.get_rgb_vec3());
+        use_shader->set_vec3("material.albedo", albedo.get_rgb_vec3());
         use_shader->set_mat4("model", model);
     }
 
@@ -56,8 +57,8 @@ public:
     void compute_model_matrix()
     {
         model = glm::mat4(1.0f);
-        model = glm::translate(model, position);
         model = model * glm::mat4_cast(rotation);
+        model = glm::translate(model, position);
         model = glm::scale(model, scale);
     }
 
