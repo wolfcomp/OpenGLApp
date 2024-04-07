@@ -370,7 +370,7 @@ bool Window::should_close() const
 
 Window::~Window()
 {
-    delete model;
+    // delete model;
     delete container;
     delete brick;
     delete spotLight;
