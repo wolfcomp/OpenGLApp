@@ -44,7 +44,7 @@ PointLight light1;
 PointLight light2;
 PointLight light3;
 SpotLight *spotLight;
-Model *model;
+// Model *model;
 Terrain terrain;
 Bezier<glm::vec3> curve{
     glm::vec3(3.5f, 0, 33.5f),
