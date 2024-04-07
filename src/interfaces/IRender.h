@@ -8,6 +8,7 @@
 #include "../HSL.h"
 #include "glm/gtc/type_ptr.hpp"
 #include "../Material.h"
+#include "../Math.h"
 
 class IRenderOld
 {
@@ -57,8 +58,11 @@ public:
     void compute_model_matrix()
     {
         model = glm::mat4(1.0f);
-        model = model * glm::mat4_cast(rotation);
         model = glm::translate(model, position);
+        auto euler = glm::eulerAngles(rotation);
+        model = model * rot_x_mat(euler.x);
+        model = model * rot_y_mat(euler.y);
+        model = model * rot_z_mat(euler.z);
         model = glm::scale(model, scale);
     }
 

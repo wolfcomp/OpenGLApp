@@ -22,7 +22,7 @@ Character::Character()
     look.set_subdivision(3);
     look.set_color(hsl(188, 0.42f, 0.44f));
     model.set_albedo(hsl(278, 0.42f, 0.44f));
-    // model.set_euler_rotation(glm::vec3(0, glm::radians(90.f), 0));
+    model.set_euler_rotation(glm::vec3(glm::radians(90.f), 0, 0));
     model.set_height(height);
     model.set_radius(radius);
     look.set_height(height / 2);
@@ -44,7 +44,7 @@ glm::vec3 Character::get_camera_position() const
 
 void Character::update_sub_objects()
 {
-    model.set_position(position);
+    model.set_position(position + glm::vec3(0, height / 2, 0));
     const auto zRotMat = rot_z_mat(90.f);
     const auto xRotMat = rot_x_mat(-yaw);
     look.set_position(position + rotateY(glm::vec3(.45f, 0, 0), glm::radians(-yaw)) + glm::vec3(0, 0.45, 0));

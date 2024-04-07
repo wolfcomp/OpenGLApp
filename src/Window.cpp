@@ -17,6 +17,7 @@
 #include "Model.h"
 #include "objects/Terrain.h"
 #include "primitives/Line.h"
+#include "collision/OBB.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -193,14 +194,6 @@ int Window::init()
         GLFW_KEY_D, []()
         { move_character(glm::vec3(0, 0, 1)); },
         true);
-    input.attach_keyboard_listener(
-        GLFW_KEY_SPACE, []()
-        { move_character(glm::vec3(0, 1, 0)); },
-        true);
-    input.attach_keyboard_listener(
-        GLFW_KEY_LEFT_CONTROL, []()
-        { move_character(glm::vec3(0, -1, 0)); },
-        true);
     return 0;
 }
 
@@ -242,34 +235,28 @@ void Window::create_objects()
     line->no_depth = true;
     objBuffer.add_object(line);
 
+    sphere = new IcoSphere();
+    sphere->set_position(terrain.get_collider().get_height_at_coord(curve(0)));
+    sphere->set_scale(glm::vec3(.25f, .25f, .25f));
+    sphere->set_albedo(hsl(270, 1, .5f));
+    sphere->set_shader(ShaderStore::get_shader("default"));
+    sphere->material = emptyMat;
+    sphere->set_subdivision(3);
+
+    objBuffer.add_object(sphere);
+
     const auto cube = new Cube();
 
-    cube->set_position(terrain.get_collider().get_height_at_coord(glm::vec3(-4.5f, 0, -10.2f)));
-    cube->set_scale(glm::vec3(.1f, .1f, .1f));
+    cube->set_position(terrain.get_collider().get_height_at_coord(glm::vec3(-4.5f, 0, -10.2f)) + glm::vec3(0, .5, 0));
+    cube->set_scale(glm::vec3(.5f, .5f, .5f));
     cube->set_albedo(pointColor);
     cube->set_shader(ShaderStore::get_shader("default"));
     cube->material = container;
+    cube->collision = new OBB();
 
     objBuffer.add_object(cube);
 
     const auto cube2 = new Cube();
-
-    cube2->set_position(pointLightPositions[0]);
-    cube2->set_scale(glm::vec3(.1f, .1f, .1f));
-    cube2->set_albedo(pointColor);
-    cube2->set_shader(ShaderStore::get_shader("noLight"));
-    cube2->no_depth = true;
-
-    objBuffer.add_object(cube2);
-
-    const auto arrow = new Arrow();
-    arrow->set_position(pointLightPositions[0]);
-    arrow->set_rotation(glm::vec3(0, M_PI / 2, 0));
-    arrow->set_albedo(hsl(0, .5, .5));
-    arrow->set_shader(ShaderStore::get_shader("noLight"));
-    arrow->no_depth = true;
-
-    objBuffer.add_object(arrow);
 
     light0.index = 0;
     light0.position = pointLightPositions[0];
