@@ -156,3 +156,9 @@ void Capsule::set_subdivision(const unsigned int subdivision)
     vertices.clear();
     generate_vertices();
 }
+
+void Capsule::set_aabb(const glm::vec3 &center, const glm::vec3 &size)
+{
+    aabb.center = center;
+    aabb.extent = size * glm::vec3(radius / 2, height / 2, radius / 2);
+}

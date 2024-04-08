@@ -72,16 +72,16 @@ std::vector<IObject *> ObjectBuffer::get_objects_in_range(glm::vec3 position, fl
         glm::vec3 min, max;
         if (object->vertices.empty())
             continue;
-        min = max = object->vertices[0].position;
+        min = max = object->vertices[0].position + glm::vec3(object->model[3]);
         for (auto vertex : object->vertices)
         {
             if (vertex.position <= min)
             {
-                min = vertex.position;
+                min = vertex.position + glm::vec3(object->model[3]);
             }
             if (vertex.position >= max)
             {
-                max = vertex.position;
+                max = vertex.position + glm::vec3(object->model[3]);
             }
         }
         auto objectCenter = (min + max) / 2.0f;

@@ -16,8 +16,10 @@ void IcoSphere::generate_vertices()
     float h_angle1 = -M_PI / 2 - H_ANGLE / 2;
     float h_angle2 = -M_PI / 2;
     vertex.position.z = radius;
+    vertex.normal = normalize(vertex.position);
     vertices[0] = vertex;
     vertex.position.z = -radius;
+    vertex.normal = normalize(vertex.position);
     vertices[11] = vertex;
     for (int i = 1; i < 6; i++)
     {
@@ -30,11 +32,13 @@ void IcoSphere::generate_vertices()
         vertex.position.x = xy * cosf(h_angle1);
         vertex.position.y = xy * sinf(h_angle1);
         vertex.position.z = z;
+        vertex.normal = normalize(vertex.position);
         vertices[i1] = vertex;
 
         vertex.position.x = xy * cosf(h_angle2);
         vertex.position.y = xy * sinf(h_angle2);
         vertex.position.z = -z;
+        vertex.normal = normalize(vertex.position);
         vertices[i2] = vertex;
 
         h_angle2 += H_ANGLE;
@@ -65,8 +69,7 @@ void IcoSphere::generate_vertices()
         11, 7, 6,
         11, 8, 7,
         11, 9, 8,
-        11, 10, 9
-    };
+        11, 10, 9};
 
     if (subdivision > 0)
     {
@@ -105,60 +108,23 @@ void IcoSphere::generate_vertices()
             }
         }
     }
-
-    for (auto& vert : vertices)
-    {
-        vert.normal = this->color.get_rgb_vec3();
-        vert.position = rotation * vert.position;
-        vert.position += position;
-    }
 }
 
-void IcoSphere::compute_half_vertex(const Vertex& a, const Vertex& b, Vertex& result) const
+void IcoSphere::compute_half_vertex(const Vertex &a, const Vertex &b, Vertex &result) const
 {
     result.position = normalize(a.position + b.position);
     result.position *= radius / length(result.position);
-    result.normal = a.normal;
-}
-
-void IcoSphere::set_color(const hsl& color)
-{
-    this->color = color;
-    vertices.clear();
-}
-
-void IcoSphere::set_euler_rotation(const glm::vec3 angle)
-{
-    rotation = glm::quat(angle);
-    vertices.clear();
-}
-
-void IcoSphere::set_position(const glm::vec3 position)
-{
-    this->position = position;
-    vertices.clear();
+    result.normal = normalize(result.position);
 }
 
 void IcoSphere::set_radius(const float radius)
 {
     this->radius = radius;
-    vertices.clear();
-}
-
-void IcoSphere::set_rotation(const glm::quat quaternion)
-{
-    rotation = quaternion;
-    vertices.clear();
+    generate_vertices();
 }
 
 void IcoSphere::set_subdivision(const unsigned int subdivision)
 {
     this->subdivision = subdivision;
-    vertices.clear();
-}
-
-void IcoSphere::pre_draw()
-{
-    if (vertices.empty())
-        generate_vertices();
+    generate_vertices();
 }

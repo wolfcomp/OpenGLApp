@@ -8,6 +8,8 @@ struct AABB
     glm::vec3 center;
     glm::vec3 extent;
 
+    AABB() : center(glm::vec3(0)), extent(glm::vec3(0)) {}
+
     AABB(const glm::vec3 &center, const glm::vec3 &extent) : center(center), extent(extent) {}
 
     bool intersect(const AABB &other, glm::vec3 *mtv) const
@@ -50,4 +52,4 @@ struct AABB
 
         return true;
     }
-}
+};

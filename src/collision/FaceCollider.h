@@ -16,5 +16,6 @@ struct FaceCollider : public ICollisionOld
     FaceCollider &operator=(const FaceCollider &) = default;
     FaceCollider &operator=(FaceCollider &&) = default;
 
+    glm::vec3 get_height_at_coord(const glm::dvec3 &point) const;
     glm::vec3 get_height_at_coord(const glm::vec3 &point) const;
 };

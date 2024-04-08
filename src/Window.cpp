@@ -222,11 +222,11 @@ void Window::create_objects()
     objBuffer.add_object(&terrain);
 
     auto vecLine = std::vector<glm::vec3>();
-    vecLine.reserve(500);
+    vecLine.reserve(200);
 
-    for (int i = 0; i < 500; i++)
+    for (int i = 0; i < 200; i++)
     {
-        auto p = curve(i / 500.0f);
+        auto p = curve(i / 200.0f);
         vecLine.push_back(terrain.get_collider().get_height_at_coord(p));
     }
 
@@ -329,6 +329,7 @@ void Window::update() const
     {
         lastSubdivision = subdivision;
     }
+    sphere->set_position(terrain.get_collider().get_height_at_coord(curve(std::fmod(TimeManager::get_active_time() * 100, 1.0))));
     positionDisplay->update();
     imguiManager.render();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

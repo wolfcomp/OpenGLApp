@@ -15,4 +15,5 @@ public:
     void set_radius(float radius);
     void set_height(float height);
     void set_subdivision(unsigned int subdivision);
+    void set_aabb(const glm::vec3 &center, const glm::vec3 &size) override;
 };

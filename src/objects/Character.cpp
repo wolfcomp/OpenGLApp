@@ -25,6 +25,7 @@ Character::Character()
     model.set_euler_rotation(glm::vec3(glm::radians(90.f), 0, 0));
     model.set_height(height);
     model.set_radius(radius);
+    aabb = AABB(glm::vec3(0), glm::vec3(radius, height / 2, radius));
     look.set_height(height / 2);
     look.set_radius(radius / 2);
     collision = new OBB();
@@ -44,7 +45,9 @@ glm::vec3 Character::get_camera_position() const
 
 void Character::update_sub_objects()
 {
-    model.set_position(position + glm::vec3(0, height / 2, 0));
+    auto modelPos = position + glm::vec3(0, height / 2, 0);
+    model.set_position(modelPos);
+    aabb.center = modelPos;
     const auto zRotMat = rot_z_mat(90.f);
     const auto xRotMat = rot_x_mat(-yaw);
     look.set_position(position + rotateY(glm::vec3(.45f, 0, 0), glm::radians(-yaw)) + glm::vec3(0, 0.45, 0));
@@ -89,6 +92,7 @@ void Character::set_explicit_camera(const glm::vec3 &position, const glm::vec3 e
 void Character::set_position(const glm::vec3 &position)
 {
     this->position = position;
+    aabb.center = position;
     update_sub_objects();
 }
 
@@ -135,11 +139,15 @@ void Character::update_position(const glm::vec3 &direction, const double delta_t
     const auto newPos = position + rotateY(direction, glm::radians(-yaw)) * velocity;
     const auto objsInRange = buffer.get_objects_in_range(newPos, 10);
     collision->set_position(glm::vec2(newPos.x, newPos.z));
+    aabb.center = newPos;
     if (!objsInRange.empty())
         for (const auto &obj : objsInRange)
-            for (const auto &objCollision : obj->get_collisions())
-                if (objCollision != nullptr && objCollision->contains(collision))
+            for (const auto &objAabb : obj->get_aabbs())
+                if (objAabb != nullptr && objAabb->intersect(aabb, nullptr))
+                {
+                    aabb.center = position;
                     return;
+                }
 
     position = newPos;
     update_sub_objects();

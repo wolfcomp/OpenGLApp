@@ -20,11 +20,6 @@ class IcoSphere final : public ITriangleObject
 
 public:
     IcoSphere();
-    void set_color(const hsl &color);
-    void set_position(glm::vec3 position);
     void set_radius(float radius);
     void set_subdivision(unsigned int subdivision);
-    void set_rotation(glm::quat quaternion);
-    void set_euler_rotation(glm::vec3 angle);
-    void pre_draw() override;
 };

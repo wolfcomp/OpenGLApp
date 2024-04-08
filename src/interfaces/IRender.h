@@ -66,13 +66,13 @@ public:
         model = glm::scale(model, scale);
     }
 
-    void set_position(glm::vec3 position)
+    virtual void set_position(glm::vec3 position)
     {
         this->position = position;
         compute_model_matrix();
     }
 
-    void set_scale(glm::vec3 scale)
+    virtual void set_scale(glm::vec3 scale)
     {
         this->scale = scale;
         compute_model_matrix();

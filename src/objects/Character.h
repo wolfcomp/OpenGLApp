@@ -2,6 +2,7 @@
 #include "../Camera.h"
 #include "../primitives/Capsule.h"
 #include "../primitives/Cone.h"
+#include "../collision/AABB.h"
 #include "glm/vec3.hpp"
 
 class ObjectBuffer;
@@ -20,6 +21,7 @@ class Character
     Cone look;
     Camera camera;
     ICollisionOld *collision;
+    AABB aabb;
     bool cameraExplicit = false;
 
     void update_sub_objects();
