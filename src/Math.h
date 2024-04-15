@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 
-#include "Mesh.h"
 #include "glm/fwd.hpp"
 
 #ifdef M_PI
@@ -17,9 +16,6 @@ T lerp(const T &a, const T &b, const float t)
 {
     return a + (b - a) * t;
 }
-
-template <>
-Vertex lerp(const Vertex &a, const Vertex &b, float t);
 #endif
 
 #ifndef EULER_LERP

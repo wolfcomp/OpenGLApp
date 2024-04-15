@@ -1,23 +1,11 @@
 #include "Window.h"
 #include <iostream>
-#include "TimeManager.h"
-#include "ObjectBuffer.h"
-#include "objects/Character.h"
-#include "debug/Arrow.h"
 #include "ShaderStore.h"
-#include "primitives/Cube.h"
 #include "InputProcessing.h"
 #include "Light.h"
-#include "Math.h"
 #include "Shadow.h"
-#include "primitives/Plane.h"
-#include "primitives/IcoSphere.h"
+#include "Math.h"
 #include "ImGuiManager.h"
-#include "windows/PositionDisplay.h"
-#include "Model.h"
-#include "objects/Terrain.h"
-#include "primitives/Line.h"
-#include "collision/OBB.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -44,8 +32,6 @@ PointLight light1;
 PointLight light2;
 PointLight light3;
 SpotLight *spotLight;
-// Model *model;
-Terrain terrain;
 Bezier<glm::vec3> curve{
     glm::vec3(3.5f, 0, 33.5f),
     glm::vec3(3.5f, 0, 17),
@@ -59,27 +45,14 @@ glm::vec3 pointLightPositions[] = {
     glm::vec3(0.0f, 0.0f, -3.0f)};
 
 glm::vec3 cubePositions[] = {
-    glm::vec3(0.0f, 0.0f, 0.0f),
-    glm::vec3(2.0f, 5.0f, -15.0f),
-    glm::vec3(-1.5f, -2.2f, -2.5f),
+    glm::vec3(2.6f, 5.0f, -15.4f),
     glm::vec3(-3.8f, -2.0f, -12.3f),
-    glm::vec3(2.4f, -0.4f, -3.5f),
     glm::vec3(-1.7f, 3.0f, -7.5f),
-    glm::vec3(1.3f, -2.0f, -2.5f),
-    glm::vec3(1.5f, 2.0f, -2.5f),
-    glm::vec3(1.5f, 0.2f, -1.5f),
-    glm::vec3(-1.3f, 1.0f, -1.5f)};
+    glm::vec3(-4.5f, 0, -10.2f)};
 
-Material *container = nullptr;
-Material *brick = nullptr;
-Material *emptyMat = nullptr;
-IcoSphere *sphere = nullptr;
 InputProcessing input;
-ObjectBuffer objBuffer;
-Character character;
 ShadowProcessor shadowProcessor;
 ImGuiManager imguiManager;
-PositionDisplay *positionDisplay;
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
@@ -101,12 +74,12 @@ void process_mouse_input(GLFWwindow *window, const double x_pos, const double y_
     lastX = x_pos;
     lastY = y_pos;
 
-    character.process_mouse_movement(xOffset, yOffset);
+    // character.process_mouse_movement(xOffset, yOffset);
 }
 
 void scroll_callback(GLFWwindow *window, double x_offset, double y_offset)
 {
-    character.process_mouse_scroll(y_offset);
+    // character.process_mouse_scroll(y_offset);
 }
 
 void increase_subdivision()
@@ -127,8 +100,8 @@ void decrease_subdivision()
 
 void move_character(const glm::vec3 &direction)
 {
-    character.update_position(direction, TimeManager::get_delta_time(), objBuffer);
-    character.set_position(terrain.get_collider().get_height_at_coord(character.get_position()));
+    // character.update_position(direction, TimeManager::get_delta_time(), objBuffer);
+    // character.set_position(terrain.get_collider().get_height_at_coord(character.get_position()));
 }
 
 int Window::init()
@@ -199,64 +172,7 @@ int Window::init()
 
 void Window::create_objects()
 {
-    objBuffer.init_buffers();
     shadowProcessor.init();
-    // model = new Model("assets/models/Sponza/Sponza.fbx");
-
-    container = new Material();
-
-    container->load_texture("container", "container.png");
-
-    brick = new Material();
-
-    brick->load_texture("brick", "brick.jpg");
-
-    emptyMat = new Material();
-    emptyMat->load_texture("empty", "empty.png");
-
-    terrain.generate_terrain("textures/terrain_height_crop.png", 100, .5f);
-    terrain.set_albedo(hsl(120, 1, .5f));
-    terrain.set_shader(ShaderStore::get_shader("default"));
-    terrain.material = emptyMat;
-
-    objBuffer.add_object(&terrain);
-
-    auto vecLine = std::vector<glm::vec3>();
-    vecLine.reserve(200);
-
-    for (int i = 0; i < 200; i++)
-    {
-        auto p = curve(i / 200.0f);
-        vecLine.push_back(terrain.get_collider().get_height_at_coord(p));
-    }
-
-    const auto line = new Line({vecLine}, hsl(0, .9, .2), 5.0f);
-    line->set_shader(ShaderStore::get_shader("noLight"));
-    line->no_depth = true;
-    objBuffer.add_object(line);
-
-    sphere = new IcoSphere();
-    sphere->set_position(terrain.get_collider().get_height_at_coord(curve(0)));
-    sphere->set_scale(glm::vec3(.25f, .25f, .25f));
-    sphere->set_albedo(hsl(270, 1, .5f));
-    sphere->set_shader(ShaderStore::get_shader("default"));
-    sphere->material = emptyMat;
-    sphere->set_subdivision(3);
-
-    objBuffer.add_object(sphere);
-
-    const auto cube = new Cube();
-
-    cube->set_position(terrain.get_collider().get_height_at_coord(glm::vec3(-4.5f, 0, -10.2f)) + glm::vec3(0, .5, 0));
-    cube->set_scale(glm::vec3(.5f, .5f, .5f));
-    cube->set_albedo(pointColor);
-    cube->set_shader(ShaderStore::get_shader("default"));
-    cube->material = container;
-    cube->collision = new OBB();
-
-    objBuffer.add_object(cube);
-
-    const auto cube2 = new Cube();
 
     light0.index = 0;
     light0.position = pointLightPositions[0];
@@ -278,7 +194,7 @@ void Window::create_objects()
     dirLight.ambient = hsl(120, .4f, .2f);
     dirLight.diffuse = hsl(0, 0, .8f);
     dirLight.specular = glm::vec3(.5f);
-    dirLight.direction = glm::vec3(-0.2f, -1.0f, -0.3f);
+    dirLight.direction = glm::vec3(-0.7f, -1.0f, -0.3f);
 
     spotLight = new SpotLight();
 
@@ -293,10 +209,6 @@ void Window::create_objects()
     spotLight->cutOff = glm::cos(glm::radians(12.5f));
     spotLight->outerCutOff = glm::cos(glm::radians(17.5f));
 
-    character.set_position(terrain.get_collider().get_height_at_coord(pointLightPositions[0] - glm::vec3(2, 0, 0)));
-    character.set_shader(ShaderStore::get_shader("default"));
-    character.set_material(emptyMat);
-
     ShaderStore::set_shader_params(
         [](const Shader *shad)
         {
@@ -307,30 +219,17 @@ void Window::create_objects()
             dirLight.set_shader(shad);
             spotLight->set_shader(shad);
             input.set_shader(shad);
-            character.update_shader(shad);
             shad->set_float("gammaCorrection", 2.2f);
-            shad->set_mat4("lightSpaceMatrix", shadowProcessor.get_light_space_matrix(character.get_position(), dirLight.direction, character.get_look_angles().y));
             shadowProcessor.bind_depth_map(shad);
         });
-
-    positionDisplay = new PositionDisplay(&character);
-
-    imguiManager.add_window(positionDisplay);
-    TimeManager::set_last_frame(glfwGetTime());
 }
 
 void Window::update() const
 {
-    TimeManager::set_current_frame(glfwGetTime());
-    TimeManager::set_delta_time((TimeManager::get_current_frame() - TimeManager::get_last_frame()) / 1000);
-    TimeManager::set_last_frame(TimeManager::get_current_frame());
-    input.process_keyboard(window, TimeManager::get_delta_time());
     if (lastSubdivision != subdivision)
     {
         lastSubdivision = subdivision;
     }
-    sphere->set_position(terrain.get_collider().get_height_at_coord(curve(std::fmod(TimeManager::get_active_time() * 100, 1.0))));
-    positionDisplay->update();
     imguiManager.render();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glPointSize(5);
@@ -342,13 +241,9 @@ void Window::update() const
 
     shadowProcessor.bind_buffer();
     // model->Draw(*ShaderStore::get_shader("shadowMap"));
-    objBuffer.draw(true);
-    character.draw_shadow();
     shadowProcessor.unbind_buffer(glm::vec2(width, height));
     glCullFace(GL_FRONT);
     // model->Draw(*ShaderStore::get_shader("default"));
-    objBuffer.draw(false);
-    character.draw();
     imguiManager.render_draw_data();
     glCullFace(GL_BACK);
 
@@ -371,9 +266,6 @@ bool Window::should_close() const
 
 Window::~Window()
 {
-    // delete model;
-    delete container;
-    delete brick;
     delete spotLight;
     glfwDestroyWindow(window);
     ImGui_ImplOpenGL3_Shutdown();

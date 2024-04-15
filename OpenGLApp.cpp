@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include "src/ShaderStore.h"
-#include "src/TimeManager.h"
 #include <filesystem>
 
 Window window;

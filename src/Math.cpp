@@ -2,7 +2,6 @@
 
 #include <cstdarg>
 
-#include "Mesh.h"
 #include "glm/gtc/matrix_transform.hpp"
 
 glm::mat4 rot_z_mat(float angle)
@@ -81,13 +80,4 @@ glm::vec3 euler_lerp(const glm::vec3 &a, const glm::vec3 &b, const float t)
         lerp_shortest(a.x, b.x, t),
         lerp_shortest(a.y, b.y, t),
         lerp_shortest(a.z, b.z, t)};
-}
-
-template <>
-Vertex lerp(const Vertex &a, const Vertex &b, const float t)
-{
-    return Vertex(
-        lerp(a.position, b.position, t),
-        lerp(a.normal, b.normal, t),
-        lerp(a.texture_coord, b.texture_coord, t));
 }
