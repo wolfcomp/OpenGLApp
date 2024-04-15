@@ -3,6 +3,7 @@
 #include "HSL.h"
 #include "Shader.h"
 #include "Shadow.h"
+#include <vector>
 
 struct Light
 {
@@ -91,5 +92,36 @@ struct SpotLight : public PointLight
     std::string get_name() override
     {
         return "spotLight";
+    }
+};
+
+class LightManager
+{
+    std::vector<Light *> lights;
+
+public:
+    void add_light(Light *light)
+    {
+        lights.push_back(light);
+    }
+
+    void set_shader(const Shader *shader)
+    {
+        for (auto light : lights)
+        {
+            light->set_shader(shader);
+        }
+    }
+
+    void bind_depth_maps(const Shader *shader)
+    {
+        for (auto light : lights)
+        {
+            auto spotLight = dynamic_cast<SpotLight *>(light);
+            if (spotLight)
+            {
+                spotLight->bind_depth_map(shader);
+            }
+        }
     }
 };

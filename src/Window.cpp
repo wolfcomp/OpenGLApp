@@ -26,12 +26,6 @@ float prevPitchExplicit;
 hsl pointColor = hsl(0, 0, .8f);
 hsl ambientColor = hsl(0, 0, .05f);
 glm::vec3 lightPos = glm::vec3(0, 0, 4);
-DirectionalLight dirLight;
-PointLight light0;
-PointLight light1;
-PointLight light2;
-PointLight light3;
-SpotLight *spotLight;
 Bezier<glm::vec3> curve{
     glm::vec3(3.5f, 0, 33.5f),
     glm::vec3(3.5f, 0, 17),
@@ -53,6 +47,7 @@ glm::vec3 cubePositions[] = {
 InputProcessing input;
 ShadowProcessor shadowProcessor;
 ImGuiManager imguiManager;
+LightManager lightManager;
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
@@ -174,29 +169,41 @@ void Window::create_objects()
 {
     shadowProcessor.init();
 
-    light0.index = 0;
-    light0.position = pointLightPositions[0];
-    light0.diffuse = pointColor;
-    light0.ambient = ambientColor;
-    light0.specular = glm::vec3(1);
-    light0.constant = 1.0f;
-    light0.linear = 0.09f;
-    light0.quadratic = 0.032f;
+    DirectionalLight *dirLight = new DirectionalLight();
+    PointLight *light0 = new PointLight();
+    PointLight *light1 = new PointLight();
+    PointLight *light2 = new PointLight();
+    PointLight *light3 = new PointLight();
+    SpotLight *spotLight = new SpotLight();
 
-    light1 = light2 = light3 = light0;
-    light1.index = 1;
-    light2.index = 2;
-    light3.index = 3;
-    light1.position = pointLightPositions[1];
-    light2.position = pointLightPositions[2];
-    light3.position = pointLightPositions[3];
+    lightManager.add_light(dirLight);
+    lightManager.add_light(light0);
+    lightManager.add_light(light1);
+    lightManager.add_light(light2);
+    lightManager.add_light(light3);
+    lightManager.add_light(spotLight);
 
-    dirLight.ambient = hsl(120, .4f, .2f);
-    dirLight.diffuse = hsl(0, 0, .8f);
-    dirLight.specular = glm::vec3(.5f);
-    dirLight.direction = glm::vec3(-0.7f, -1.0f, -0.3f);
+    light0->index = 0;
+    light0->position = pointLightPositions[0];
+    light0->diffuse = pointColor;
+    light0->ambient = ambientColor;
+    light0->specular = glm::vec3(1);
+    light0->constant = 1.0f;
+    light0->linear = 0.09f;
+    light0->quadratic = 0.032f;
 
-    spotLight = new SpotLight();
+    *light1 = *light2 = *light3 = *light0;
+    light1->index = 1;
+    light2->index = 2;
+    light3->index = 3;
+    light1->position = pointLightPositions[1];
+    light2->position = pointLightPositions[2];
+    light3->position = pointLightPositions[3];
+
+    dirLight->ambient = hsl(120, .4f, .2f);
+    dirLight->diffuse = hsl(0, 0, .8f);
+    dirLight->specular = glm::vec3(.5f);
+    dirLight->direction = glm::vec3(-0.7f, -1.0f, -0.3f);
 
     spotLight->position = pointLightPositions[0];
     spotLight->direction = normalize(glm::vec3(0, 0, -1));
@@ -212,12 +219,7 @@ void Window::create_objects()
     ShaderStore::set_shader_params(
         [](const Shader *shad)
         {
-            light0.set_shader(shad);
-            light1.set_shader(shad);
-            light2.set_shader(shad);
-            light3.set_shader(shad);
-            dirLight.set_shader(shad);
-            spotLight->set_shader(shad);
+            lightManager.set_shader(shad);
             input.set_shader(shad);
             shad->set_float("gammaCorrection", 2.2f);
             shadowProcessor.bind_depth_map(shad);
@@ -266,7 +268,8 @@ bool Window::should_close() const
 
 Window::~Window()
 {
-    delete spotLight;
+
+    ShaderStore::remove_all_shaders();
     glfwDestroyWindow(window);
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
