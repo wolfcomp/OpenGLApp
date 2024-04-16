@@ -30,4 +30,5 @@ public:
     void bind_depth_map(const Shader *shader);
     glm::mat4 get_light_space_matrix(const glm::vec3 &light_pos, const glm::vec3 &light_dir);
     glm::mat4 get_light_space_matrix(const glm::vec3 &light_pos, const glm::vec3 &light_dir, const glm::mat4 &light_projection);
+    void cleanup();
 };

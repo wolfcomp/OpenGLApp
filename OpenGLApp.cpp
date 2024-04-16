@@ -5,7 +5,7 @@
 #include "src/ShaderStore.h"
 #include <filesystem>
 
-Window window;
+Window *window;
 
 int main()
 {
@@ -17,7 +17,9 @@ int main()
         std::filesystem::current_path(path);
     }
 
-    auto winRet = window.init();
+    window = new Window();
+
+    auto winRet = window->init();
     if (winRet != 0)
     {
         return winRet;
@@ -27,12 +29,14 @@ int main()
     ShaderStore::add_shader("noLight", "shaders/default.vs", "shaders/noLight.fs");
     ShaderStore::add_shader("shadowMap", "shaders/shadowMap.vs", "shaders/shadowMap.fs");
 
-    window.create_objects();
+    window->create_objects();
 
-    while (!window.should_close())
+    while (!window->should_close())
     {
-        window.update();
+        window->update();
     }
+
+    delete window;
 
     return 0;
 }

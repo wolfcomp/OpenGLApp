@@ -124,4 +124,13 @@ public:
             }
         }
     }
+
+    void cleanup()
+    {
+        for (auto light : lights)
+        {
+            delete light;
+        }
+        lights.clear();
+    }
 };

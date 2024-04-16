@@ -6,23 +6,18 @@
 #include "Shadow.h"
 #include "Math.h"
 #include "ImGuiManager.h"
+#include "windows/InfoWindow.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <chrono>
+
+#define CAMERA_SPEED 2.5f
 
 constexpr int width = 1600;
 constexpr int height = 900;
-double lastX, lastY;
-bool firstMouse = true;
-int subdivision = 0;
-int lastSubdivision = 0;
 bool wireframe = false;
-glm::vec3 staticCameraPos = glm::vec3(5.5, 3, 5);
-float staticCamYaw = 60.f;
-float staticCamPitch = -25.f;
-float curveAggressiveness = 1;
-bool lastCharacterStateObserved = false;
-float prevYawExplicit;
-float prevPitchExplicit;
+double deltaTime = 0.0;
+std::chrono::time_point<std::chrono::high_resolution_clock> lastFrame;
 hsl pointColor = hsl(0, 0, .8f);
 hsl ambientColor = hsl(0, 0, .05f);
 glm::vec3 lightPos = glm::vec3(0, 0, 4);
@@ -44,6 +39,7 @@ glm::vec3 cubePositions[] = {
     glm::vec3(-1.7f, 3.0f, -7.5f),
     glm::vec3(-4.5f, 0, -10.2f)};
 
+Camera camera;
 InputProcessing input;
 ShadowProcessor shadowProcessor;
 ImGuiManager imguiManager;
@@ -55,56 +51,19 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
     input.change_aspect(static_cast<float>(width), static_cast<float>(height));
 }
 
-void process_mouse_input(GLFWwindow *window, const double x_pos, const double y_pos)
-{
-    if (firstMouse)
-    {
-        lastX = x_pos;
-        lastY = y_pos;
-        firstMouse = false;
-    }
-
-    const double xOffset = x_pos - lastX;
-    const double yOffset = lastY - y_pos; // reversed: y ranges bottom to top
-    lastX = x_pos;
-    lastY = y_pos;
-
-    // character.process_mouse_movement(xOffset, yOffset);
-}
-
-void scroll_callback(GLFWwindow *window, double x_offset, double y_offset)
-{
-    // character.process_mouse_scroll(y_offset);
-}
-
-void increase_subdivision()
-{
-    if (subdivision < 5)
-    {
-        subdivision++;
-    }
-}
-
-void decrease_subdivision()
-{
-    if (subdivision > 0)
-    {
-        subdivision--;
-    }
-}
-
 void move_character(const glm::vec3 &direction)
 {
-    // character.update_position(direction, TimeManager::get_delta_time(), objBuffer);
-    // character.set_position(terrain.get_collider().get_height_at_coord(character.get_position()));
+    auto pos = camera.get_pos();
+    pos += direction * (float)(CAMERA_SPEED * deltaTime);
+    camera.set_position(pos);
 }
 
 int Window::init()
 {
     input.change_aspect(width, height);
     glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     window = glfwCreateWindow(width, height, "OpenGLApp", nullptr, nullptr);
@@ -123,6 +82,10 @@ int Window::init()
         return -1;
     }
 
+    GLint maxTessLevel;
+    glGetIntegerv(GL_MAX_TESS_GEN_LEVEL, &maxTessLevel);
+    // std::cout << "Max tessellation level: " << maxTessLevel << std::endl;
+
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
@@ -131,17 +94,26 @@ int Window::init()
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(window, false);
-    ImGui_ImplOpenGL3_Init("#version 330");
+    ImGui_ImplOpenGL3_Init("#version 410");
 
     glViewport(0, 0, width, height);
     glEnable(GL_DEPTH_TEST);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glfwSetCursorPosCallback(window, process_mouse_input);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetScrollCallback(window, scroll_callback);
+    glfwSetCursorPosCallback(window, [](GLFWwindow *window, double x_pos, double y_pos)
+                             { input.process_mouse_move(window, x_pos, y_pos); });
+    glfwSetMouseButtonCallback(window, [](GLFWwindow *window, int button, int action, int mods)
+                               { input.process_mouse_button(window, button, action, mods); });
+    glfwSetScrollCallback(window, [](GLFWwindow *window, double x_offset, double y_offset)
+                          { input.process_mouse_scroll(window, x_offset, y_offset); });
 
-    input.attach_keyboard_listener(GLFW_KEY_UP, increase_subdivision, false);
-    input.attach_keyboard_listener(GLFW_KEY_DOWN, decrease_subdivision, false);
+    init_listeners();
+
+    return 0;
+}
+
+void Window::init_listeners()
+{
     input.attach_keyboard_listener(
         GLFW_KEY_F, []()
         { wireframe = !wireframe; },
@@ -162,7 +134,16 @@ int Window::init()
         GLFW_KEY_D, []()
         { move_character(glm::vec3(0, 0, 1)); },
         true);
-    return 0;
+    input.attach_keyboard_listener(
+        GLFW_KEY_SPACE, []()
+        { move_character(glm::vec3(0, 1, 0)); },
+        true);
+    input.attach_keyboard_listener(
+        GLFW_KEY_LEFT_CONTROL, []()
+        { move_character(glm::vec3(0, -1, 0)); },
+        true);
+    input.attach_mouse_listener([](MouseInput input)
+                                { camera.process_mouse(input.x_pos_offset, input.y_pos_offset); });
 }
 
 void Window::create_objects()
@@ -216,9 +197,12 @@ void Window::create_objects()
     spotLight->cutOff = glm::cos(glm::radians(12.5f));
     spotLight->outerCutOff = glm::cos(glm::radians(17.5f));
 
+    imguiManager.add_window(new InfoWindow(&camera));
+
     ShaderStore::set_shader_params(
         [](const Shader *shad)
         {
+            camera.set_shader(shad);
             lightManager.set_shader(shad);
             input.set_shader(shad);
             shad->set_float("gammaCorrection", 2.2f);
@@ -228,10 +212,9 @@ void Window::create_objects()
 
 void Window::update() const
 {
-    if (lastSubdivision != subdivision)
-    {
-        lastSubdivision = subdivision;
-    }
+    deltaTime = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - lastFrame).count();
+    lastFrame = std::chrono::high_resolution_clock::now();
+    input.process_keyboard(window, 0);
     imguiManager.render();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glPointSize(5);
@@ -268,7 +251,10 @@ bool Window::should_close() const
 
 Window::~Window()
 {
-
+    imguiManager.cleanup();
+    lightManager.cleanup();
+    input.cleanup();
+    shadowProcessor.cleanup();
     ShaderStore::remove_all_shaders();
     glfwDestroyWindow(window);
     ImGui_ImplOpenGL3_Shutdown();

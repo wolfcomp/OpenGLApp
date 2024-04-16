@@ -6,7 +6,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-unsigned int create_texture(const char *path, bool gamma_correct = false)
+unsigned int create_texture(const char *path, bool gamma_correct, bool silent_error)
 {
     unsigned int texture;
     glGenTextures(1, &texture);
@@ -44,9 +44,12 @@ unsigned int create_texture(const char *path, bool gamma_correct = false)
     }
     else
     {
-        std::cerr << "ERROR::MATERIAL::CREATE_TEXTURE" << std::endl;
-        std::cerr << "Failed to load texture" << std::endl;
-        std::cerr << path << std::endl;
+        if (!silent_error)
+        {
+            std::cerr << "ERROR::MATERIAL::CREATE_TEXTURE" << std::endl;
+            std::cerr << "Failed to load texture" << std::endl;
+            std::cerr << path << std::endl;
+        }
         texture = 0;
     }
     stbi_image_free(data);
@@ -64,13 +67,14 @@ void Material::load_texture(const std::string block, const std::string path)
     std::filesystem::path p = "textures";
     p /= block;
     p /= path;
-    diffuseTexture = create_texture(get_path(p, "_d").c_str(), true);
-    specularTexture = create_texture(get_path(p, "_s").c_str());
-    normalTexture = create_texture(get_path(p, "_n").c_str());
+    diffuseTexture = create_texture(get_path(p, "_d").c_str(), true, false);
+    specularTexture = create_texture(get_path(p, "_s").c_str(), false, true);
+    normalTexture = create_texture(get_path(p, "_n").c_str(), false, true);
 }
 
-void Material::set_shader(const Shader *shader)
+void Material::use()
 {
+    shader->use();
     shader->set_int("material.diffuse", 0);
     shader->set_int("material.specular", 1);
     shader->set_int("material.normal", 2);

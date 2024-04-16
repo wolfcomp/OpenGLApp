@@ -67,3 +67,9 @@ glm::mat4 ShadowProcessor::get_light_space_matrix(const glm::vec3 &light_pos, co
     const glm::mat4 light_view = glm::lookAt(light_pos, light_pos + light_dir, glm::vec3(0.0f, 1.0f, 0.0f));
     return light_projection * light_view;
 }
+
+void ShadowProcessor::cleanup()
+{
+    glDeleteFramebuffers(1, &depth_map_fbo);
+    glDeleteTextures(1, &depth_map);
+}

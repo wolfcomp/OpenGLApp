@@ -30,7 +30,9 @@ public:
         {
             if (window->is_open())
             {
+                ImGui::Begin(window->get_name().c_str(), nullptr, window->get_flags());
                 window->render();
+                ImGui::End();
             }
         }
 
@@ -40,5 +42,14 @@ public:
     void render_draw_data()
     {
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    }
+
+    void cleanup()
+    {
+        for (auto window : windows)
+        {
+            delete window;
+        }
+        windows.clear();
     }
 };
