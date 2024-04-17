@@ -7,6 +7,9 @@
 #include "Math.h"
 #include "ImGuiManager.h"
 #include "windows/InfoWindow.h"
+#include "objects/World.h"
+#include "objects/primitives/Cube.h"
+#include "Material.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <chrono>
@@ -44,6 +47,7 @@ InputProcessing input;
 ShadowProcessor shadowProcessor;
 ImGuiManager imguiManager;
 LightManager lightManager;
+World world;
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
@@ -106,6 +110,8 @@ int Window::init()
                                { input.process_mouse_button(window, button, action, mods); });
     glfwSetScrollCallback(window, [](GLFWwindow *window, double x_offset, double y_offset)
                           { input.process_mouse_scroll(window, x_offset, y_offset); });
+    glfwSetCharCallback(window, [](GLFWwindow *window, unsigned int codepoint)
+                        { ImGui_ImplGlfw_CharCallback(window, codepoint); });
 
     init_listeners();
 
@@ -199,6 +205,15 @@ void Window::create_objects()
 
     imguiManager.add_window(new InfoWindow(&camera));
 
+    auto cube = new Cube();
+
+    cube->material = new Material();
+    cube->material->load_texture("container", "container");
+    cube->material->shader = ShaderStore::get_shader("default");
+    cube->material->shadow_shader = ShaderStore::get_shader("shadow");
+
+    world.add_mesh(cube);
+
     ShaderStore::set_shader_params(
         [](const Shader *shad)
         {
@@ -225,9 +240,10 @@ void Window::update() const
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     shadowProcessor.bind_buffer();
-    // model->Draw(*ShaderStore::get_shader("shadowMap"));
+    world.draw_shadow(glm::mat4(1));
     shadowProcessor.unbind_buffer(glm::vec2(width, height));
     glCullFace(GL_FRONT);
+    world.draw(glm::mat4(1));
     // model->Draw(*ShaderStore::get_shader("default"));
     imguiManager.render_draw_data();
     glCullFace(GL_BACK);
@@ -251,6 +267,7 @@ bool Window::should_close() const
 
 Window::~Window()
 {
+    world.cleanup();
     imguiManager.cleanup();
     lightManager.cleanup();
     input.cleanup();

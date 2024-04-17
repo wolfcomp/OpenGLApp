@@ -1,5 +1,6 @@
 #include "Mesh.h"
 #include "../Material.h"
+#include "../Shader.h"
 
 Mesh::Mesh()
 {
@@ -21,14 +22,6 @@ Mesh::Mesh()
     glBindVertexArray(0);
 }
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, Material *material)
-{
-    Mesh();
-    this->vertices = vertices;
-    this->indices = indices;
-    this->material = material;
-}
-
 Mesh::~Mesh()
 {
     glDeleteVertexArrays(1, &VAO);
@@ -36,11 +29,36 @@ Mesh::~Mesh()
     glDeleteBuffers(1, &EBO);
 }
 
-void Mesh::draw(GLenum mode)
+void Mesh::draw(glm::mat4 world_pos)
 {
+    if (!material)
+        return;
     glBindVertexArray(VAO);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
     material->use();
+    world_pos = glm::translate(world_pos, position);
+    world_pos = world_pos * glm::mat4_cast(rotation);
+    world_pos = glm::scale(world_pos, scale);
+    material->shader->set_mat4("model", world_pos);
     glDrawElements(mode, indices.size(), GL_UNSIGNED_INT, 0);
+    for (auto child : children)
+        child->draw(world_pos);
+}
+
+void Mesh::draw_shadow(glm::mat4 world_pos)
+{
+    if (!material || !material->shadow_shader)
+        return;
+    glBindVertexArray(VAO);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+    material->shadow_shader->use();
+    world_pos = glm::translate(world_pos, position);
+    world_pos = world_pos * glm::mat4_cast(rotation);
+    world_pos = glm::scale(world_pos, scale);
+    material->shader->set_mat4("model", world_pos);
+    glDrawElements(mode, indices.size(), GL_UNSIGNED_INT, 0);
+    for (auto child : children)
+        child->draw_shadow(world_pos);
 }
