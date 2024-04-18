@@ -100,3 +100,11 @@ void Camera::process_mouse(float xoffset, float yoffset, bool constrainPitch)
     // update front, right and up vectors using the updated Euler angles
     update_camera_vectors();
 }
+
+glm::vec3 Camera::get_movement(glm::vec3 direction) const
+{
+    auto rotation = glm::quat(glm::vec3(glm::radians(eulerAngles.x), glm::radians(eulerAngles.y), 0));
+    auto rotated = rotation * glm::vec3(direction.x, direction.y, direction.z);
+
+    return rotated;
+}

@@ -13,6 +13,8 @@ InputProcessing::InputProcessing()
 
 void InputProcessing::change_aspect(const float width, const float height)
 {
+    this->width = width;
+    this->height = height;
     aspect = width / height;
     projection = glm::perspective(glm::radians(zoom), aspect, 0.1f, 100.0f);
 }
@@ -126,4 +128,9 @@ void InputProcessing::cleanup()
     mouse_listeners.clear();
     should_repeat.clear();
     key_pressed.clear();
+}
+
+glm::vec2 InputProcessing::get_screen_size() const
+{
+    return {width, height};
 }

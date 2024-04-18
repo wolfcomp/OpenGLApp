@@ -27,6 +27,8 @@ class InputProcessing
     std::map<int, bool> key_pressed;
     float zoom;
     float aspect;
+    int width;
+    int height;
     MouseInput last;
 
 public:
@@ -42,5 +44,6 @@ public:
     void remove_mouse_listener(int listener);
     void set_shader(const Shader *shader);
     glm::mat4 get_projection() const;
+    glm::vec2 get_screen_size() const;
     void cleanup();
 };

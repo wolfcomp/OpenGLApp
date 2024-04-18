@@ -58,7 +58,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 void move_character(const glm::vec3 &direction)
 {
     auto pos = camera.get_pos();
-    pos += direction * (float)(CAMERA_SPEED * deltaTime);
+    pos += camera.get_movement(direction) * (float)(CAMERA_SPEED * deltaTime);
     camera.set_position(pos);
 }
 
@@ -243,7 +243,7 @@ void Window::update() const
 
     shadowProcessor.bind_buffer();
     world.draw_shadow(glm::mat4(1));
-    shadowProcessor.unbind_buffer(glm::vec2(width, height));
+    shadowProcessor.unbind_buffer(input.get_screen_size());
     glCullFace(GL_FRONT);
     world.draw(glm::mat4(1));
     imguiManager.render_draw_data();
