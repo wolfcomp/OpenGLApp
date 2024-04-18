@@ -38,6 +38,14 @@ struct DirectionalLight : public Light
     {
         return "dirLight";
     }
+
+    glm::mat4 get_light_space_matrix(glm::vec3 position)
+    {
+        float near_plane = 1.0f, far_plane = 7.5f;
+        glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+        glm::mat4 lightView = glm::lookAt(-direction * 10.0f, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+        return lightProjection * lightView;
+    }
 };
 
 struct PointLight : public Light

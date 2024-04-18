@@ -5,6 +5,12 @@ layout(location = 2) in vec2 aTexCoords;
 layout(location = 3) in vec3 aTangent;
 layout(location = 4) in vec3 aBitangent;
 
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+uniform mat4 lightSpaceMatrix;
+uniform vec3 viewPos;
+
 out VS_OUT {
    vec3 FragPos;
    vec2 TexCoords;
@@ -14,12 +20,6 @@ out VS_OUT {
    vec4 FragPosLightSpace;
    mat3 TBN;
 } vs_out;
-
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
-uniform mat4 lightSpaceMatrix;
-uniform vec3 viewPos;
 
 void main() {
    vs_out.FragPos = vec3(model * vec4(aPos, 1.0));

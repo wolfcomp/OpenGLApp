@@ -31,4 +31,5 @@ public:
     ~Mesh();
     void draw(glm::mat4 world_pos);
     void draw_shadow(glm::mat4 world_pos);
+    void set_light_space_matrix(const glm::mat4 &light_space_matrix);
 };

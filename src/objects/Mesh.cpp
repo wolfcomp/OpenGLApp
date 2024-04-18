@@ -4,6 +4,10 @@
 
 Mesh::Mesh()
 {
+    position = glm::vec3(0, 0, 0);
+    scale = glm::vec3(1, 1, 1);
+    rotation = glm::quat(1, 0, 0, 0);
+
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -57,8 +61,20 @@ void Mesh::draw_shadow(glm::mat4 world_pos)
     world_pos = glm::translate(world_pos, position);
     world_pos = world_pos * glm::mat4_cast(rotation);
     world_pos = glm::scale(world_pos, scale);
-    material->shader->set_mat4("model", world_pos);
+    material->shadow_shader->set_mat4("model", world_pos);
     glDrawElements(mode, indices.size(), GL_UNSIGNED_INT, 0);
     for (auto child : children)
         child->draw_shadow(world_pos);
+}
+
+void Mesh::set_light_space_matrix(const glm::mat4 &light_space_matrix)
+{
+    if (!material || !material->shadow_shader || !material->shader)
+        return;
+
+    material->shadow_shader->set_mat4("lightSpaceMatrix", light_space_matrix);
+    material->shader->set_mat4("lightSpaceMatrix", light_space_matrix);
+
+    for (auto child : children)
+        child->set_light_space_matrix(light_space_matrix);
 }
