@@ -27,6 +27,7 @@ struct Light
 struct DirectionalLight : public Light
 {
     glm::vec3 direction;
+    glm::vec3 position;
 
     void set_shader(const Shader *shader) override
     {
@@ -37,14 +38,6 @@ struct DirectionalLight : public Light
     std::string get_name() override
     {
         return "dirLight";
-    }
-
-    glm::mat4 get_light_space_matrix(glm::vec3 position)
-    {
-        float near_plane = 1.0f, far_plane = 7.5f;
-        glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
-        glm::mat4 lightView = glm::lookAt(-direction * 10.0f, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
-        return lightProjection * lightView;
     }
 };
 
@@ -110,6 +103,10 @@ class LightManager
 public:
     void add_light(Light *light)
     {
+        if (dynamic_cast<DirectionalLight *>(light))
+            for (auto l : lights)
+                if (dynamic_cast<DirectionalLight *>(l))
+                    throw std::runtime_error("Only one directional light is allowed");
         lights.push_back(light);
     }
 
@@ -131,6 +128,19 @@ public:
                 spotLight->bind_depth_map(shader);
             }
         }
+    }
+
+    DirectionalLight *get_directional_light()
+    {
+        for (auto light : lights)
+        {
+            auto dirLight = dynamic_cast<DirectionalLight *>(light);
+            if (dirLight)
+            {
+                return dirLight;
+            }
+        }
+        return nullptr;
     }
 
     void cleanup()

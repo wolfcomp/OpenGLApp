@@ -8,7 +8,6 @@ struct Material {
     float shininess;
     bool hasNormalMap;
     bool hasSpecularMap;
-    vec3 albedo;
 };
 
 struct Light {
@@ -98,7 +97,7 @@ void main() {
     // // phase 3: spot light
     // result += CalcSpotLight(spotLight, normal, fs_in.FragPos, viewDir);
 
-    FragColor = vec4(GammaCorrect(material.albedo * result), 1.0);
+    FragColor = vec4(GammaCorrect(result), 1.0);
 }
 
 vec3 GetSpecular(Light light, float spec) {

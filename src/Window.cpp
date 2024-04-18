@@ -208,7 +208,7 @@ void Window::create_objects()
     auto cube = new Cube();
 
     cube->material = new Material();
-    cube->material->load_texture("container", "container");
+    cube->material->load_texture("container", "container.png");
     cube->material->shader = ShaderStore::get_shader("default");
     cube->material->shadow_shader = ShaderStore::get_shader("shadow");
 
@@ -222,6 +222,8 @@ void Window::create_objects()
             input.set_shader(shad);
             shad->set_float("gammaCorrection", 2.2f);
             shadowProcessor.bind_depth_map(shad);
+            auto dir_light = lightManager.get_directional_light();
+            shad->set_mat4("lightSpaceMatrix", shadowProcessor.get_light_space_matrix(dir_light->position, dir_light->direction));
         });
 }
 
@@ -244,7 +246,6 @@ void Window::update() const
     shadowProcessor.unbind_buffer(glm::vec2(width, height));
     glCullFace(GL_FRONT);
     world.draw(glm::mat4(1));
-    // model->Draw(*ShaderStore::get_shader("default"));
     imguiManager.render_draw_data();
     glCullFace(GL_BACK);
 

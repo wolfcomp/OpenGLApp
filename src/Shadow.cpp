@@ -57,7 +57,8 @@ glm::mat4 ShadowProcessor::get_light_space_matrix(const glm::vec3 &light_pos, co
 {
     const float near_plane = 0.1f;
     const float far_plane = 10.0f;
-    const glm::mat4 light_view = glm::lookAt(light_pos, light_pos + light_dir, glm::vec3(0.0f, 1.0f, 0.0f));
+    auto pos = light_pos - light_dir * 5.0f;
+    const glm::mat4 light_view = glm::lookAt(pos, pos + light_dir, glm::vec3(0.0f, 1.0f, 0.0f));
     const auto projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
     return projection * light_view;
 }

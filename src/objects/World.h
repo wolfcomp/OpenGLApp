@@ -22,6 +22,12 @@ public:
             mesh->draw_shadow(world_pos);
     }
 
+    void set_light_space_matrix(const glm::mat4 &light_space_matrix)
+    {
+        for (auto mesh : meshes)
+            mesh->set_light_space_matrix(light_space_matrix);
+    }
+
     void add_mesh(Mesh *mesh)
     {
         meshes.push_back(mesh);

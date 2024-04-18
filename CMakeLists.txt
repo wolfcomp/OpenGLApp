@@ -5,6 +5,7 @@ if (POLICY CMP0141)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
+set(BUILD_SHARED_LIBS OFF)
 add_subdirectory(Dependencies/includes/assimp)
 
 project(OpenGLApp)
@@ -26,7 +27,7 @@ target_link_directories(OpenGLApp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Dependenci
 target_link_directories(OpenGLApp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/includes/assimp/lib/${CMAKE_BUILD_TYPE})
 target_link_libraries(OpenGLApp PRIVATE "glfw3.lib")
 target_link_libraries(OpenGLApp PRIVATE "opengl32.lib")
-target_link_libraries(OpenGLApp PRIVATE "assimp-vc143-mtd.lib")
+# target_link_libraries(OpenGLApp PRIVATE "assimp-vc143-mtd.lib")
 
 add_custom_command(TARGET OpenGLApp POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/shaders $<TARGET_FILE_DIR:OpenGLApp>/shaders)
 add_custom_command(TARGET OpenGLApp POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/textures $<TARGET_FILE_DIR:OpenGLApp>/textures)
