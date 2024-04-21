@@ -36,15 +36,21 @@ public:
             }
             vertices.insert(vertices.end(), tmpVert.begin(), tmpVert.end());
         }
-        for (int i = 1; i < 4; i += 2)
+        for (auto &v : tmpVert)
+        {
+            v.position = glm::vec3(yRot * glm::vec4(v.position, 1));
+            v.normal = glm::vec3(yRot * glm::vec4(v.normal, 0));
+        }
+        vertices.insert(vertices.end(), tmpVert.begin(), tmpVert.end());
+        for (int i = 0; i < 2; i++)
         {
             for (auto &v : tmpVert)
             {
                 v.position = glm::vec3(yRot * glm::vec4(v.position, 1));
                 v.normal = glm::vec3(yRot * glm::vec4(v.normal, 0));
             }
-            vertices.insert(vertices.end(), tmpVert.begin(), tmpVert.end());
         }
+        vertices.insert(vertices.end(), tmpVert.begin(), tmpVert.end());
         for (int i = 0; i < 6; i++)
         {
             indices.push_back(i * 4);
@@ -54,8 +60,8 @@ public:
             indices.push_back(i * 4 + 3);
             indices.push_back(i * 4 + 2);
 
-            auto normal = glm::cross(vertices[i * 4 + 1].position - vertices[i * 4].position,
-                                     vertices[i * 4 + 2].position - vertices[i * 4].position);
+            auto normal = -normalize(glm::cross(vertices[i * 4 + 1].position - vertices[i * 4].position,
+                                                vertices[i * 4 + 2].position - vertices[i * 4].position));
             for (int j = 0; j < 4; j++)
             {
                 vertices[i * 4 + j].normal = normal;

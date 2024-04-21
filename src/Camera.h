@@ -28,6 +28,7 @@ public:
     glm::vec3 get_pos() const;
     glm::vec3 get_rotation() const;
     glm::vec3 get_movement(glm::vec3 direction) const;
+    glm::vec3 get_front() const;
     void set_shader(const Shader *shad);
     void process_mouse(float xoffset, float yoffset, bool constrainPitch = true);
 };

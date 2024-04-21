@@ -2,12 +2,12 @@
 #include "../Material.h"
 #include "../Shader.h"
 
-Mesh::Mesh()
-{
-    position = glm::vec3(0, 0, 0);
-    scale = glm::vec3(1, 1, 1);
-    rotation = glm::quat(1, 0, 0, 0);
+unsigned VAO;
+unsigned VBO;
+unsigned EBO;
 
+void Mesh::setup()
+{
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -26,17 +26,26 @@ Mesh::Mesh()
     glBindVertexArray(0);
 }
 
+Mesh::Mesh()
+{
+    position = glm::vec3(0, 0, 0);
+    scale = glm::vec3(1, 1, 1);
+    rotation = glm::quat(1, 0, 0, 0);
+}
+
 Mesh::~Mesh()
 {
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
+    for (auto child : children)
+        delete child;
+    if (material)
+        delete material;
 }
 
 void Mesh::draw(glm::mat4 world_pos)
 {
     if (!material)
         return;
+    pre_draw();
     glBindVertexArray(VAO);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
@@ -46,6 +55,7 @@ void Mesh::draw(glm::mat4 world_pos)
     world_pos = glm::scale(world_pos, scale);
     material->shader->set_mat4("model", world_pos);
     glDrawElements(mode, indices.size(), GL_UNSIGNED_INT, 0);
+    post_draw();
     for (auto child : children)
         child->draw(world_pos);
 }

@@ -74,11 +74,11 @@ void InputProcessing::remove_mouse_listener(int listener)
 
 void InputProcessing::process_mouse_move(GLFWwindow *window, double x_offset, double y_offset)
 {
-    if (!key_pressed[GLFW_MOUSE_BUTTON_LEFT])
+    if (!key_pressed[GLFW_MOUSE_BUTTON_LEFT] && !key_pressed[GLFW_MOUSE_BUTTON_RIGHT])
         return;
 
-    auto new_x_rel = last.x_pos - x_offset;
-    auto new_y_rel = y_offset - last.y_pos;
+    auto new_x_rel = x_offset - last.x_pos;
+    auto new_y_rel = last.y_pos - y_offset;
 
     last.x_pos = x_offset;
     last.y_pos = y_offset;
@@ -95,12 +95,18 @@ void InputProcessing::process_mouse_move(GLFWwindow *window, double x_offset, do
 
 void InputProcessing::process_mouse_button(GLFWwindow *window, int key, int action, int mods)
 {
-    if (key == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && !key_pressed[GLFW_MOUSE_BUTTON_LEFT])
+    if ((key == GLFW_MOUSE_BUTTON_LEFT || key == GLFW_MOUSE_BUTTON_RIGHT) && action == GLFW_PRESS && !key_pressed[GLFW_MOUSE_BUTTON_LEFT] && !key_pressed[GLFW_MOUSE_BUTTON_RIGHT])
     {
         glfwGetCursorPos(window, &last.x_pos, &last.y_pos);
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
-    else if (key == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+    else if (key == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE && !key_pressed[GLFW_MOUSE_BUTTON_RIGHT])
+    {
+        last.x_pos_offset = 0;
+        last.y_pos_offset = 0;
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+    else if (key == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE && !key_pressed[GLFW_MOUSE_BUTTON_LEFT])
     {
         last.x_pos_offset = 0;
         last.y_pos_offset = 0;

@@ -61,7 +61,7 @@ std::string get_path(std::filesystem::path p, std::string ext)
     return (p.parent_path().generic_string() + "/" + p.stem().generic_string() + ext + p.extension().generic_string());
 }
 
-void Material::load_texture(const std::string block, const std::string path)
+void TextureMaterial::load_texture(const std::string block, const std::string path)
 {
     // load and create textures
     std::filesystem::path p = "textures";
@@ -75,16 +75,31 @@ void Material::load_texture(const std::string block, const std::string path)
 void Material::use()
 {
     shader->use();
+    shader->set_float("material.shininess", shininess);
+}
+
+void TextureMaterial::use()
+{
+    Material::use();
     shader->set_int("material.diffuse", 0);
     shader->set_int("material.specular", 1);
     shader->set_int("material.normal", 2);
+    shader->set_bool("material.hasDiffuseMap", true);
     shader->set_bool("material.hasNormalMap", normalTexture != 0);
     shader->set_bool("material.hasSpecularMap", specularTexture != 0);
-    shader->set_float("material.shininess", shininess);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, diffuseTexture);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, specularTexture);
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, normalTexture);
+}
+
+void ColorMaterial::use()
+{
+    Material::use();
+    shader->set_vec3("material.color", color);
+    shader->set_bool("material.hasNormalMap", false);
+    shader->set_bool("material.hasSpecularMap", false);
+    shader->set_bool("material.hasDiffuseMap", false);
 }

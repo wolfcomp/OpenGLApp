@@ -4,7 +4,7 @@
 #include "glm/gtx/rotate_vector.hpp"
 
 #define MOUSE_SENSITIVITY 0.1f
-#define PITCH_LIMIT 89.0f
+#define PITCH_LIMIT 89.9f
 
 Camera::Camera() : Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0, 0)
 {
@@ -103,8 +103,10 @@ void Camera::process_mouse(float xoffset, float yoffset, bool constrainPitch)
 
 glm::vec3 Camera::get_movement(glm::vec3 direction) const
 {
-    auto rotation = glm::quat(glm::vec3(glm::radians(eulerAngles.x), glm::radians(eulerAngles.y), 0));
-    auto rotated = rotation * glm::vec3(direction.x, direction.y, direction.z);
+    return glm::vec3(glm::vec4(direction, 1) * viewMatrix);
+}
 
-    return rotated;
+glm::vec3 Camera::get_front() const
+{
+    return front;
 }

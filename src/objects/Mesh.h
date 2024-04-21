@@ -19,7 +19,6 @@ struct Mesh
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
     Material *material;
-    unsigned int VAO, VBO, EBO;
     glm::vec3 position;
     glm::vec3 scale;
     glm::quat rotation;
@@ -29,7 +28,10 @@ struct Mesh
 public:
     Mesh();
     ~Mesh();
+    virtual void pre_draw(){};
+    virtual void post_draw(){};
     void draw(glm::mat4 world_pos);
     void draw_shadow(glm::mat4 world_pos);
     void set_light_space_matrix(const glm::mat4 &light_space_matrix);
+    static void setup();
 };

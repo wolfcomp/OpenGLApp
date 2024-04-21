@@ -8,6 +8,8 @@ struct Material {
     float shininess;
     bool hasNormalMap;
     bool hasSpecularMap;
+    bool hasDiffuseMap;
+    vec3 color;
 };
 
 struct Light {
@@ -106,6 +108,18 @@ vec3 GetSpecular(Light light, float spec) {
     return vec3(spec);
 }
 
+vec3 GetDiffuse(Light light) {
+    if(material.hasDiffuseMap)
+        return light.diffuse * vec3(texture(material.diffuse, fs_in.TexCoords));
+    return light.diffuse * material.color;
+}
+
+float GetShadow(vec3 normal, vec4 fragPos, vec3 lightDir) {
+    float dotProduct = max(dot(normal, lightDir), 0.0);
+    float bias = 0.005 * tan(acos(dotProduct));
+    return ShadowCalcuation(fragPos, clamp(bias, 0, 0.01));
+}
+
 // calculates the color when using a directional light.
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir) {
     vec3 lightDir = normalize(-light.direction);
@@ -116,12 +130,10 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir) {
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     // combine results
     vec3 ambient = light.light.ambient * vec3(texture(material.diffuse, fs_in.TexCoords));
-    vec3 diffuse = light.light.diffuse * diff * vec3(texture(material.diffuse, fs_in.TexCoords));
+    vec3 diffuse = diff * GetDiffuse(light.light);
     vec3 specular = GetSpecular(light.light, spec);
-    float dotProduct = max(dot(normal, lightDir), 0.0);
-    float bias = 0.005 * tan(acos(dotProduct));
-    float shadow = ShadowCalcuation(fs_in.FragPosLightSpace, clamp(bias, 0, 0.01));
-    return (ambient + (diffuse + specular) * (1 - shadow));
+    float shadow = GetShadow(normal, fs_in.FragPosLightSpace, lightDir);
+    return (ambient + diffuse + specular);
 }
 
 // calculates the color when using a point light.
@@ -139,10 +151,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
     vec3 ambient = light.light.ambient * vec3(texture(material.diffuse, fs_in.TexCoords));
     vec3 diffuse = light.light.diffuse * diff * vec3(texture(material.diffuse, fs_in.TexCoords));
     vec3 specular = GetSpecular(light.light, spec);
-    ambient *= attenuation;
-    diffuse *= attenuation;
-    specular *= attenuation;
-    return (ambient + diffuse + specular);
+    return (ambient + diffuse + specular) * attenuation;
 }
 
 // calculates the color when using a spot light.
@@ -164,10 +173,7 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
     vec3 ambient = light.light.ambient * vec3(texture(material.diffuse, fs_in.TexCoords));
     vec3 diffuse = light.light.diffuse * diff * vec3(texture(material.diffuse, fs_in.TexCoords));
     vec3 specular = GetSpecular(light.light, spec);
-    ambient *= attenuation;
-    diffuse *= attenuation * intensity;
-    specular *= attenuation * intensity;
-    return (ambient + diffuse + specular);
+    return (ambient + (diffuse + specular) * intensity) * attenuation;
 }
 
 vec3 GammaCorrect(vec3 color) {

@@ -9,6 +9,7 @@
 #include "windows/InfoWindow.h"
 #include "objects/World.h"
 #include "objects/primitives/Cube.h"
+#include "objects/debug/Arrow.h"
 #include "Material.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -115,6 +116,8 @@ int Window::init()
 
     init_listeners();
 
+    Mesh::setup();
+
     return 0;
 }
 
@@ -126,19 +129,19 @@ void Window::init_listeners()
         false);
     input.attach_keyboard_listener(
         GLFW_KEY_W, []()
-        { move_character(glm::vec3(1, 0, 0)); },
-        true);
-    input.attach_keyboard_listener(
-        GLFW_KEY_S, []()
-        { move_character(glm::vec3(-1, 0, 0)); },
-        true);
-    input.attach_keyboard_listener(
-        GLFW_KEY_A, []()
         { move_character(glm::vec3(0, 0, -1)); },
         true);
     input.attach_keyboard_listener(
-        GLFW_KEY_D, []()
+        GLFW_KEY_S, []()
         { move_character(glm::vec3(0, 0, 1)); },
+        true);
+    input.attach_keyboard_listener(
+        GLFW_KEY_A, []()
+        { move_character(glm::vec3(-1, 0, 0)); },
+        true);
+    input.attach_keyboard_listener(
+        GLFW_KEY_D, []()
+        { move_character(glm::vec3(1, 0, 0)); },
         true);
     input.attach_keyboard_listener(
         GLFW_KEY_SPACE, []()
@@ -189,8 +192,9 @@ void Window::create_objects()
 
     dirLight->ambient = hsl(120, .4f, .2f);
     dirLight->diffuse = hsl(0, 0, .8f);
-    dirLight->specular = glm::vec3(.5f);
-    dirLight->direction = glm::vec3(-0.7f, -1.0f, -0.3f);
+    dirLight->specular = glm::vec3(1);
+    dirLight->direction = normalize(glm::vec3(-0.7f, -1.0f, -0.3f));
+    dirLight->position = lightPos;
 
     spotLight->position = pointLightPositions[0];
     spotLight->direction = normalize(glm::vec3(0, 0, -1));
@@ -207,12 +211,44 @@ void Window::create_objects()
 
     auto cube = new Cube();
 
-    cube->material = new Material();
-    cube->material->load_texture("container", "container.png");
+    cube->material = new TextureMaterial();
+    dynamic_cast<TextureMaterial *>(cube->material)->load_texture("container", "container.png");
     cube->material->shader = ShaderStore::get_shader("default");
     cube->material->shadow_shader = ShaderStore::get_shader("shadow");
 
     world.add_mesh(cube);
+
+    auto arrow = new Arrow(dirLight->direction);
+    arrow->material = new ColorMaterial();
+    dynamic_cast<ColorMaterial *>(arrow->material)->color = glm::vec3(1, 1, 0);
+    arrow->material->shader = ShaderStore::get_shader("noLight");
+    arrow->position = dirLight->position;
+
+    world.add_mesh(arrow);
+
+    auto y_axis = new Arrow(glm::vec3(0, 1, 0));
+    y_axis->material = new ColorMaterial();
+    dynamic_cast<ColorMaterial *>(y_axis->material)->color = glm::vec3(0, 0, 1);
+    y_axis->material->shader = ShaderStore::get_shader("noLight");
+    y_axis->position = glm::vec3(0, 0, 0);
+
+    world.add_mesh(y_axis);
+
+    auto x_axis = new Arrow(glm::vec3(1, 0, 0));
+    x_axis->material = new ColorMaterial();
+    dynamic_cast<ColorMaterial *>(x_axis->material)->color = glm::vec3(1, 0, 0);
+    x_axis->material->shader = ShaderStore::get_shader("noLight");
+    x_axis->position = glm::vec3(0, 0, 0);
+
+    world.add_mesh(x_axis);
+
+    auto z_axis = new Arrow(glm::vec3(0, 0, 1));
+    z_axis->material = new ColorMaterial();
+    dynamic_cast<ColorMaterial *>(z_axis->material)->color = glm::vec3(0, 1, 0);
+    z_axis->material->shader = ShaderStore::get_shader("noLight");
+    z_axis->position = glm::vec3(0, 0, 0);
+
+    world.add_mesh(z_axis);
 
     ShaderStore::set_shader_params(
         [](const Shader *shad)

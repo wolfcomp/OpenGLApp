@@ -26,6 +26,7 @@ int main()
     }
     ShaderStore::add_shader("default", "shaders/default.vs", "shaders/default.fs");
     ShaderStore::add_shader("uvVisual", "shaders/default.vs", "shaders/texCoordVisual.fs");
+    ShaderStore::add_shader("normalVisual", "shaders/default.vs", "shaders/normalVisual.fs");
     ShaderStore::add_shader("noLight", "shaders/default.vs", "shaders/noLight.fs");
     ShaderStore::add_shader("shadow", "shaders/shadowMap.vs", "shaders/shadowMap.fs");
 
