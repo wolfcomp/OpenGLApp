@@ -43,7 +43,7 @@ Mesh::~Mesh()
 
 void Mesh::draw(glm::mat4 world_pos)
 {
-    if (!material)
+    if (!material || !should_draw)
         return;
     pre_draw();
     glBindVertexArray(VAO);
@@ -62,7 +62,7 @@ void Mesh::draw(glm::mat4 world_pos)
 
 void Mesh::draw_shadow(glm::mat4 world_pos)
 {
-    if (!material || !material->shadow_shader)
+    if (!material || !material->shadow_shader || !should_draw)
         return;
     glBindVertexArray(VAO);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);

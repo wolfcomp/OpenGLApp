@@ -24,6 +24,7 @@ struct Mesh
     glm::quat rotation;
     std::vector<Mesh *> children;
     GLenum mode = GL_TRIANGLES;
+    bool should_draw = true;
 
 public:
     Mesh();
@@ -34,4 +35,25 @@ public:
     void draw_shadow(glm::mat4 world_pos);
     void set_light_space_matrix(const glm::mat4 &light_space_matrix);
     static void setup();
+};
+
+struct BasicMesh : public Mesh
+{
+    BasicMesh()
+    {
+    }
+
+    BasicMesh(std::vector<Vertex> vertices, std::vector<unsigned> indices)
+    {
+        this->vertices = vertices;
+        this->indices = indices;
+    }
+
+    void pre_draw() override
+    {
+    }
+
+    void post_draw() override
+    {
+    }
 };
