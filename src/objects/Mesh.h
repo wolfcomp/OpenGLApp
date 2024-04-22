@@ -6,6 +6,7 @@
 #include <vector>
 
 struct Material;
+struct Collision;
 
 struct Vertex
 {
@@ -23,10 +24,11 @@ struct Mesh
     glm::vec3 scale;
     glm::quat rotation;
     std::vector<Mesh *> children;
+    Collision *collider = nullptr;
     GLenum mode = GL_TRIANGLES;
     bool should_draw = true;
+    bool can_has_children = true;
 
-public:
     Mesh();
     ~Mesh();
     virtual void pre_draw(){};
@@ -34,7 +36,12 @@ public:
     void draw(glm::mat4 world_pos);
     void draw_shadow(glm::mat4 world_pos);
     void set_light_space_matrix(const glm::mat4 &light_space_matrix);
+    glm::mat4 get_model_matrix();
+    void add_child(Mesh *child);
+    void remove_child(Mesh *child);
+    void toggle_collider_renders(bool recursive = true);
     static void setup();
+    void toggle();
 };
 
 struct BasicMesh : public Mesh

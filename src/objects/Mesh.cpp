@@ -1,6 +1,7 @@
 #include "Mesh.h"
 #include "../Material.h"
 #include "../Shader.h"
+#include "../colliders/ColliderRender.h"
 
 unsigned VAO;
 unsigned VBO;
@@ -87,4 +88,35 @@ void Mesh::set_light_space_matrix(const glm::mat4 &light_space_matrix)
 
     for (auto child : children)
         child->set_light_space_matrix(light_space_matrix);
+}
+
+void Mesh::add_child(Mesh *child)
+{
+    if (child == this)
+        throw "Cannot add self as child you dip shit you want an infinite loop? :)";
+    if (!can_has_children)
+        throw "Object can't have children";
+    children.push_back(child);
+}
+
+void Mesh::remove_child(Mesh *child)
+{
+    children.erase(std::remove(children.begin(), children.end(), child), children.end());
+}
+
+void Mesh::toggle_collider_renders(bool recursive)
+{
+    for (auto child : children)
+    {
+        auto colRend = dynamic_cast<ColliderRender *>(child);
+        if (colRend)
+            colRend->toggle();
+        else if (recursive)
+            child->toggle_collider_renders(recursive);
+    }
+}
+
+void Mesh::toggle()
+{
+    should_draw = !should_draw;
 }

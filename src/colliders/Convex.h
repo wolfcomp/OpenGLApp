@@ -9,7 +9,6 @@ struct ConvexHull : public Collision<ConvexHull>
 {
     std::vector<unsigend> indices;
     Mesh *mesh;
-    std::vec3 position;
 
     ConvexHull();
 
