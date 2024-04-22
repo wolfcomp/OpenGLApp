@@ -6,7 +6,7 @@
 #include <vector>
 
 struct Material;
-struct Collision;
+struct ColliderBase;
 
 struct Vertex
 {
@@ -24,15 +24,15 @@ struct Mesh
     glm::vec3 scale;
     glm::quat rotation;
     std::vector<Mesh *> children;
-    Collision *collider = nullptr;
+    ColliderBase *collider = nullptr;
     GLenum mode = GL_TRIANGLES;
     bool should_draw = true;
     bool can_has_children = true;
 
     Mesh();
     ~Mesh();
-    virtual void pre_draw(){};
-    virtual void post_draw(){};
+    virtual void pre_draw() {};
+    virtual void post_draw() {};
     void draw(glm::mat4 world_pos);
     void draw_shadow(glm::mat4 world_pos);
     void set_light_space_matrix(const glm::mat4 &light_space_matrix);

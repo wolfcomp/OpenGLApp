@@ -1,9 +1,9 @@
 #pragma once
 
 #include <glm/vec3.hpp>
-#include "Collision.h"
+#include "Collider.h"
 
-struct SphereCollider : public Collision<SphereCollider>
+struct SphereCollider : public Collider<SphereCollider>
 {
     glm::vec3 center;
     float radius;
@@ -37,4 +37,4 @@ struct SphereCollider : public Collision<SphereCollider>
 
         direction = glm::normalize(t) * (r - glm::length(t));
     }
-}
+};

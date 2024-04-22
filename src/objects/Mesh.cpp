@@ -44,36 +44,42 @@ Mesh::~Mesh()
 
 void Mesh::draw(glm::mat4 world_pos)
 {
-    if (!material || !should_draw)
+    if (!material)
         return;
-    pre_draw();
-    glBindVertexArray(VAO);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
-    material->use();
-    world_pos = glm::translate(world_pos, position);
-    world_pos = world_pos * glm::mat4_cast(rotation);
-    world_pos = glm::scale(world_pos, scale);
-    material->shader->set_mat4("model", world_pos);
-    glDrawElements(mode, indices.size(), GL_UNSIGNED_INT, 0);
-    post_draw();
+    if (should_draw)
+    {
+        pre_draw();
+        glBindVertexArray(VAO);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+        material->use();
+        world_pos = glm::translate(world_pos, position);
+        world_pos = world_pos * glm::mat4_cast(rotation);
+        world_pos = glm::scale(world_pos, scale);
+        material->shader->set_mat4("model", world_pos);
+        glDrawElements(mode, indices.size(), GL_UNSIGNED_INT, 0);
+        post_draw();
+    }
     for (auto child : children)
         child->draw(world_pos);
 }
 
 void Mesh::draw_shadow(glm::mat4 world_pos)
 {
-    if (!material || !material->shadow_shader || !should_draw)
+    if (!material || !material->shadow_shader)
         return;
-    glBindVertexArray(VAO);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
-    material->shadow_shader->use();
-    world_pos = glm::translate(world_pos, position);
-    world_pos = world_pos * glm::mat4_cast(rotation);
-    world_pos = glm::scale(world_pos, scale);
-    material->shadow_shader->set_mat4("model", world_pos);
-    glDrawElements(mode, indices.size(), GL_UNSIGNED_INT, 0);
+    if (should_draw)
+    {
+        glBindVertexArray(VAO);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+        material->shadow_shader->use();
+        world_pos = glm::translate(world_pos, position);
+        world_pos = world_pos * glm::mat4_cast(rotation);
+        world_pos = glm::scale(world_pos, scale);
+        material->shadow_shader->set_mat4("model", world_pos);
+        glDrawElements(mode, indices.size(), GL_UNSIGNED_INT, 0);
+    }
     for (auto child : children)
         child->draw_shadow(world_pos);
 }
@@ -93,7 +99,7 @@ void Mesh::set_light_space_matrix(const glm::mat4 &light_space_matrix)
 void Mesh::add_child(Mesh *child)
 {
     if (child == this)
-        throw "Cannot add self as child you dip shit you want an infinite loop? :)";
+        throw "Cannot add self as child you dip shit. You want an infinite loop? :)";
     if (!can_has_children)
         throw "Object can't have children";
     children.push_back(child);
@@ -108,7 +114,7 @@ void Mesh::toggle_collider_renders(bool recursive)
 {
     for (auto child : children)
     {
-        auto colRend = dynamic_cast<ColliderRender *>(child);
+        auto colRend = dynamic_cast<ColliderRenderIntermediate *>(child);
         if (colRend)
             colRend->toggle();
         else if (recursive)

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "../Mesh.h"
+#include "../../colliders/AABB.h"
+#include "../../colliders/ColliderRender.h"
 
 class Cube : public Mesh
 {
@@ -67,5 +69,11 @@ public:
                 vertices[i * 4 + j].normal = normal;
             }
         }
+
+        auto aabb = new AABB(glm::vec3(0), glm::vec3(1));
+
+        collider = aabb;
+
+        add_child(new ColliderRender<AABB>(aabb));
     }
 };

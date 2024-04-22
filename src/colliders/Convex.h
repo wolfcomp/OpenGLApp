@@ -1,13 +1,14 @@
 #pragma once
 
 #include <glm/vec3.hpp>
-#include "Collision.h"
+#include "Collider.h"
+#include <vector>
 
 struct Mesh;
 
-struct ConvexHull : public Collision<ConvexHull>
+struct ConvexHull : public Collider<ConvexHull>
 {
-    std::vector<unsigend> indices;
+    std::vector<unsigned> indices;
     Mesh *mesh;
 
     ConvexHull();

@@ -1,5 +1,7 @@
 #include "Convex.h"
 #include "../objects/Mesh.h"
+#include <algorithm>
+#include <glm/gtx/vector_angle.hpp>
 
 ConvexHull::ConvexHull()
 {

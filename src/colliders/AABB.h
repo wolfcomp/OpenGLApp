@@ -1,9 +1,9 @@
 #pragma once
 
 #include <glm/vec3.hpp>
-#include "Collision.h"
+#include "Collider.h"
 
-struct AABB : public Collision<AABB>
+struct AABB : public Collider<AABB>
 {
     glm::vec3 center;
     glm::vec3 extent;

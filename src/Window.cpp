@@ -9,7 +9,7 @@
 #include "windows/InfoWindow.h"
 #include "objects/World.h"
 #include "objects/primitives/Cube.h"
-#include "objects/debug/Arrow.h"
+// #include "objects/debug/Arrow.h"
 #include "Material.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -218,37 +218,37 @@ void Window::create_objects()
 
     world.add_mesh(cube);
 
-    auto arrow = new Arrow(dirLight->direction);
-    arrow->material = new ColorMaterial();
-    dynamic_cast<ColorMaterial *>(arrow->material)->color = glm::vec3(1, 1, 0);
-    arrow->material->shader = ShaderStore::get_shader("noLight");
-    arrow->position = dirLight->position;
+    // auto arrow = new Arrow(dirLight->direction);
+    // arrow->material = new ColorMaterial();
+    // dynamic_cast<ColorMaterial *>(arrow->material)->color = glm::vec3(1, 1, 0);
+    // arrow->material->shader = ShaderStore::get_shader("noLight");
+    // arrow->position = dirLight->position;
 
-    world.add_mesh(arrow);
+    // world.add_mesh(arrow);
 
-    auto y_axis = new Arrow(glm::vec3(0, 1, 0));
-    y_axis->material = new ColorMaterial();
-    dynamic_cast<ColorMaterial *>(y_axis->material)->color = glm::vec3(0, 0, 1);
-    y_axis->material->shader = ShaderStore::get_shader("noLight");
-    y_axis->position = glm::vec3(0, 0, 0);
+    // auto y_axis = new Arrow(glm::vec3(0, 1, 0));
+    // y_axis->material = new ColorMaterial();
+    // dynamic_cast<ColorMaterial *>(y_axis->material)->color = glm::vec3(0, 0, 1);
+    // y_axis->material->shader = ShaderStore::get_shader("noLight");
+    // y_axis->position = glm::vec3(0, 0, 0);
 
-    world.add_mesh(y_axis);
+    // world.add_mesh(y_axis);
 
-    auto x_axis = new Arrow(glm::vec3(1, 0, 0));
-    x_axis->material = new ColorMaterial();
-    dynamic_cast<ColorMaterial *>(x_axis->material)->color = glm::vec3(1, 0, 0);
-    x_axis->material->shader = ShaderStore::get_shader("noLight");
-    x_axis->position = glm::vec3(0, 0, 0);
+    // auto x_axis = new Arrow(glm::vec3(1, 0, 0));
+    // x_axis->material = new ColorMaterial();
+    // dynamic_cast<ColorMaterial *>(x_axis->material)->color = glm::vec3(1, 0, 0);
+    // x_axis->material->shader = ShaderStore::get_shader("noLight");
+    // x_axis->position = glm::vec3(0, 0, 0);
 
-    world.add_mesh(x_axis);
+    // world.add_mesh(x_axis);
 
-    auto z_axis = new Arrow(glm::vec3(0, 0, 1));
-    z_axis->material = new ColorMaterial();
-    dynamic_cast<ColorMaterial *>(z_axis->material)->color = glm::vec3(0, 1, 0);
-    z_axis->material->shader = ShaderStore::get_shader("noLight");
-    z_axis->position = glm::vec3(0, 0, 0);
+    // auto z_axis = new Arrow(glm::vec3(0, 0, 1));
+    // z_axis->material = new ColorMaterial();
+    // dynamic_cast<ColorMaterial *>(z_axis->material)->color = glm::vec3(0, 1, 0);
+    // z_axis->material->shader = ShaderStore::get_shader("noLight");
+    // z_axis->position = glm::vec3(0, 0, 0);
 
-    world.add_mesh(z_axis);
+    // world.add_mesh(z_axis);
 
     ShaderStore::set_shader_params(
         [](const Shader *shad)
