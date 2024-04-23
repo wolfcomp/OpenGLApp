@@ -4,6 +4,13 @@
 #include <assimp/postprocess.h>
 #include <iostream>
 
+Mesh *process_node(aiNode *node, const aiScene *scene)
+{
+    auto mesh = new Mesh();
+
+    return mesh;
+}
+
 Mesh *ModelImport::load_model(const std::string &path)
 {
     Assimp::Importer importer;
@@ -15,5 +22,5 @@ Mesh *ModelImport::load_model(const std::string &path)
         return nullptr;
     }
 
-    return nullptr; // process_node(scene->mRootNode, scene);
+    return process_node(scene->mRootNode, scene);
 };
