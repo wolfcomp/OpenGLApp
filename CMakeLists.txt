@@ -29,3 +29,6 @@ target_link_libraries(OpenGLApp PRIVATE assimp)
 add_custom_command(TARGET OpenGLApp POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/shaders $<TARGET_FILE_DIR:OpenGLApp>/shaders)
 add_custom_command(TARGET OpenGLApp POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/textures $<TARGET_FILE_DIR:OpenGLApp>/textures)
 add_custom_command(TARGET OpenGLApp POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/assets $<TARGET_FILE_DIR:OpenGLApp>/assets)
+
+# Copying the assimp dll to the build directory
+add_custom_command(TARGET OpenGLApp POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/Dependencies/includes/assimp/bin/$<CONFIG>/$<$<CONFIG:Debug>:assimp-vc143-mtd.dll>$<$<CONFIG:Release>:assimp-vc143-mt.dll>$<$<CONFIG:RelWithDebInfo>:assimp-vc143-mt.dll>$<$<CONFIG:MinSizeRel>:assimp-vc143-mt.dll> $<TARGET_FILE_DIR:OpenGLApp>)
