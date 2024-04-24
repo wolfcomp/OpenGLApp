@@ -10,6 +10,9 @@
 #include "objects/World.h"
 #include "objects/primitives/Cube.h"
 // #include "objects/debug/Arrow.h"
+#include "ModelImport.h"
+#include "colliders/ConvexHull.h"
+#include "colliders/ColliderRender.h"
 #include "Material.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -151,6 +154,10 @@ void Window::init_listeners()
         GLFW_KEY_LEFT_CONTROL, []()
         { move_character(glm::vec3(0, -1, 0)); },
         true);
+    input.attach_keyboard_listener(
+        GLFW_KEY_C, []()
+        { world.toggle_collider_render(); },
+        false);
     input.attach_mouse_listener([](MouseInput input)
                                 { camera.process_mouse(input.x_pos_offset, input.y_pos_offset); });
 }
@@ -217,6 +224,16 @@ void Window::create_objects()
     cube->material->shadow_shader = ShaderStore::get_shader("shadow");
 
     world.add_mesh(cube);
+
+    auto testFbx = ModelImport::load_model("assets/models/test.fbx");
+    testFbx->material = new ColorMaterial();
+    dynamic_cast<ColorMaterial *>(testFbx->material)->color = glm::vec3(.7f);
+    testFbx->material->shader = ShaderStore::get_shader("default");
+    auto testFbxCollider = new ConvexHull(testFbx);
+    testFbx->collider = testFbxCollider;
+    testFbx->add_child(new ColliderRender<ConvexHull>(testFbxCollider));
+
+    world.add_mesh(testFbx);
 
     // auto arrow = new Arrow(dirLight->direction);
     // arrow->material = new ColorMaterial();

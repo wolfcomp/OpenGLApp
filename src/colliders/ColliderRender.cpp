@@ -1,9 +1,11 @@
 #include "ColliderRender.h"
 #include "AABB.h"
-#include "Convex.h"
+#include "ConvexHull.h"
 #include "SphereCollider.h"
+#include "../Material.h"
+#include "../ShaderStore.h"
 
-ColliderRender<AABB>::ColliderRender(AABB *collider)
+ColliderRender<AABB>::ColliderRender(AABB *collider) : ColliderRenderIntermediate()
 {
     this->collider = collider;
 
@@ -29,7 +31,7 @@ ColliderRender<AABB>::ColliderRender(AABB *collider)
         4, 5, 1, 1, 0, 4};
 }
 
-ColliderRender<ConvexHull>::ColliderRender(ConvexHull *collider)
+ColliderRender<ConvexHull>::ColliderRender(ConvexHull *collider) : ColliderRenderIntermediate()
 {
     this->collider = collider;
 
@@ -37,7 +39,7 @@ ColliderRender<ConvexHull>::ColliderRender(ConvexHull *collider)
     this->indices = collider->indices;
 }
 
-ColliderRender<SphereCollider>::ColliderRender(SphereCollider *collider)
+ColliderRender<SphereCollider>::ColliderRender(SphereCollider *collider) : ColliderRenderIntermediate()
 {
     this->collider = collider;
 
@@ -75,4 +77,13 @@ ColliderRender<SphereCollider>::ColliderRender(SphereCollider *collider)
         this->indices.push_back(i);
         this->indices.push_back(i + 1);
     }
+}
+
+ColliderRenderIntermediate::ColliderRenderIntermediate() : Mesh()
+{
+    can_has_children = false;
+    auto colorMat = new ColorMaterial();
+    colorMat->color = glm::vec3(1, 0, 0);
+    material = colorMat;
+    material->shader = ShaderStore::get_shader("noLight");
 }

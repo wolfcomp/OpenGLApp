@@ -33,6 +33,12 @@ public:
         meshes.push_back(mesh);
     }
 
+    void toggle_collider_render(bool recursive = true)
+    {
+        for (auto mesh : meshes)
+            mesh->toggle_collider_renders(recursive);
+    }
+
     void cleanup()
     {
         for (auto mesh : meshes)

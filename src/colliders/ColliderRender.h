@@ -5,10 +5,7 @@
 
 struct ColliderRenderIntermediate : public Mesh
 {
-    ColliderRenderIntermediate() : Mesh()
-    {
-        can_has_children = false;
-    }
+    ColliderRenderIntermediate();
 
     void pre_draw() override
     {

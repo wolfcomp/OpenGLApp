@@ -1,4 +1,4 @@
-#include "Convex.h"
+#include "ConvexHull.h"
 #include "../objects/Mesh.h"
 #include <algorithm>
 #include <glm/gtx/vector_angle.hpp>

@@ -44,7 +44,7 @@ Mesh::~Mesh()
 
 void Mesh::draw(glm::mat4 world_pos)
 {
-    if (!material)
+    if (material != nullptr)
         return;
     if (should_draw)
     {
@@ -66,7 +66,7 @@ void Mesh::draw(glm::mat4 world_pos)
 
 void Mesh::draw_shadow(glm::mat4 world_pos)
 {
-    if (!material || !material->shadow_shader)
+    if (material != nullptr || !material->shadow_shader)
         return;
     if (should_draw)
     {
@@ -86,7 +86,7 @@ void Mesh::draw_shadow(glm::mat4 world_pos)
 
 void Mesh::set_light_space_matrix(const glm::mat4 &light_space_matrix)
 {
-    if (!material || !material->shadow_shader || !material->shader)
+    if (material != nullptr || !material->shadow_shader || !material->shader)
         return;
 
     material->shadow_shader->set_mat4("lightSpaceMatrix", light_space_matrix);
