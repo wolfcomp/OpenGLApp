@@ -5,10 +5,12 @@
 #include <vector>
 
 struct Mesh;
+struct Vertex;
 
 struct ConvexHull : public Collider<ConvexHull>
 {
     std::vector<unsigned> indices;
+    std::vector<Vertex> vertices;
     Mesh *mesh;
 
     ConvexHull();

@@ -44,9 +44,7 @@ Mesh::~Mesh()
 
 void Mesh::draw(glm::mat4 world_pos)
 {
-    if (material != nullptr)
-        return;
-    if (should_draw)
+    if (should_draw && material != nullptr)
     {
         pre_draw();
         glBindVertexArray(VAO);
@@ -66,9 +64,7 @@ void Mesh::draw(glm::mat4 world_pos)
 
 void Mesh::draw_shadow(glm::mat4 world_pos)
 {
-    if (material != nullptr || !material->shadow_shader)
-        return;
-    if (should_draw)
+    if (should_draw && material != nullptr && material->shadow_shader != nullptr)
     {
         glBindVertexArray(VAO);
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
@@ -86,11 +82,11 @@ void Mesh::draw_shadow(glm::mat4 world_pos)
 
 void Mesh::set_light_space_matrix(const glm::mat4 &light_space_matrix)
 {
-    if (material != nullptr || !material->shadow_shader || !material->shader)
-        return;
-
-    material->shadow_shader->set_mat4("lightSpaceMatrix", light_space_matrix);
-    material->shader->set_mat4("lightSpaceMatrix", light_space_matrix);
+    if (material != nullptr || material->shadow_shader != nullptr || material->shader != nullptr)
+    {
+        material->shadow_shader->set_mat4("lightSpaceMatrix", light_space_matrix);
+        material->shader->set_mat4("lightSpaceMatrix", light_space_matrix);
+    }
 
     for (auto child : children)
         child->set_light_space_matrix(light_space_matrix);

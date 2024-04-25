@@ -35,7 +35,7 @@ ColliderRender<ConvexHull>::ColliderRender(ConvexHull *collider) : ColliderRende
 {
     this->collider = collider;
 
-    this->vertices = collider->mesh->vertices;
+    this->vertices = collider->vertices;
     this->indices = collider->indices;
 }
 

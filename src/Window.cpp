@@ -223,12 +223,12 @@ void Window::create_objects()
     cube->material->shader = ShaderStore::get_shader("default");
     cube->material->shadow_shader = ShaderStore::get_shader("shadow");
 
-    world.add_mesh(cube);
+    // world.add_mesh(cube);
 
     auto testFbx = ModelImport::load_model("assets/models/test.fbx");
     testFbx->material = new ColorMaterial();
     dynamic_cast<ColorMaterial *>(testFbx->material)->color = glm::vec3(.7f);
-    testFbx->material->shader = ShaderStore::get_shader("default");
+    testFbx->material->shader = ShaderStore::get_shader("noLight");
     auto testFbxCollider = new ConvexHull(testFbx);
     testFbx->collider = testFbxCollider;
     testFbx->add_child(new ColliderRender<ConvexHull>(testFbxCollider));
