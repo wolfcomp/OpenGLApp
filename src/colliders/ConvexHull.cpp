@@ -2,7 +2,6 @@
 #include "../objects/Mesh.h"
 #include <algorithm>
 #include <glm/gtx/vector_angle.hpp>
-#include <fstream>
 
 int orientation(glm::vec2 p, glm::vec2 q, glm::vec2 r)
 {
@@ -89,15 +88,6 @@ ConvexHull::ConvexHull(Mesh *mesh)
             sorted.push_back(p);
         }
     }
-
-    // write all the points of sorted to a file
-    std::ofstream file;
-    file.open("sorted.txt");
-    for (auto i = 0; i < sorted.size(); i++)
-    {
-        file << sorted[i].x << " " << sorted[i].y << std::endl;
-    }
-    file.close();
 
     // Initialize the stack with the lowest point in the x axis
     auto stack = jarvis_march(sorted);
