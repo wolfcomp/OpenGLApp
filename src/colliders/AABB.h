@@ -16,7 +16,7 @@ struct AABB : public Collider<AABB>
     {
     }
 
-    bool intersects(const AABB &other) const
+    bool intersects(const AABB &other) const override
     {
         auto t = other.center - center;
         auto e = other.extent + extent;
@@ -24,7 +24,7 @@ struct AABB : public Collider<AABB>
         return (abs(t.x) <= abs(e.x) && abs(t.y) <= abs(e.y) && abs(t.z) <= abs(e.z));
     }
 
-    void rebound(const AABB &other, glm::vec3 &direction) const
+    void rebound(const AABB &other, glm::vec3 &direction) const override
     {
         auto t = other.center - center;
         auto e = other.extent + extent;
@@ -66,5 +66,10 @@ struct AABB : public Collider<AABB>
         {
             direction.z = newDirection.z;
         }
+    }
+
+    std::vector<glm::vec3> get_points() const override
+    {
+        return std::vector<glm::vec3>();
     }
 };

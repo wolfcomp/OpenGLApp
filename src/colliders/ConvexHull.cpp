@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <glm/gtx/vector_angle.hpp>
 
+// Jarvis_march algorithm based on https://www.sanfoundry.com/cpp-program-implement-gift-wrapping-algorithm-two-dimensions/
+
 int orientation(glm::vec2 p, glm::vec2 q, glm::vec2 r)
 {
     auto val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
@@ -121,4 +123,9 @@ bool ConvexHull::intersects(const ConvexHull &other) const
 void ConvexHull::rebound(const ConvexHull &other, glm::vec3 &direction) const
 {
     direction = glm::vec3(0.0f);
+}
+
+std::vector<glm::vec3> ConvexHull::get_points() const
+{
+    return std::vector<glm::vec3>();
 }

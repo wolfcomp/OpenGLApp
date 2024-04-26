@@ -20,4 +20,6 @@ struct ConvexHull : public Collider<ConvexHull>
     bool intersects(const ConvexHull &other) const;
 
     void rebound(const ConvexHull &other, glm::vec3 &direction) const;
+
+    std::vector<glm::vec3> get_points() const;
 };

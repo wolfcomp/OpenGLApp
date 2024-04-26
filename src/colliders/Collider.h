@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/vec3.hpp>
+#include <vector>
 
 struct ColliderBase
 {
@@ -17,6 +18,8 @@ struct Collider : public ColliderBase
     virtual bool intersects(const T &other) const = 0;
 
     virtual void rebound(const T &other, glm::vec3 &direction) const = 0;
+
+    virtual std::vector<glm::vec3> get_points() const = 0;
 
     bool intersects(const ColliderBase &other) const override
     {

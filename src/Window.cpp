@@ -223,7 +223,7 @@ void Window::create_objects()
     cube->material->shader = ShaderStore::get_shader("default");
     cube->material->shadow_shader = ShaderStore::get_shader("shadow");
 
-    // world.add_mesh(cube);
+    world.add_mesh(cube);
 
     auto testFbx = ModelImport::load_model("assets/models/test.fbx");
     testFbx->material = new ColorMaterial();

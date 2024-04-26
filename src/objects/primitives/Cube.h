@@ -3,6 +3,7 @@
 #include "../Mesh.h"
 #include "../../colliders/AABB.h"
 #include "../../colliders/ColliderRender.h"
+#include "../../colliders/SphereCollider.h"
 
 class Cube : public Mesh
 {
@@ -70,10 +71,16 @@ public:
             }
         }
 
-        auto aabb = new AABB(glm::vec3(0), glm::vec3(1));
+        // auto aabb = new AABB(glm::vec3(0), glm::vec3(1));
 
-        collider = aabb;
+        // collider = aabb;
 
-        add_child(new ColliderRender<AABB>(aabb));
+        // add_child(new ColliderRender<AABB>(aabb));
+
+        auto sphereCol = new SphereCollider(glm::vec3(0), 1);
+
+        collider = sphereCol;
+
+        add_child(new ColliderRender<SphereCollider>(sphereCol));
     }
 };

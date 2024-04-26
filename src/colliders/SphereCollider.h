@@ -37,4 +37,30 @@ struct SphereCollider : public Collider<SphereCollider>
 
         direction = glm::normalize(t) * (r - glm::length(t));
     }
+
+    std::vector<glm::vec3> get_points() const
+    {
+        auto ret = std::vector<glm::vec3>();
+        auto slices = 20;
+        auto stacks = 20;
+
+        for (int i = 0; i <= stacks; i++)
+        {
+            float V = i / (float)stacks;
+            float phi = V * glm::pi<float>();
+
+            for (int j = 0; j <= slices; j++)
+            {
+                float U = j / (float)slices;
+                float theta = U * (glm::pi<float>() * 2);
+
+                float x = cos(theta) * sin(phi);
+                float y = cos(phi);
+                float z = sin(theta) * sin(phi);
+
+                ret.push_back(glm::vec3(x * radius, y * radius, z * radius));
+            }
+        }
+        return ret;
+    }
 };
