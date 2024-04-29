@@ -30,4 +30,21 @@ struct Collider : public ColliderBase
     {
         rebound(static_cast<const T &>(other), direction);
     }
+
+    glm::vec3 find_furthest_point(glm::vec3 direction)
+    {
+        auto points = get_points();
+        glm::vec3 maxPoint;
+        auto maxDistance = -std::numeric_limits<float>::max();
+        for (auto point : points)
+        {
+            auto distance = dot(point, direction);
+            if (distance > maxDistance)
+            {
+                maxDistance = distance;
+                maxPoint = point;
+            }
+        }
+        return maxPoint;
+    }
 };

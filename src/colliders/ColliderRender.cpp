@@ -35,7 +35,13 @@ ColliderRender<ConvexHull>::ColliderRender(ConvexHull *collider) : ColliderRende
 {
     this->collider = collider;
 
-    this->vertices = collider->vertices;
+    std::vector<Vertex> vertexes;
+    for (auto vertex : collider->vertices)
+    {
+        vertexes.push_back(Vertex(vertex));
+    }
+
+    this->vertices = vertexes;
     this->indices = collider->indices;
 }
 

@@ -38,7 +38,7 @@ struct SphereCollider : public Collider<SphereCollider>
         direction = glm::normalize(t) * (r - glm::length(t));
     }
 
-    std::vector<glm::vec3> get_points() const
+    std::vector<glm::vec3> get_points() const override
     {
         auto ret = std::vector<glm::vec3>();
         auto slices = 20;

@@ -62,6 +62,22 @@ void Mesh::draw(glm::mat4 world_pos)
         child->draw(world_pos);
 }
 
+glm::mat4 Mesh::get_model_matrix()
+{
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, position);
+    model = model * glm::mat4_cast(rotation);
+    model = glm::scale(model, scale);
+    return model;
+}
+
+glm::mat4 Mesh::get_world_matrix(glm::mat4 parent_pos)
+{
+    if (parent != nullptr)
+        parent_pos = parent->get_world_matrix(parent_pos);
+    return glm::scale(glm::translate(parent_pos, position) * glm::mat4_cast(rotation), scale);
+}
+
 void Mesh::draw_shadow(glm::mat4 world_pos)
 {
     if (should_draw && material != nullptr && material->shadow_shader != nullptr)
@@ -96,8 +112,11 @@ void Mesh::add_child(Mesh *child)
 {
     if (child == this)
         throw "Cannot add self as child you dip shit. You want an infinite loop? :)";
+    if (child->parent != nullptr)
+        throw "An object can only have one parent";
     if (!can_has_children)
         throw "Object can't have children";
+    child->parent = this;
     children.push_back(child);
 }
 

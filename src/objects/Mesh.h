@@ -24,6 +24,7 @@ struct Mesh
     glm::vec3 scale;
     glm::quat rotation;
     std::vector<Mesh *> children;
+    Mesh *parent = nullptr;
     ColliderBase *collider = nullptr;
     GLenum mode = GL_TRIANGLES;
     bool should_draw = true;
@@ -31,12 +32,13 @@ struct Mesh
 
     Mesh();
     ~Mesh();
-    virtual void pre_draw() {};
-    virtual void post_draw() {};
+    virtual void pre_draw(){};
+    virtual void post_draw(){};
     void draw(glm::mat4 world_pos);
     void draw_shadow(glm::mat4 world_pos);
     void set_light_space_matrix(const glm::mat4 &light_space_matrix);
     glm::mat4 get_model_matrix();
+    glm::mat4 get_world_matrix(glm::mat4 parent_pos = glm::mat4(1.0f));
     void add_child(Mesh *child);
     void remove_child(Mesh *child);
     void toggle_collider_renders(bool recursive = true);

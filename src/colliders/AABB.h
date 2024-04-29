@@ -70,6 +70,19 @@ struct AABB : public Collider<AABB>
 
     std::vector<glm::vec3> get_points() const override
     {
-        return std::vector<glm::vec3>();
+        auto points = std::vector<glm::vec3>();
+        points.reserve(8);
+        for (int i = 0; i < 2; i++)
+        {
+            for (int j = 0; j < 2; j++)
+            {
+                for (int k = 0; k < 2; k++)
+                {
+                    points.push_back(center + glm::vec3((i == 0 ? -1 : 1) * extent.x, (j == 0 ? -1 : 1) * extent.y, (k == 0 ? -1 : 1) * extent.z));
+                }
+            }
+        }
+
+        return points;
     }
 };

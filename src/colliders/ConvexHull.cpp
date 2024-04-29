@@ -2,6 +2,7 @@
 #include "../objects/Mesh.h"
 #include <algorithm>
 #include <glm/gtx/vector_angle.hpp>
+#include <ranges>
 
 // Jarvis_march algorithm based on https://www.sanfoundry.com/cpp-program-implement-gift-wrapping-algorithm-two-dimensions/
 
@@ -101,10 +102,10 @@ ConvexHull::ConvexHull(Mesh *mesh)
         auto pos01 = sorted[stack[(i + 1) % stack.size()]];
         auto pos10 = glm::vec3(pos00.x, highestPos.y, pos00.y);
         auto pos11 = glm::vec3(pos01.x, highestPos.y, pos01.y);
-        vertices.push_back(Vertex(glm::vec3(pos00.x, lowestPos.y, pos00.y)));
-        vertices.push_back(Vertex(glm::vec3(pos01.x, lowestPos.y, pos01.y)));
-        vertices.push_back(Vertex(pos10));
-        vertices.push_back(Vertex(pos11));
+        vertices.push_back(glm::vec3(pos00.x, lowestPos.y, pos00.y));
+        vertices.push_back(glm::vec3(pos01.x, lowestPos.y, pos01.y));
+        vertices.push_back(pos10);
+        vertices.push_back(pos11);
         indices.push_back(i * 4);
         indices.push_back(i * 4 + 1);
         indices.push_back(i * 4 + 2);
@@ -127,5 +128,5 @@ void ConvexHull::rebound(const ConvexHull &other, glm::vec3 &direction) const
 
 std::vector<glm::vec3> ConvexHull::get_points() const
 {
-    return std::vector<glm::vec3>();
+    return vertices;
 }
