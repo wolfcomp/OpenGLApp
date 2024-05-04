@@ -10,6 +10,12 @@ class World
     std::vector<Mesh *> meshes;
 
 public:
+    void update(float delta_time)
+    {
+        for (auto mesh : meshes)
+            mesh->update(delta_time);
+    }
+
     void draw(glm::mat4 world_pos)
     {
         for (auto mesh : meshes)

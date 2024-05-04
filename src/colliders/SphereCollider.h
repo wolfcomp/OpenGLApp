@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/vec3.hpp>
+#include <glm/ext/scalar_constants.hpp>
 #include "Collider.h"
 
 struct SphereCollider : public Collider<SphereCollider>

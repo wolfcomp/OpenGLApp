@@ -117,8 +117,7 @@ ConvexHull::ConvexHull(Mesh *mesh)
 
 bool ConvexHull::intersects(const ConvexHull &other) const
 {
-    // Check if the bounding boxes of the two convex hulls intersect with use of the separating axis theorem
-    return false;
+    return gjk.gjk(*this, other);
 }
 
 void ConvexHull::rebound(const ConvexHull &other, glm::vec3 &direction) const

@@ -7,6 +7,8 @@
 
 class Cube : public Mesh
 {
+    float time = 0;
+
 public:
     Cube() : Mesh()
     {
@@ -82,5 +84,12 @@ public:
         collider = sphereCol;
 
         add_child(new ColliderRender<SphereCollider>(sphereCol));
+    }
+
+    void update(float delta_time) override
+    {
+        time += delta_time;
+        time = std::fmod(time, 1.0f);
+        position = glm::vec3(glm::cos(time * glm::pi<float>() * 2), 0, glm::sin(time * glm::pi<float>() * 2));
     }
 };
