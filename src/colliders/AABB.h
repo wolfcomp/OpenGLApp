@@ -8,11 +8,11 @@ struct AABB : public Collider<AABB>
     glm::vec3 center;
     glm::vec3 extent;
 
-    AABB() : center(glm::vec3(0.0f)), extent(glm::vec3(0.0f))
+    AABB() : Collider<AABB>(nullptr), center(glm::vec3(0.0f)), extent(glm::vec3(0.0f))
     {
     }
 
-    AABB(glm::vec3 center, glm::vec3 extent) : center(center), extent(extent)
+    AABB(Mesh *parent, glm::vec3 center, glm::vec3 extent) : Collider<AABB>(parent), center(center), extent(extent)
     {
     }
 

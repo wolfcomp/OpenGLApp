@@ -286,6 +286,7 @@ void Window::update() const
     lastFrame = std::chrono::high_resolution_clock::now();
     input.process_keyboard(window, 0);
     imguiManager.render();
+    world.update(deltaTime);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glPointSize(5);
     // enable gl wireframe mode

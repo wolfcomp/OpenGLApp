@@ -1,4 +1,5 @@
 #include "Collider.h"
+#include "../objects/Mesh.h"
 #include <iostream>
 
 bool GJK::same_direction(glm::vec3 direction, glm::vec3 ao)
@@ -132,8 +133,39 @@ void debug_collider_log(ColliderHandler *a, ColliderHandler *b)
     std::cout << "Collision between " << a << " and " << b << std::endl;
 }
 
-ColliderBase::ColliderBase()
+ColliderBase::ColliderBase(Mesh *parent)
 {
-    handler = new ColliderHandler(this);
-    handler->callback = &debug_collider_log;
+    this->parent = parent;
+    handler = new ColliderHandler(this, &debug_collider_log);
+}
+
+glm::vec3 ColliderBase::find_furthest_point(glm::vec3 direction) const
+{
+    auto points = get_points();
+    glm::vec3 maxPoint;
+    auto maxDistance = -std::numeric_limits<float>::max();
+    for (auto point : points)
+    {
+        auto distance = dot(glm::vec3(glm::vec4(point, 1)), direction);
+        if (distance > maxDistance)
+        {
+            maxDistance = distance;
+            maxPoint = glm::vec3(parent->get_world_matrix() * glm::vec4(point, 1));
+        }
+    }
+    return maxPoint;
+}
+
+void ColliderBase::resolve_collision(const ColliderBase &other) const
+{
+    auto type = handler->check(*other.handler);
+    if (type == ColliderHandler::Type::COLLIDE)
+    {
+        auto curpos = parent->position;
+        auto otherpos = other.parent->position;
+        auto direction = glm::normalize(otherpos - curpos);
+        // auto distance = glm::distance(find_furthest_point(glm::vec3(0)), other.find_furthest_point(glm::vec3(0)));
+        // auto offset = direction * distance;
+        // parent->position += offset;
+    }
 }

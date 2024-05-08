@@ -73,23 +73,19 @@ public:
             }
         }
 
-        // auto aabb = new AABB(glm::vec3(0), glm::vec3(1));
+        auto aabb = new AABB(this, glm::vec3(0), glm::vec3(1));
 
-        // collider = aabb;
+        collider = aabb;
 
-        // add_child(new ColliderRender<AABB>(aabb));
+        add_child(new ColliderRender<AABB>(aabb));
 
-        auto sphereCol = new SphereCollider(glm::vec3(0), 1);
-
-        collider = sphereCol;
-
-        add_child(new ColliderRender<SphereCollider>(sphereCol));
+        should_update = true;
     }
 
     void update(float delta_time) override
     {
-        time += delta_time;
+        time += delta_time * 0.5f;
         time = std::fmod(time, 1.0f);
-        position = glm::vec3(glm::cos(time * glm::pi<float>() * 2), 0, glm::sin(time * glm::pi<float>() * 2));
+        position = glm::vec3(glm::cos(time * glm::pi<float>() * 2) * 2, 0, glm::sin(time * glm::pi<float>() * 2) * 2);
     }
 };

@@ -10,7 +10,6 @@ struct ConvexHull : public Collider<ConvexHull>
 {
     std::vector<unsigned> indices;
     std::vector<glm::vec3> vertices;
-    Mesh *mesh;
 
     ConvexHull();
 

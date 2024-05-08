@@ -36,10 +36,13 @@ Mesh::Mesh()
 
 Mesh::~Mesh()
 {
+    parent = nullptr;
     for (auto child : children)
         delete child;
     if (material)
         delete material;
+    if (collider)
+        delete collider;
 }
 
 void Mesh::draw(glm::mat4 world_pos)
@@ -140,4 +143,15 @@ void Mesh::toggle_collider_renders(bool recursive)
 void Mesh::toggle()
 {
     should_draw = !should_draw;
+}
+
+bool Mesh::is_parent(Mesh *child)
+{
+    if (child == this)
+        return true;
+    if (!parent)
+        return false;
+    if (child == parent)
+        return true;
+    return parent->is_parent(child);
 }

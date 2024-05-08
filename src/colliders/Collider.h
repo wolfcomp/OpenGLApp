@@ -9,6 +9,7 @@
 
 struct ColliderBase;
 struct ColliderHandler;
+struct Mesh;
 
 struct Simplex
 {
@@ -21,6 +22,7 @@ public:
 
     Simplex &operator=(std::initializer_list<glm::vec3> list)
     {
+        m_size = 0;
         for (auto p : list)
             points[m_size++] = p;
 
@@ -54,8 +56,9 @@ struct ColliderBase
 {
     GJK gjk;
     ColliderHandler *handler;
+    Mesh *parent;
 
-    ColliderBase();
+    ColliderBase(Mesh *parent);
 
     virtual ~ColliderBase() = default;
 
@@ -65,22 +68,9 @@ struct ColliderBase
 
     virtual std::vector<glm::vec3> get_points() const = 0;
 
-    glm::vec3 find_furthest_point(glm::vec3 direction) const
-    {
-        auto points = get_points();
-        glm::vec3 maxPoint;
-        auto maxDistance = -std::numeric_limits<float>::max();
-        for (auto point : points)
-        {
-            auto distance = dot(point, direction);
-            if (distance > maxDistance)
-            {
-                maxDistance = distance;
-                maxPoint = point;
-            }
-        }
-        return maxPoint;
-    }
+    void resolve_collision(const ColliderBase &other) const;
+
+    glm::vec3 find_furthest_point(glm::vec3 direction) const;
 
     glm::vec3 support(const ColliderBase &other, glm::vec3 direction) const
     {
@@ -91,6 +81,8 @@ struct ColliderBase
 template <typename T>
 struct Collider : public ColliderBase
 {
+    Collider(Mesh *parent) : ColliderBase(parent) {}
+
     virtual bool intersects(const T &other) const = 0;
 
     virtual void rebound(const T &other, glm::vec3 &direction) const = 0;
@@ -147,10 +139,10 @@ struct ColliderHandler
     /// @brief Checks if the collider is colliding with another collider
     /// @param other The other collider to check against
     /// @return True if the colliders are colliding and should block further execution, false otherwise
-    bool check(const ColliderHandler &other) const
+    Type check(const ColliderHandler &other) const
     {
         if (!active || !other.active)
-            return false;
+            return Type::NONE;
 
         auto type = types.find(other.objectType);
         if (type != types.end())
@@ -160,7 +152,7 @@ struct ColliderHandler
                 if (collider->intersects(*other.collider))
                 {
                     callback(const_cast<ColliderHandler *>(this), const_cast<ColliderHandler *>(&other));
-                    return true;
+                    return Type::COLLIDE;
                 }
             }
             else if (type->second == Type::OVERLAP)
@@ -168,10 +160,10 @@ struct ColliderHandler
                 if (collider->intersects(*other.collider))
                 {
                     callback(const_cast<ColliderHandler *>(this), const_cast<ColliderHandler *>(&other));
-                    return false;
+                    return Type::OVERLAP;
                 }
             }
         }
-        return false;
+        return Type::NONE;
     }
 };

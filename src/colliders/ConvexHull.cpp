@@ -54,14 +54,12 @@ std::vector<unsigned> jarvis_march(std::vector<glm::vec2> points)
     return stack;
 }
 
-ConvexHull::ConvexHull()
+ConvexHull::ConvexHull() : Collider<ConvexHull>(nullptr)
 {
 }
 
-ConvexHull::ConvexHull(Mesh *mesh)
+ConvexHull::ConvexHull(Mesh *mesh) : Collider<ConvexHull>(mesh)
 {
-    this->mesh = mesh;
-
     // Find the point with the lowest and highest y-coordinate
     auto lowest = 0;
     auto highest = 0;

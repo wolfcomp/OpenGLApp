@@ -29,6 +29,7 @@ struct Mesh
     GLenum mode = GL_TRIANGLES;
     bool should_draw = true;
     bool can_has_children = true;
+    bool should_update = false;
 
     Mesh();
     ~Mesh();
@@ -43,6 +44,7 @@ struct Mesh
     void add_child(Mesh *child);
     void remove_child(Mesh *child);
     void toggle_collider_renders(bool recursive = true);
+    bool is_parent(Mesh *child);
     static void setup();
     void toggle();
 };

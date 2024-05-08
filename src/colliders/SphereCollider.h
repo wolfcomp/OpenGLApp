@@ -9,11 +9,11 @@ struct SphereCollider : public Collider<SphereCollider>
     glm::vec3 center;
     float radius;
 
-    SphereCollider() : center(glm::vec3(0.0f)), radius(0.0f)
+    SphereCollider() : Collider<SphereCollider>(nullptr), center(glm::vec3(0.0f)), radius(0.0f)
     {
     }
 
-    SphereCollider(glm::vec3 center, float radius) : center(center), radius(radius)
+    SphereCollider(Mesh *parent, glm::vec3 center, float radius) : Collider<SphereCollider>(nullptr), center(center), radius(radius)
     {
     }
 
