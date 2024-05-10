@@ -1,6 +1,7 @@
 #include "Mesh.h"
 #include "../Material.h"
 #include "../Shader.h"
+#include "../colliders/Collider.h"
 #include "../colliders/ColliderRender.h"
 
 unsigned VAO;
@@ -154,4 +155,8 @@ bool Mesh::is_parent(Mesh *child)
     if (child == parent)
         return true;
     return parent->is_parent(child);
+}
+
+void Mesh::on_collision(ColliderBase *other)
+{
 }

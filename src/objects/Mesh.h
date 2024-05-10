@@ -33,9 +33,10 @@ struct Mesh
 
     Mesh();
     ~Mesh();
-    virtual void pre_draw() {};
-    virtual void post_draw() {};
-    virtual void update(float delta_time) {};
+    virtual void pre_draw(){};
+    virtual void post_draw(){};
+    virtual void update(float delta_time){};
+    virtual void on_collision(ColliderBase *other);
     void draw(glm::mat4 world_pos);
     void draw_shadow(glm::mat4 world_pos);
     void set_light_space_matrix(const glm::mat4 &light_space_matrix);

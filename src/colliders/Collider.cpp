@@ -128,15 +128,10 @@ bool GJK::gjk(const ColliderBase &a, const ColliderBase &b)
     }
 }
 
-void debug_collider_log(ColliderHandler *a, ColliderHandler *b)
-{
-    std::cout << "Collision between " << a << " and " << b << std::endl;
-}
-
 ColliderBase::ColliderBase(Mesh *parent)
 {
     this->parent = parent;
-    handler = new ColliderHandler(this, &debug_collider_log);
+    handler = new ColliderHandler(this);
 }
 
 glm::vec3 ColliderBase::find_furthest_point(glm::vec3 direction) const
@@ -168,4 +163,24 @@ void ColliderBase::resolve_collision(const ColliderBase &other) const
         // auto offset = direction * distance;
         // parent->position += offset;
     }
+}
+
+ColliderHandler::Type ColliderHandler::check(const ColliderHandler &other) const
+{
+    if (!active || !other.active)
+        return Type::NONE;
+
+    auto type = types.find(other.objectType);
+    if (type != types.end())
+    {
+        if (type->second == Type::COLLIDE || type->second == Type::OVERLAP)
+        {
+            if (collider->intersects(*other.collider))
+            {
+                collider->parent->on_collision(other.collider);
+                return type->second;
+            }
+        }
+    }
+    return Type::NONE;
 }

@@ -130,40 +130,12 @@ struct ColliderHandler
                                         {ObjectType::WORLD_STATIC, Type::COLLIDE}};
     ColliderBase *collider;
     bool active = true;
-    void (*callback)(ColliderHandler *handler, ColliderHandler *other);
 
-    ColliderHandler() : collider(nullptr), callback(nullptr) {}
-    ColliderHandler(ColliderBase *collider) : collider(collider), callback(nullptr) {}
-    ColliderHandler(ColliderBase *collider, void (*callback)(ColliderHandler *handler, ColliderHandler *other)) : collider(collider), callback(callback) {}
+    ColliderHandler() : collider(nullptr) {}
+    ColliderHandler(ColliderBase *collider) : collider(collider) {}
 
     /// @brief Checks if the collider is colliding with another collider
     /// @param other The other collider to check against
     /// @return True if the colliders are colliding and should block further execution, false otherwise
-    Type check(const ColliderHandler &other) const
-    {
-        if (!active || !other.active)
-            return Type::NONE;
-
-        auto type = types.find(other.objectType);
-        if (type != types.end())
-        {
-            if (type->second == Type::COLLIDE)
-            {
-                if (collider->intersects(*other.collider))
-                {
-                    callback(const_cast<ColliderHandler *>(this), const_cast<ColliderHandler *>(&other));
-                    return Type::COLLIDE;
-                }
-            }
-            else if (type->second == Type::OVERLAP)
-            {
-                if (collider->intersects(*other.collider))
-                {
-                    callback(const_cast<ColliderHandler *>(this), const_cast<ColliderHandler *>(&other));
-                    return Type::OVERLAP;
-                }
-            }
-        }
-        return Type::NONE;
-    }
+    Type check(const ColliderHandler &other) const;
 };

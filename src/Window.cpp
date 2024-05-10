@@ -8,7 +8,7 @@
 #include "ImGuiManager.h"
 #include "windows/InfoWindow.h"
 #include "objects/World.h"
-#include "objects/primitives/Cube.h"
+#include "objects/TestCube.h"
 // #include "objects/debug/Arrow.h"
 #include "ModelImport.h"
 #include "colliders/ConvexHull.h"
@@ -216,7 +216,7 @@ void Window::create_objects()
 
     imguiManager.add_window(new InfoWindow(&camera));
 
-    auto cube = new Cube();
+    auto cube = new TestCube();
 
     cube->material = new TextureMaterial();
     dynamic_cast<TextureMaterial *>(cube->material)->load_texture("container", "container.png");
