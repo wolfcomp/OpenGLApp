@@ -3,6 +3,7 @@
 #include "HSL.h"
 #include "Shader.h"
 #include "Shadow.h"
+#include <vector>
 
 struct Light
 {
@@ -26,6 +27,7 @@ struct Light
 struct DirectionalLight : public Light
 {
     glm::vec3 direction;
+    glm::vec3 position;
 
     void set_shader(const Shader *shader) override
     {
@@ -91,5 +93,62 @@ struct SpotLight : public PointLight
     std::string get_name() override
     {
         return "spotLight";
+    }
+};
+
+class LightManager
+{
+    std::vector<Light *> lights;
+
+public:
+    void add_light(Light *light)
+    {
+        if (dynamic_cast<DirectionalLight *>(light))
+            for (auto l : lights)
+                if (dynamic_cast<DirectionalLight *>(l))
+                    throw std::runtime_error("Only one directional light is allowed");
+        lights.push_back(light);
+    }
+
+    void set_shader(const Shader *shader)
+    {
+        for (auto light : lights)
+        {
+            light->set_shader(shader);
+        }
+    }
+
+    void bind_depth_maps(const Shader *shader)
+    {
+        for (auto light : lights)
+        {
+            auto spotLight = dynamic_cast<SpotLight *>(light);
+            if (spotLight)
+            {
+                spotLight->bind_depth_map(shader);
+            }
+        }
+    }
+
+    DirectionalLight *get_directional_light()
+    {
+        for (auto light : lights)
+        {
+            auto dirLight = dynamic_cast<DirectionalLight *>(light);
+            if (dirLight)
+            {
+                return dirLight;
+            }
+        }
+        return nullptr;
+    }
+
+    void cleanup()
+    {
+        for (auto light : lights)
+        {
+            delete light;
+        }
+        lights.clear();
     }
 };

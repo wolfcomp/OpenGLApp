@@ -6,7 +6,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-unsigned int create_texture(const char *path, bool gamma_correct = false)
+unsigned int create_texture(const char *path, bool gamma_correct, bool silent_error)
 {
     unsigned int texture;
     glGenTextures(1, &texture);
@@ -44,9 +44,12 @@ unsigned int create_texture(const char *path, bool gamma_correct = false)
     }
     else
     {
-        std::cerr << "ERROR::MATERIAL::CREATE_TEXTURE" << std::endl;
-        std::cerr << "Failed to load texture" << std::endl;
-        std::cerr << path << std::endl;
+        if (!silent_error)
+        {
+            std::cerr << "ERROR::MATERIAL::CREATE_TEXTURE" << std::endl;
+            std::cerr << "Failed to load texture" << std::endl;
+            std::cerr << path << std::endl;
+        }
         texture = 0;
     }
     stbi_image_free(data);
@@ -58,29 +61,45 @@ std::string get_path(std::filesystem::path p, std::string ext)
     return (p.parent_path().generic_string() + "/" + p.stem().generic_string() + ext + p.extension().generic_string());
 }
 
-void Material::load_texture(const std::string block, const std::string path)
+void TextureMaterial::load_texture(const std::string block, const std::string path)
 {
     // load and create textures
     std::filesystem::path p = "textures";
     p /= block;
     p /= path;
-    diffuseTexture = create_texture(get_path(p, "_d").c_str(), true);
-    specularTexture = create_texture(get_path(p, "_s").c_str());
-    normalTexture = create_texture(get_path(p, "_n").c_str());
+    diffuseTexture = create_texture(get_path(p, "_d").c_str(), true, false);
+    specularTexture = create_texture(get_path(p, "_s").c_str(), false, true);
+    normalTexture = create_texture(get_path(p, "_n").c_str(), false, true);
 }
 
-void Material::set_shader(const Shader *shader)
+void Material::use()
 {
+    shader->use();
+    shader->set_float("material.shininess", shininess);
+}
+
+void TextureMaterial::use()
+{
+    Material::use();
     shader->set_int("material.diffuse", 0);
     shader->set_int("material.specular", 1);
     shader->set_int("material.normal", 2);
+    shader->set_bool("material.hasDiffuseMap", true);
     shader->set_bool("material.hasNormalMap", normalTexture != 0);
     shader->set_bool("material.hasSpecularMap", specularTexture != 0);
-    shader->set_float("material.shininess", shininess);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, diffuseTexture);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, specularTexture);
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, normalTexture);
+}
+
+void ColorMaterial::use()
+{
+    Material::use();
+    shader->set_vec3("material.color", color);
+    shader->set_bool("material.hasNormalMap", false);
+    shader->set_bool("material.hasSpecularMap", false);
+    shader->set_bool("material.hasDiffuseMap", false);
 }

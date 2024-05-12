@@ -9,6 +9,7 @@ struct Window
     ~Window();
 
     int init();
+    void init_listeners();
     static void create_objects();
     void update() const;
     void render() const;

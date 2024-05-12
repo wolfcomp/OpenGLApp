@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 
-#include "Mesh.h"
 #include "glm/fwd.hpp"
 
 #ifdef M_PI
@@ -17,9 +16,6 @@ T lerp(const T &a, const T &b, const float t)
 {
     return a + (b - a) * t;
 }
-
-template <>
-Vertex lerp(const Vertex &a, const Vertex &b, float t);
 #endif
 
 #ifndef EULER_LERP
@@ -120,4 +116,15 @@ glm::mat4 scale_mat(float x, float y, float z);
 glm::mat4 translate_mat(float x, float y, float z);
 
 glm::mat4 combine(const glm::mat4 *mats...);
+#endif
+
+#ifndef BARYCENTRIC
+#define BARYCENTRIC
+/// @brief Calculates the barycentric coordinates of a point in a triangle and returns the coordinates in the triangle's space.
+/// @param a A point of the triangle.
+/// @param b A point of the triangle.
+/// @param c A point of the triangle.
+/// @param p The point to calculate the barycentric coordinates of.
+/// @return A pointer to a vec3 containing the barycentric coordinates of the point. Nullptr if the point is not in the triangle.
+glm::vec3 *barycentric(const glm::vec3 &a, const glm::vec3 &b, const glm::vec3 &c, const glm::vec2 &p);
 #endif

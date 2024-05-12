@@ -53,13 +53,12 @@ void ShadowProcessor::bind_depth_map(const Shader *shader)
     shader->set_int(shadow_map_name, shadow_map_index);
 }
 
-glm::mat4 ShadowProcessor::get_light_space_matrix(const glm::vec3 &character_pos, const glm::vec3 &light_dir, const float &character_yaw)
+glm::mat4 ShadowProcessor::get_light_space_matrix(const glm::vec3 &light_pos, const glm::vec3 &light_dir)
 {
     const float near_plane = 0.1f;
     const float far_plane = 10.0f;
-    const glm::vec3 character_vector = rotateY(glm::vec3(0.0f, 0.0f, 1.0f), glm::radians(character_yaw));
-    const glm::vec3 light_pos = character_pos - 5.0f * light_dir + 2.5f * normalize(character_vector);
-    const glm::mat4 light_view = glm::lookAt(light_pos, light_pos + light_dir, glm::vec3(0.0f, 1.0f, 0.0f));
+    auto pos = light_pos - light_dir * 5.0f;
+    const glm::mat4 light_view = glm::lookAt(pos, pos + light_dir, glm::vec3(0.0f, 1.0f, 0.0f));
     const auto projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
     return projection * light_view;
 }
@@ -68,4 +67,10 @@ glm::mat4 ShadowProcessor::get_light_space_matrix(const glm::vec3 &light_pos, co
 {
     const glm::mat4 light_view = glm::lookAt(light_pos, light_pos + light_dir, glm::vec3(0.0f, 1.0f, 0.0f));
     return light_projection * light_view;
+}
+
+void ShadowProcessor::cleanup()
+{
+    glDeleteFramebuffers(1, &depth_map_fbo);
+    glDeleteTextures(1, &depth_map);
 }

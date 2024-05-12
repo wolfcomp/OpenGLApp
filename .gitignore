@@ -411,5 +411,5 @@ test/test_runner
 # vscode
 .vscode/
 
-!src/debug
+!src/**/debug
 *.blend1
