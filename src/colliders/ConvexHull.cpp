@@ -111,6 +111,15 @@ ConvexHull::ConvexHull(Mesh *mesh) : Collider<ConvexHull>(mesh)
         indices.push_back(i * 4 + 3);
         indices.push_back(i * 4 + 2);
     }
+    for (auto i = 0; i < stack.size() - 2; i++)
+    {
+        indices.push_back(0);
+        indices.push_back((i + 1) * 4);
+        indices.push_back((i + 2) * 4);
+        indices.push_back(2);
+        indices.push_back((i + 1) * 4 + 2);
+        indices.push_back((i + 2) * 4 + 2);
+    }
 }
 
 bool ConvexHull::intersects(const ConvexHull &other) const
